@@ -22,7 +22,6 @@ if not fs.exists("/programs/api/yaml.lua") then
 end
 
 local ts = require("/programs/api/ts")
-local yaml = require("/programs/api/yaml")
 
 local function usage()
     print("usage: ts install <program> [-github <owner> <repo> <branch> | -url <rurl>]")
