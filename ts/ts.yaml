@@ -2,6 +2,7 @@ name: Tuna System
 description: A Package Manager for CraftOS
 files:
   - programs/ts.lua
+  - programs/api/ts.lua
   - startup/ts.lua
 dependencies:
   - yaml
