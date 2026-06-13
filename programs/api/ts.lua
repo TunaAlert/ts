@@ -1,27 +1,207 @@
-
---TODO: change to load from config
-local repos = {
-    {owner="TunaAlert", repo="ts", branch="main"}
-}
+local yaml = require("/programs/api/yaml")
 
 local function getProgramsInRepo(repo)
-  local request = http.get(("https://api.github.com/repos/%s/%s/git/trees/%s"):format(repo.owner, repo.repo, repo.branch)
-  
-  --TODO: load response to programs. We retrieve the ts branch of the returned tree and request another tree from that hash. You'll get it.
-  print(request.readAll())
-  
-  request.close()
-  return {}
+    if repo.type ~= "github" then
+        return {}
+    end
+    
+    local request = http.get(("https://api.github.com/repos/%s/%s/git/trees/%s"):format(repo.owner, repo.repo, repo.branch))
+    
+    --TODO: load response to programs. We retrieve the ts branch of the returned tree and request another tree from that hash. You'll get it.
+    print(request.readAll())
+    
+    request.close()
+    return {}
+end
+
+local function getRepos()
+    local config = yaml.load("/.data/ts/config.yaml")
+    if config == nil or config.repos == nil then
+        return {}
+    end
+    return config.repos
 end
 
 local function getPrograms()
-  local programs = {}
-  for i, repo in pairs(repos) do
-      table.append(programs, getPorgramsInRepo(repo))
-  end
-  return programs
+    local repos = getRepos()
+
+    local programs = {}
+    for i, repo in pairs(repos) do
+        table.append(programs, getPorgramsInRepo(repo))
+    end
+    return programs
+end
+
+local function getInstalledPrograms()
+    local fileList = fs.list("/ts/")
+    local programList {}
+    for i, file in pairs(fileList) do
+        local data = yaml.load("/ts/" .. file)
+        local info = {
+            command = string.sub(file, 1, #file-4)
+            name = data.name or string.sub(file, 1, #file-4)
+            description = data.description or ""
+        }
+        programList[#programList+1] = info
+    end
+    return programList
+end
+
+local function findRepoForProgram(program)
+    local programRepo = nil
+    local repos = getRepos()
+    for i, repo in pairs(repos) do
+        if repo.type == "github" then
+            if http.get(("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)) ~= nil then
+                programRepo = repo
+            end
+        elseif repo.type == "url" then
+            if http.get(("%s/ts/%s.yaml"):format(repo.url, program)) ~= nil then
+                programRepo = repo
+            end
+        end
+    end
+    return programRepo
+end
+
+local function install(program, repo)
+    if repo == nil then
+        repo = findRepoForProgram(program)
+        if repo == nil then
+            return false
+        end
+    end
+    local yamlUrl = nil
+    local fileUrlGetter = nil
+    if repo.type == "github" then
+        yamlUrl = ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)
+        fileUrlGetter = function(r, f) ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
+    elseif repo.type == "url" then
+        yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
+        fileUrlGetter = function(r, f) ("%s/%s"):format(r.url, f) end
+    else
+        return false
+    end
+    if yamlUrl ~= nil and fileUrlGetter ~= nil then
+        local request = http.get(yamlUrl)
+        if request == nil then
+            return false
+        end
+        local data = yaml.parse(request.readAll())
+        request.close()
+        if data == nil then
+            return false
+        end
+        data.repo = repo
+        yaml.save(data, ("/ts/%s.yaml"):format(program))
+        local startupFile = nil
+        for i, file in pairs(data.files) do
+            request = fileUrlGetter(repo, file)
+            local handle = io.open(file, "w")
+            gandle.write(request.readAll())
+            handle.close()
+            request.close()
+            if string.find(file, "^/?startup/") then
+                startupFile = file
+            end
+        end
+        if startupFile ~= nil then
+            shell.run(startupFile)
+        end
+        return true
+    else
+        return false
+    end
+end
+
+local function remove(program)
+    local data = yaml.load(("/ts/%s.lua"):format(program))
+    if data == nil then
+        return false
+    end
+    for i, file in data.files do
+        if fs.exists(file) then
+            fs.delete(file)
+            file = fs.getDir(file)
+            while file ~= "" and #fs.list(file) == 0 do
+                fs.delete(file)
+                file = getDir(file)
+            end
+        end
+    end
+    fs.delete(("/ts/%s.lua"):format(program))
+    return true
+end
+
+local function upgrade()
+    local fileList = fs.list("/ts/")
+    for i, file in pairs(fileList) do
+        local data = yaml.load("/ts/" .. file)
+        local program = string.sub(filr, 1, #file-4)
+        install(program, data.repo)
+    end
+end
+
+local function update()
+    install("ts")
+end
+
+local function reposEqual(a, b)
+    return a.type == b.type and a.url == b.url and a.owner == b.owner and a.repo == b.repo and a.branch == b.branch
+end
+
+local function addRepo(repo)
+    local config = yaml.load("/.data/ts/config.yaml")
+    if config == nil then
+        config = {}
+    end
+    if config.repos == nil then
+        config.repos = {}
+    end
+    local addRepo = true
+    for i, preRepo in pairs(config.repos) do
+        if reposEqual(preRepo, repo) then
+            addRepo = false
+        end
+    end
+    if addRepo then
+        config.repos[#config.repos + 1] = repo
+        yaml.save(config, "/.data/ts/config.yaml")
+    end
+    return addRepo
+end
+
+local function removeRepo(repo)
+    local config = yaml.load("/.data/ts/config.yaml")
+    if config == nil then
+        config = {}
+    end
+    if config.repos == nil then
+        config.repos = {}
+    end
+    local removed = false
+    local index = 0
+    for i, preRepo in pairs(config.repos) do
+        if reposEqual(preRepo, repo) then
+            index = i
+            removed = true
+        end
+    end
+    if removed then
+        table.remove(config.repos, index)
+        yaml.save(config, "/.data/ts/config.yaml")
+    end
+    return removed
 end
 
 return {
-  getPrograms: getPrograms
+    getPrograms = getPrograms,
+    getInstalledPrograms = getInstalledPrograms,
+    getRepos = getRepos,
+    install = install,
+    remove = remove,
+    upgrade = upgrade,
+    update = update,
+    addRepo = addRepo,
+    removeRepo = removeRepo
 }
