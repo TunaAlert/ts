@@ -17,5 +17,10 @@ shell.setCompletionFunction("programs/ts.lua", completion.build(
             end
             return nil
         end,
-        
+        function(shell, text, previous)
+            if previous[2] == "config" or previous[2] == "install" then
+                return completion.choice(shell, text, previous, {"-github", "-url"})
+            end
+            return nil
+        end
         ))
