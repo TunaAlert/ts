@@ -142,8 +142,31 @@ local function parse(str)
             inList = false,
             line = i
         }
-        if string.find(line, "^%s*%w+:( .+)?$") then
-            if string.find(line, "^%s+") then
+        if line ~= nil then
+            if string.find(line, "^%s*%w+:( .+)?$") then
+                if string.find(line, "^%s+") then
+                    data.indent = #(string.match(line, "^%s+"))
+                    if indentStep == 0 then
+                        indentStep = data.indent
+                    elseif data.indent % indentStep ~= 0 then
+                        error("malformed Yaml indentation in line " .. tostring(i))
+                    end
+                    data.indent = data.indent / indentStep
+                end
+                data.key = string.match(line, "%w+")
+                if string.find(line, ": .+$") then
+                    local value = string.match(line, ": .+$")
+                    value = string.sub(value, 3)
+                    if isnumber(tonumber(value)) then
+                        value = tonumber(value)
+                    elseif value == "true" or value == "false" then
+                        value = value == "true"
+                    elseif value[1] == "[" or value[1] == "{" then
+                        value = parseJson(value, i)
+                    end
+                    data.value = value
+                end
+            elseif string.find(line, "^%s+%- %w+:( .+)?$") then
                 data.indent = #(string.match(line, "^%s+"))
                 if indentStep == 0 then
                     indentStep = data.indent
@@ -151,9 +174,26 @@ local function parse(str)
                     error("malformed Yaml indentation in line " .. tostring(i))
                 end
                 data.indent = data.indent / indentStep
-            end
-            data.key = string.match(line, "%w+")
-            if string.find(line, ": .+$") then
+                data.key = string.match(line, "%w+")
+                local value = string.match(line, ": .+$")
+                value = string.sub(value, 3)
+                if isnumber(tonumber(value)) then
+                    value = tonumber(value)
+                elseif value == "true" or value == "false" then
+                    value = value == "true"
+                elseif string.sub(value, 1, 1) == "[" or string.sub(value, 1, 1) == "{" then
+                    value = parseJson(value, i)
+                end
+                data.value = value
+                data.inList = true
+            elseif string.find(line, "^%s+%- .+$") then
+                data.indent = #(string.match(line, "^%s+"))
+                if indentStep == 0 then
+                    indentStep = data.indent
+                elseif data.indent % indentStep ~= 0 then
+                    error("malformed Yaml indentation in line " .. tostring(i))
+                end
+                data.indent = data.indent / indentStep
                 local value = string.match(line, ": .+$")
                 value = string.sub(value, 3)
                 if isnumber(tonumber(value)) then
@@ -164,50 +204,12 @@ local function parse(str)
                     value = parseJson(value, i)
                 end
                 data.value = value
+                data.inList = true
+            elseif string.find(line, "%S") then
+                error("malformed yaml in line " .. tostring(i))
             end
-        elseif string.find(line, "^%s+%- %w+:( .+)?$") then
-            data.indent = #(string.match(line, "^%s+"))
-            if indentStep == 0 then
-                indentStep = data.indent
-            elseif data.indent % indentStep ~= 0 then
-                error("malformed Yaml indentation in line " .. tostring(i))
-            end
-            data.indent = data.indent / indentStep
-            data.key = string.match(line, "%w+")
-            local value = string.match(line, ": .+$")
-            value = string.sub(value, 3)
-            if isnumber(tonumber(value)) then
-                value = tonumber(value)
-            elseif value == "true" or value == "false" then
-                value = value == "true"
-            elseif string.sub(value, 1, 1) == "[" or string.sub(value, 1, 1) == "{" then
-                value = parseJson(value, i)
-            end
-            data.value = value
-            data.inList = true
-        elseif string.find(line, "^%s+%- .+$") then
-            data.indent = #(string.match(line, "^%s+"))
-            if indentStep == 0 then
-                indentStep = data.indent
-            elseif data.indent % indentStep ~= 0 then
-                error("malformed Yaml indentation in line " .. tostring(i))
-            end
-            data.indent = data.indent / indentStep
-            local value = string.match(line, ": .+$")
-            value = string.sub(value, 3)
-            if isnumber(tonumber(value)) then
-                value = tonumber(value)
-            elseif value == "true" or value == "false" then
-                value = value == "true"
-            elseif value[1] == "[" or value[1] == "{" then
-                value = parseJson(value, i)
-            end
-            data.value = value
-            data.inList = true
-        elseif string.find(line, "%S") then
-            error("malformed yaml in line " .. tostring(i))
+            lineData[#lineData+1] = data
         end
-        lineData[#lineData+1] = data
     end
     
     local data = {}
