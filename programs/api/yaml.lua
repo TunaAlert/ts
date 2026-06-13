@@ -363,11 +363,15 @@ local function constructYaml(data, prefix, inList)
     return yaml
 end
 
+local function encode(data)
+    return constructYaml(data, "", false)
+end
+
 local function save(data, file)
     if type(data) ~= "table" then
         return false
     end
-    local yaml = constructYaml(data, "", false)
+    local yaml = encode(data)
     local handle = io.open(file, "w")
     handle.write(yaml)
     handle.close()
@@ -376,6 +380,7 @@ end
 
 return {
     parse = parse,
+    encode = encode,
     load = load,
     save = save
 }
