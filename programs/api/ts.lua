@@ -38,8 +38,8 @@ local function getInstalledPrograms()
     for i, file in pairs(fileList) do
         local data = yaml.load("/ts/" .. file)
         local info = {
-            command = string.sub(file, 1, #file-4)
-            name = data.name or string.sub(file, 1, #file-4)
+            command = string.sub(file, 1, #file-4),
+            name = data.name or string.sub(file, 1, #file-4),
             description = data.description or ""
         }
         programList[#programList+1] = info
