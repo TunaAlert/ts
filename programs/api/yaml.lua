@@ -15,6 +15,119 @@ local function isList(t)
     return true
 end
 
+local function parseJson(str, line)
+    local data = {}
+    local stack = {}
+    local layers = {}
+    local buffer = ""
+    local key = ""
+    local inStringLiteral = false
+    for i = 1, #str, 1 do
+        local char = string.sub(str, i, i)
+        if inStringLiteral then
+            if char == "\\" then
+                i = i + 1
+                local nextChar = string.sub(str, i, i)
+                if nextChar == "\\" then
+                    buffer = buffer .. "\\"
+                elseif nextChar == "\"" then
+                    buffer = buffer .. "\""
+                elseif nextChar == "n" then
+                    buffer = buffer .. "\n"
+                else
+                    error(("Unrecognized escape character \\%s in line %d"):format(nextChar, line))
+                end
+            elseif char == "\"" then
+                inStringLiteral = false
+                stack[#stack][key] = buffer
+            else
+                buffer = buffer .. char
+            end
+        elseif char == "{" then
+            if #stack == 0 then
+                stack[1] = data
+            elseif layers[#layers] == "{}" then
+                local newTable = {}
+                stack[#stack][key] = newTable
+                stack[#stack + 1] = newTable
+            else
+                local list = stack[#stack]
+                local newTable = {}
+                list[#list + 1] = newTable
+                stack[#stack + 1] = newTable
+            end
+            layers[#layers+1] = "{}"
+        elseif char == "[" then
+            if #stack == 0 then
+                stack[1] = data
+            elseif layers[#layers] == "{}" then
+                local newTable = {}
+                stack[#stack][key] = newTable
+                stack[#stack + 1] = newTable
+            else
+                local list = stack[#stack]
+                local newTable = {}
+                list[#list + 1] = newTable
+                stack[#stack + 1] = newTable
+            end
+            layers[#layers+1] = "[]"
+        elseif #layers == 0 then
+            error(("Malformed Json in line %d"):format(line))
+        elseif char == "}" then
+            if layers[#layers] == "{}" then
+                stack[#stack][key] = buffer
+                buffer = ""
+                layers[#layers] = nil
+                stack[#stack] = nil
+            else
+                error(("Unexpected token } in line %d"):format(line))
+            end
+        elseif char == "]" then
+            if layers[#layers] == "[]" then
+                local list = stack[#stack]
+                list[#list + 1] = buffer
+                buffer = ""
+                layers[#layers] = nil
+                stack[#stack] = nil
+            else
+                error(("Unexpected token } in line %d"):format(line))
+            end
+        elseif char == ":" then
+            if layers[#layers] == "{}" then
+                key = buffer
+                buffer = ""
+            else
+                buffer = buffer .. ":"
+            end
+        elseif char == "\"" then
+            if buffer == "" then
+                inStringLiteral = true
+            else
+                buffer = buffer .. "\""
+            end
+        elseif string.find(char, "%s") then
+            if #buffer > 0 then
+                buffer = buffer .. char
+            end
+        elseif char == "," then
+            if layers[#layers] == "{}" then
+                stack[#stack][key] = buffer
+                buffer = ""
+            else
+                local list = stack[#stack]
+                list[#list + 1] = buffer
+                buffer = ""
+            end
+        else
+            buffer = buffer .. char
+        end
+    end
+    if #layers > 0 then
+        error(("Missing closing brackets (%s) in Json line %d"):format(layers[#layers], line))
+    end
+    return data
+end
+
 local function parse(str)
 
     local lines = string.gmatch(str, "[^\n]+")
@@ -99,7 +212,7 @@ local function parse(str)
     
     local data = {}
 
-    local stack = [data]
+    local stack = {data}
     
     for i, ld in lineData do
         if ld.key ~= nil then
