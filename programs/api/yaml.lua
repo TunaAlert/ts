@@ -216,7 +216,7 @@ local function parse(str)
 
     local stack = {data}
     
-    for i, ld in lineData do
+    for i, ld in pairs(lineData) do
         if ld.key ~= nil then
             if ld.inList then
                 if ld.indent < #stack then
