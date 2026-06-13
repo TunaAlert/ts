@@ -53,6 +53,7 @@ if cmd == "install" then
                 return
             end
             repo = {
+                type = "gitgub",
                 owner = arg[4],
                 repo = arg[5],
                 branch = arg[6],
@@ -62,7 +63,10 @@ if cmd == "install" then
                 usage()
                 return
             end
-            repo = arg[4]
+            repo = {
+                type = "url",
+                url = arg[4]
+            }
         else
             usage()
             return
@@ -134,13 +138,23 @@ elseif cmd == "config" then
                 usage()
                 return
             end
-            ts.addRepo("github", arg[4], arg[5], arg[6])
+            local repo = {
+                type = "github",
+                owner = arg[4],
+                repo = arg[5],
+                branch = arg[6]
+            }
+            ts.addRepo(repo)
         elseif arg[3] == "-url" then
             if #arg ~= 4 then
                 usage()
                 return
             end
-            ts.addRepo("url", arg[4])
+            local repo = {
+                type = "url",
+                url = arg[4]
+            }
+            ts.addRepo(repo)
         else
             usage()
             return
@@ -151,13 +165,23 @@ elseif cmd == "config" then
                 usage()
                 return
             end
-            ts.removeRepo("github", arg[4], arg[5], arg[6])
+            local repo = {
+                type = "github",
+                owner = arg[4],
+                repo = arg[5],
+                branch = arg[6]
+            }
+            ts.removeRepo(repo)
         elseif arg[3] == "-url" then
             if #arg ~= 4 then
                 usage()
                 return
             end
-            ts.removeRepo("url", arg[4])
+            local repo = {
+                type = "url",
+                url = arg[4]
+            }
+            ts.removeRepo(repo)
         else
             usage()
             return
