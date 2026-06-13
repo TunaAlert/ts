@@ -34,7 +34,7 @@ end
 
 local function getInstalledPrograms()
     local fileList = fs.list("/ts/")
-    local programList {}
+    local programList = {}
     for i, file in pairs(fileList) do
         local data = yaml.load("/ts/" .. file)
         local info = {
