@@ -150,7 +150,7 @@ local function parse(str)
                 elseif data.indent % indentStep ~= 0 then
                     error("malformed Yaml indentation in line " .. tostring(i))
                 end
-                data.indent = data.indent // indentStep
+                data.indent = data.indent / indentStep
             end
             data.key = string.match(line, "%w+")
             if string.find(line, ": .+$") then
@@ -172,7 +172,7 @@ local function parse(str)
             elseif data.indent % indentStep ~= 0 then
                 error("malformed Yaml indentation in line " .. tostring(i))
             end
-            data.indent = data.indent // indentStep
+            data.indent = data.indent / indentStep
             data.key = string.match(line, "%w+")
             local value = string.match(line, ": .+$")
             value = string.sub(value, 3)
@@ -192,7 +192,7 @@ local function parse(str)
             elseif data.indent % indentStep ~= 0 then
                 error("malformed Yaml indentation in line " .. tostring(i))
             end
-            data.indent = data.indent // indentStep
+            data.indent = data.indent / indentStep
             local value = string.match(line, ": .+$")
             value = string.sub(value, 3)
             if isnumber(tonumber(value)) then
