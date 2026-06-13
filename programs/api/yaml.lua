@@ -3,7 +3,16 @@ local function isnumber(n)
 end
 
 local function isList(t)
-    return #t > 0 or t[1] ~= nil
+    if type(t) ~= "table" then
+        return false
+    end
+    if #t > 0 then
+        return true
+    end
+    for k, v in pairs(t) do
+        return false
+    end
+    return true
 end
 
 local function parse(str)
