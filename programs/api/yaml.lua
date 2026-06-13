@@ -316,7 +316,9 @@ local function constructInlineJSON(data)
             json = json .. "}"
         end
         return json
-    else return ""
+    else
+        return ""
+    end
 end
 
 local function constructYaml(data, prefix, inList)
@@ -370,7 +372,7 @@ local function save(data, file)
     return true    
 end
 
-return{
+return {
     parse = parse,
     load = load,
     save = save
