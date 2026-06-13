@@ -2,22 +2,22 @@
 if not fs.exists("/programs/api/ts.lua") then
     local request = http.get("https://raw.githubusercontent.com/TunaAlert/ts/refs/heads/main/programs/api/ts.lua")
     local handle = io.open("/programs/api/ts.lua", "w")
-    handle.write(request.readAll())
-    handle.close()
+    handle:write(request.readAll())
+    handle:close()
     request.close()
     
     request = http.get("https://raw.githubusercontent.com/TunaAlert/ts/refs/heads/main/.data/ts/config.yaml")
     handle = io.open("/.data/ts/config.yaml", "w")
-    handle.write(request.readAll())
-    handle.close()
+    handle:write(request.readAll())
+    handle:close()
     request.close()
 end
 
 if not fs.exists("/programs/api/yaml.lua") then
     local request = http.get("https://raw.githubusercontent.com/TunaAlert/ts/refs/heads/main/programs/api/yaml.lua")
     local handle = io.open("/programs/api/yaml.lua", "w")
-    handle.write(request.readAll())
-    handle.close()
+    handle:write(request.readAll())
+    handle:close()
     request.close()
 end
 
