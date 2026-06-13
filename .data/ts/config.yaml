@@ -1,4 +1,5 @@
 repos:
-  - owner: TunaAlert
+  - type: github
+    owner: TunaAlert
     repo: ts
     branch: main
