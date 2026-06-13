@@ -1,0 +1,5 @@
+name: Precise GPS
+description: A rewrite of the builtin GPS using more satellites to achieve greater precision
+files:
+  - programs/pgps.lua
+  - startup/pgps.lua
