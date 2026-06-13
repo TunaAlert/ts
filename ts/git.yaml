@@ -3,3 +3,4 @@ description: A program for managing git repositories
 files:
   - programs/git.lua
   - programs/api/git.lua
+  - startup/git.lua
