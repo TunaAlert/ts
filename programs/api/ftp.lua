@@ -114,7 +114,7 @@ local function host(folder, readperm, writeperm)
 						print("denied access: file is read-only")
 					else
 						fs.delete(path)
-						rednet.send(id, ftp.SUCCESS, "ftp")
+						rednet.send(id, SUCCESS, "ftp")
 					print("fulfilled")
 					end
 				else
