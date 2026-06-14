@@ -3,7 +3,7 @@ local completion = require("cc.shell.completion")
 shell.setAlias("ftp", "/programs/ftp.lua")
 
 shell.setCompletionFunction("programs/ftp.lua", completion.build(
-        {completion.choice, {"host", "list", "push", "pull", "pushdir", "pulldir"}},
+        {completion.choice, {"host", "list", "push", "pull", "pushdir", "pulldir", "delete"}},
         function(shell, text, previous)
             if previous[2] == "host" then
                 return completion.dir(shell, text)
@@ -23,6 +23,8 @@ shell.setCompletionFunction("programs/ftp.lua", completion.build(
                 return completion.dir(shell, text)
             elseif previous[2] == "pulldir" then
                 return completion.dir(shell, text)
+            elseif previous[2] == "delete" then
+                return completion.dirOrFile(shell, text)
             end
             return nil
         end,
