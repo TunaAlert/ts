@@ -500,7 +500,7 @@ dmailDisplayMenu = function()
             end
         }
     }
-    for i = 1, selectedMessage.lineCount - ({messageBody.getSize()})[2], 1 do
+    for i = 1, selectedMessage.lineCount + 2 - ({messageBody.getSize()})[2], 1 do
         local filler = {
             function() end
         }
