@@ -63,10 +63,10 @@ local function loadMessages()
 end
 
 local function displayDmailList()
-    shell.run("clear")
-
     messageList.setVisible(true)
     messageBody.setVisible(false)
+
+    messageList.clear()
     
     local offset = 0
     
@@ -102,14 +102,15 @@ local function displayDmailList()
 end
 
 local function displayDmail()
-    shell.run("clear")
-    
     messageList.setVisible(false)
     messageBody.setVisible(true)
+    
+    messageBody.clear()
+    
 end
 
 local function clampScrollInList(value)
-    return math.max(math.min(value, #messages - {messageList.getSize()}[2]), 0)
+    return math.max(math.min(value, #messages - ({messageList.getSize()})[2]), 0)
 end
 
 dmailListMenu = function()
@@ -125,9 +126,10 @@ dmailListMenu = function()
         term.write(event .. "               ")
         if event == "mouse_click" then
             local button, x, y = a, b, c
-            local yoffs = {messageList.getPosition()}[2]
-            if y > yoffs and y <= #messages + yoffs then
-                messages[y-yoffs+scroll].read = true
+            local yoffs = ({messageList.getPosition()})[2]
+            local clickedLine = y-yoffs+scroll
+            if clickedLine > 0 and clickedLine <= #messages then
+                messages[clickedLine].read = true
             end
             displayDmailList()
         elseif event == "mouse_scroll" then
