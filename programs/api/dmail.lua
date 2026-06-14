@@ -82,10 +82,6 @@ local function openMail(server, mail)
     return ftp.SUCCESS, message
 end
 
-local function compareDescending(a, b)
-    return a > b
-end
-
 local function fetchLocal()
     local messageFiels = {}
     local localInbox = fs.list("/.data/dmail/inbox")
