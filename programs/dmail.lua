@@ -101,7 +101,7 @@ local function displayDmailList()
         if s ~= dmail.SUCCESS then
             messageList.setCursorPos(1, 1+offset)
             messageList.setTextColor(colors.red)
-            messageList.write(("error status %d"):format(s))
+            messageList.write(("  error status %d"):format(s))
             offset = offset + 1
         end
     end
