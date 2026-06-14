@@ -221,6 +221,9 @@ local function displayDmail()
     messageBody.setVisible(true)
 
     local message = messages[selectedDmail]
+    if message == nil then
+        return
+    end
 
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
