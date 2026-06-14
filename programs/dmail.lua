@@ -311,8 +311,10 @@ local function displayDmail()
     messageBody.clear()
     messageBody.scroll(scroll)
     messageBody.setCursorPos(1, 1)
-    write(message.body .. "\n\n")
+    write(message.body)
+    message.lineCount = ({messageBody.getCursorPos()})[2]
     for i, attachment in ipairs(message.attachments) do
+        messageBody.setCursorPos(3, message.lineCount+1+i)
         local defaultColor = colors.yellow
         if attachmentsDownloaded[i] == true then
             defaultColor = colors.lime
@@ -321,16 +323,16 @@ local function displayDmail()
         end
         if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
             messageBody.setTextColor(defaultColor)
-            messageBody.write("  + ")
+            messageBody.write("+ ")
             messageBody.setTextColor(colors.orange)
             messageBody.write("[")
             messageBody.setTextColor(defaultColor)
             messageBody.write(attachment)
             messageBody.setTextColor(colors.orange)
-            messageBody.write("]\n")
+            messageBody.write("]")
         else
             messageBody.setTextColor(defaultColor)
-            messageBody.write("  +  " .. attachment .. "\n")
+            messageBody.write("+  " .. attachment)
         end
     end
 end
