@@ -71,7 +71,7 @@ end
 local function loadMessages()
     status = {}
     messages = dmail.fetchLocal()
-    for i, message in messages do
+    for i, message in pairs(messages) do
         message.read = isMessageRead(message.id)
         message.selected = false
     end
