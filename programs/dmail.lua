@@ -296,7 +296,7 @@ dmailListMenu = function()
             local button, x, y = a, b, c
             local yoffs = ({messageList.getPosition()})[2]
             local clickedLine = y-yoffs+scroll
-            if y == 3 then
+            if y == 2 then
                 if x <= 6 then
                     local flagSet = hasUnselectedMessages()
                     for i, message in pairs(messages) do
