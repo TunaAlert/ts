@@ -120,6 +120,7 @@ end
 return {
     send = send,
     fetch = fetch,
+    fetchLocal = fetchLocal,
     openMail = openMail,
     SUCCESS = ftp.SUCCESS,
     UNKNOWN_RESPONSE = ftp.UNKNOWN_RESPONSE,
