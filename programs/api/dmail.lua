@@ -71,11 +71,9 @@ local function openMail(server, mail)
         local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
         if not fs.exists(attachmentFile) then
             local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
-            if not fs.exists(mailFile) then
-                local status = ftp.pull(server, remoteFile, attachmentFile)
-                if status == ftp.SUCCESS then
-                    ftp.delete(server, remoteFile)
-                end
+            local status = ftp.pull(server, remoteFile, attachmentFile)
+            if status == ftp.SUCCESS then
+                ftp.delete(server, remoteFile)
             end
         end
     end
