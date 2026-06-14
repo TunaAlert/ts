@@ -374,6 +374,17 @@ local function displayDmail()
     end
 end
 
+local function composeDmail()
+    messageList.setVisible(false)
+    messageBody.setVisible(true)
+    
+    term.redirect(parentTerm)
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    messageBody.setBackgroundColor(colors.black)
+    messageBody.clear()
+end
+
 local function clampScrollInList(value)
     return math.max(math.min(value, #messages + #status - ({messageList.getSize()})[2]), 0)
 end
@@ -387,25 +398,21 @@ local function clampScrollInDmail(value)
 end
 
 local function handleMenuKeyEvent(key)
-    if key == "down" then
+    if key == keys.down then
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-    elseif key == "up" then
+    elseif key == keys.up then
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-    elseif key == "left" then
+    elseif key == keys.left then
         menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons + 1
-    elseif key == "right" then
+    elseif key == keys.right then
         menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
-    elseif key == "enter" then
+    elseif key == keys.enter then
         menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
         menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
     end
-
-end
-
-local function composeDmail()
 
 end
 
@@ -608,6 +615,14 @@ composeDmailMenu = function()
     local nextMenu = nil
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
+        if event == "mouse_click" then
+            composeDmail()
+        elseif event == "mouse_scroll" then
+            composeDmail()
+        elseif event == "key" then
+            composeDmail()
+            print(a)
+        end
     end
     return nextMenu
 end
