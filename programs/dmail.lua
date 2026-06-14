@@ -610,6 +610,15 @@ end
 composeDmailMenu = function()
     scroll = 0
 
+    composedMessage = {
+        subject = "",
+        recipient = 0,
+        body = "",
+        attachments = {}
+    }
+
+    menuButtonSelected = {0, 0}
+    
     composeDmail()
     
     local nextMenu = nil
@@ -620,8 +629,11 @@ composeDmailMenu = function()
         elseif event == "mouse_scroll" then
             composeDmail()
         elseif event == "key" then
+            local key = keys.getName(a)
             composeDmail()
-            print(a)
+        elseif event == "char" then
+            local char = a
+            composeDmail()
         end
     end
     return nextMenu
