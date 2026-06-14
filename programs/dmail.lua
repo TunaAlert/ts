@@ -372,12 +372,14 @@ dmailListMenu = function()
             local key = keys.getName(a)
             if key == "down" then
                 menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
+                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
                 if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
                     scroll = clampScrollInList(menuButtonSelected[1] - ({messageList,getSize()})[2] / 2)
                 end
                 displayDmailList()
             elseif key == "up" then
-                menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons +1
+                menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
+                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
                 if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
                     scroll = clampScrollInList(menuButtonSelected[1] - ({messageList,getSize()})[2] / 2)
                 end
@@ -388,6 +390,10 @@ dmailListMenu = function()
             elseif key == "right" then
                 menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
                 displayDmailList()
+            elseif key == "enter" then
+                menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
+                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
+                (menuButtons[menuButtonSelected[1]][menuButtonSelected[2]])()
             end
         end
     end
