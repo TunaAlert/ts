@@ -156,7 +156,7 @@ local function install(program, repo, forceDependencies)
     if data.dependencies ~= nil then
         for i, dependency in pairs(data.dependencies) do
             local depData = yaml.load(("/ts/%s.yaml"):format(dependency.program))
-            if depData == nil then
+            if depData == nil or depData.version == nil then
                 unmetDependencies[#unmetDependencies+1] = dependency
             elseif not versionEqualOrHigher(depData.version, dependency.version) then
                 unmetDependencies[#unmetDependencies+1] = dependency
