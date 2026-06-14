@@ -24,12 +24,16 @@ end
 local function openMail(server, mail)
     local mailFile = ("/.data/dmail/inbox/%s.mail"):format(mail)
     if not fs.exists(mailFile) then
-        local remoteFile = ("%d/inbox/%s.mail"):format(os.getComputerID(), mail)
-        local status = ftp.pull(server, remoteFile, mailFile)
-        if status ~= ftp.SUCCESS then
-            return status
+        if server > 0 then
+            local remoteFile = ("%d/inbox/%s.mail"):format(os.getComputerID(), mail)
+            local status = ftp.pull(server, remoteFile, mailFile)
+            if status ~= ftp.SUCCESS then
+                return status
+            end
+            ftp.delete(server, remoteFile)
+        else
+            return ftp.ACCESS_DENIED
         end
-        ftp.delete(server, remoteFile)
     end
     
     local message = {
@@ -82,18 +86,29 @@ local function compareDescending(a, b)
     return a > b
 end
 
+local function fetchLocal()
+    local messageFiels = {}
+    local localInbox = fs.list("/.data/dmail/inbox")
+    for i, localMessage in pairs(localInbox) do
+        messageFiles[#messageFiles + 1] = string.sub(localMessage, 1, #localMessage)
+    end
+    local messages = {}
+    for i, messageFile in pairs(messageFiles) do
+        local stat, message = openMail(0, string.sub(messageFile, 1, #messageFile - 5))
+        if stat == ftp.SUCCESS then
+            messages[#messages+1] = message
+        end
+    end
+    return status, messages
+end
+
 local function fetch(server)
     local status, messageFiles = ftp.list(server, ("%d/inbox/"):format(os.getComputerID()))
     if status ~= ftp.SUCCESS then
         messageFiles = {}
     end
-    local localInbox = fs.list("/.data/dmail/inbox")
-    for i, localMessage in pairs(localInbox) do
-        messageFiles[#messageFiles + 1] = string.sub(localMessage, 1, #localMessage - 5)
-    end
-    table.sort(messageFiles, compareDescending)
     local messages = {}
-    for i, messageFile in ipairs(messageFiles) do
+    for i, messageFile in pairs(messageFiles) do
         local stat, message = openMail(server, string.sub(messageFile, 1, #messageFile - 5))
         if stat == ftp.SUCCESS then
             messages[#messages+1] = message
