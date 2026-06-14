@@ -2,6 +2,19 @@ local function isnumber(n)
     return type(n) == "number" and n == n
 end
 
+local function isList(t)
+    if type(t) ~= "table" then
+        return false
+    end
+    if #t > 0 then
+        return true
+    end
+    for k, v in pairs(t) do
+        return false
+    end
+    return true
+end
+
 local function parse(str)
     local data = {}
     local stack = {}
@@ -172,6 +185,37 @@ local function parse(str)
 end
 
 local function encode(data)
+    if type(data) == "number" or type(data) == "boolean" then
+        return tostring(data)
+    elseif type(data) == "string" then
+        return "\"" .. data .. "\""
+    elseif type(data) == "table" then
+        if isList(data) then
+            local str = "["
+            for i, v in pairs(data) do
+                local enc = encode(v)
+                if enc ~= "" then
+                    if str ~= "[" then
+                        str = str .. ", "
+                    end
+                    str = str .. enc
+                end
+            end
+            return str .. "]"
+        else
+            local str = "{"
+            for k, v in pairs(data) do
+                local enc = encode(v)
+                if enc ~= "" then
+                    if str ~= "{" then
+                        str = str .. ", "
+                    end
+                    str = str .. "\"" .. k .. "\": " .. enc
+                end
+            end
+            return str .. "}"
+        end
+    end
     return ""
 end
 
