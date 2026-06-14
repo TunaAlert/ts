@@ -75,7 +75,7 @@ local function install(program, repo)
     local fileUrlGetter = nil
     if repo.type == "github" then
         yamlUrl = ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)
-        fileUrlGetter = function(r, f) ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
+        fileUrlGetter = function(r, f) return ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
     elseif repo.type == "url" then
         yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
         fileUrlGetter = function(r, f) ("%s/%s"):format(r.url, f) end
@@ -96,13 +96,15 @@ local function install(program, repo)
         yaml.save(data, ("/ts/%s.yaml"):format(program))
         local startupFile = nil
         for i, file in pairs(data.files) do
-            request = fileUrlGetter(repo, file)
-            local handle = io.open(file, "w")
-            handle:write(request.readAll())
-            handle:close()
-            request.close()
-            if string.find(file, "^/?startup/") then
-                startupFile = file
+            request = http.get(fileUrlGetter(repo, file))
+            if request ~= nil then
+                local handle = io.open(file, "w")
+                handle:write(request.readAll())
+                handle:close()
+                request.close()
+                if string.find(file, "^/?startup/") then
+                    startupFile = file
+                end
             end
         end
         if startupFile ~= nil then
