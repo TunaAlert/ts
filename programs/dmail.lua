@@ -238,11 +238,18 @@ local function displayDmailList()
     else
         term.write("[delete]")
     end
-    
-    term.setCursorPos(termWidth-12, termHeight)
+
     term.setTextColor(colors.yellow)
-    if menuButtonSelected[1] == #menuButtons then
-        term.blit("[New DMail]", "10000000001", "fffffffffff")
+    term.setCursorPos(2, termHeight)
+    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
+        term.blit("[Exit]", "144441", "ffffff")
+    else
+        term.write("[Exit]")
+    end
+    
+    term.setCursorPos(termWidth-11, termHeight)
+    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 2 then
+        term.blit("[New DMail]", "14444444441", "fffffffffff")
     else
         term.write("[New DMail]")
     end
@@ -441,6 +448,9 @@ dmailListMenu = function()
     end
     menuButtons[#menuButtons + 1] = {
         function()
+            exited = true
+        end,
+        function()
             nextMenu = composeDmailMenu
         end
     }
@@ -463,8 +473,10 @@ dmailListMenu = function()
                     menuButtons[1][3]()
                 end
             elseif y == termHeight then
-                if x >= termWidth - 12 then
+                if x <= 7 then
                     menuButtons[#menuButtons][1]()
+                elseif x >= termWidth - 11 then
+                    menuButtons[#menuButtons][2]()
                 end
             elseif y > yoffs and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
