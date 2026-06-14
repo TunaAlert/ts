@@ -79,7 +79,7 @@ local function host(folder, readperm, writeperm)
                 path = path .. "/"
             end
 
-			print(("received %s request from %d"):format(cmd, id))
+			print(("received %s request from %d"):format(cmd[1], id))
 
             if string.find(path, "[/\]%.%.[/\]") then
                 rednet.send(id, "denied forbidden", "ftp")
