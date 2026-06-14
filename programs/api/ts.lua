@@ -4,6 +4,8 @@ local json = require("/programs/api/json")
 local function versionEqualOrHigher(installed, required)
     local iparts = {}
     local rparts = {}
+    installed = tostring(installed)
+    required = tostring(required)
 
     for part in string.gmatch(installed, "[^%.]+") do
         iparts[#iparts + 1] = part
