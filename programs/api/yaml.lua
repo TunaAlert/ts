@@ -165,7 +165,7 @@ local function parse(str)
                         value = tonumber(value)
                     elseif value == "true" or value == "false" then
                         value = value == "true"
-                    elseif value[1] == "[" or value[1] == "{" then
+                    elseif string.sub(value, 1, 1) == "[" or string.sun(value, 1, 1) == "{" then
                         value = parseJson(value, i)
                     end
                     data.value = value
