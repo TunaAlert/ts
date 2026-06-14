@@ -340,6 +340,10 @@ local function clampScrollInList(value)
     return math.max(math.min(value, #messages - ({messageList.getSize()})[2]), 0)
 end
 
+local function clampScrollInDmail(value)
+    return math.max(math.min(value, #messages - ({messageBody.getSize()})[2]), 0)
+end
+
 local function handleMenuKeyEvent(key)
     if key == "down" then
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
@@ -500,6 +504,8 @@ dmailDisplayMenu = function()
         }
         menuButtons[#menuButtons + 1] = buttons
     end
+
+    displayDmail()
     
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
@@ -513,11 +519,14 @@ dmailDisplayMenu = function()
             displayDmail()
         elseif event == "mouse_scroll" then
             local dir = a
-            scroll = clampScrollInList(scroll + dir)
+            scroll = clampScrollInDmail(scroll + dir)
             displayDmail()
         elseif event == "key" then
             local key = keys.getName(a)
             handleMenuKeyEvent(key)
+            if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+                scroll = clampScrollInDmail(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
+            end
             displayDmail()
         end
     end
