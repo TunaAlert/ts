@@ -282,6 +282,9 @@ local function parse(str)
 end
 
 local function load(file)
+    if not fs.exists(fs) then
+        return {}
+    end
     local str = ""
     for line in io.lines(file) do
         str = str .. line .. "\n"
