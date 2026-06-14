@@ -470,6 +470,7 @@ dmailListMenu = function()
             displayDmailList()
         elseif event == "mouse_scroll" then
             local dir = a
+            menuButtonSelected = {0, 0}
             scroll = clampScrollInList(scroll + dir)
             displayDmailList()
         elseif event == "key" then
@@ -548,6 +549,7 @@ dmailDisplayMenu = function()
             displayDmail()
         elseif event == "mouse_scroll" then
             local dir = a
+            menuButtonSelected = {0, 0}
             scroll = clampScrollInDmail(scroll + dir)
             displayDmail()
         elseif event == "key" then
