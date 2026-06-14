@@ -12,8 +12,8 @@ local function versionEqualOrHigher(installed, required)
         rparts[rparts + 1] = part
     end
 
-    for i = 1, math.min(#iparts, #rparts), 1 do
-        inum = tonumber(iparts[i])
+    for i = 1, #rparts, 1 do
+        inum = tonumber(iparts[i] or 0)
         rnum = tonumber(rparts[i])
         if inum < rnum then
             return false
