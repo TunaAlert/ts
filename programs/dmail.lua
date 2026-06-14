@@ -213,28 +213,29 @@ local function displayDmailList()
         term.write(("%d unread messages"):format(unread))
     end
     term.setCursorPos(1, 2)
+    term.setTextColor(colors.yellow)
     if hasUnselectedMessages() then
         if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
-            term.blit("[all]  ", "1000100", "fffffff")
+            term.blit("[all]  ", "1444100", "fffffff")
         else
             term.write("[all]  ")
         end
     else
         if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
-            term.blit("[none] ", "1000010", "fffffff")
+            term.blit("[none] ", "1444410", "fffffff")
         else
             term.write("[none] ")
         end
     end
     
     if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
-        term.blit("[read] ", "1000010", "fffffff")
+        term.blit("[read] ", "1444410", "fffffff")
     else
         term.write("[read] ")
     end
     
     if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 3 then
-        term.blit("[delete]", "10000001", "ffffffff")
+        term.blit("[delete]", "e111111e", "ffffffff")
     else
         term.write("[delete]")
     end
