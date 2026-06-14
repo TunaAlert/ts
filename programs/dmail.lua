@@ -7,6 +7,7 @@ local termWidth, termHeight = term.getSize()
 
 local messageList = window.create(term.current(), 1, 3, termWidth, termHeight - 3)
 local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 4)
+local parentTerm = term.current()
 
 local status = {}
 local messages = {}
@@ -134,9 +135,23 @@ end
 local function displayDmail()
     messageList.setVisible(false)
     messageBody.setVisible(true)
-    term.redirect(messageBody)
 
     local message = messages[selectedDmail]
+
+    term.redirect(parentTerm)
+    term.setBackgroundColor(color.black)
+    term.clear()
+    term.setCursorPos(1, 1)
+    term.setTextColor(color.black)
+    term.setBackgroundColor(color.lightGray)
+    term.clearLine()
+    term.write(message.subject)
+    term.setTextColor(color.green)
+    term.setCursorPos(1, 2)
+    term.clearLine()
+    term.write("  From: " .. message.sender)
+    
+    term.redirect(messageBody)
 
     messageBody.setTextColor(colors.white)
     messageBody.setBackgroundColor(colors.black)
@@ -163,8 +178,6 @@ dmailListMenu = function()
     local nextMenu = nil
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
-        term.setCursorPos(1, 1)
-        term.write(event .. "               ")
         if event == "mouse_click" then
             local button, x, y = a, b, c
             local yoffs = ({messageList.getPosition()})[2]
@@ -205,7 +218,7 @@ dmailDisplayMenu = function()
     
     local nextMenu = nil
     while not exited and nextMenu == nil do
-        
+        local event, a, b, c, d, e, f = os.pullEvent()
     end
     return nextMenu
 end
