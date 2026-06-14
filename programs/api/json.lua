@@ -11,6 +11,9 @@ local function parse(str)
     local buffer = ""
     local key = ""
 
+    local row = 1
+    local column = 1
+    
     for i = 1, #str, 1 do
         local char = string.sub(str, i, i)
         if inStringLiteral then
@@ -24,7 +27,7 @@ local function parse(str)
                 elseif nextChar == "n" then
                     buffer = buffer .. "\n"
                 else
-                    error(("Unexpected token %s near \\"):format(nextChar))
+                    error(("Unexpected token %s at %d:%d"):format(nextChar, row, column))
                 end
             elseif char == "\"" then
                 inStringLiteral = false
@@ -41,7 +44,7 @@ local function parse(str)
                     stack[#stack][key] = newTable
                     stack[#stack + 1] = newTable
                 else
-                    error("Unexpected Token {")
+                    error(("Unexpected Token { at %d:%d"):format(row, column))
                 end
             else
                 local list = stack[#stack]
@@ -59,14 +62,14 @@ local function parse(str)
                     elseif buffer == "true" or buffer == "false" then
                         value = buffer == "true"
                     else
-                        error(("Unexpected token %s"):format(buffer))
+                        error(("Unexpected token %s at %d:%d"):format(buffer, row, column))
                     end
                 end
                 stack[#stack][key] = value
                 layers[#layers] = nil
                 stack[#stack] = nil
             else
-                error("Unexpected token }")
+                error(("Unexpected token } at %d:%d"):format(row, column))
             end
         elseif char == "[" then
             if #stack == 0 then
@@ -77,7 +80,7 @@ local function parse(str)
                     stack[#stack][key] = newTable
                     stack[#stack + 1] = newTable
                 else
-                    error("Unexpected Token {")
+                    error(("Unexpected Token { at %d:%d"):format(row, column))
                 end
             else
                 local list = stack[#stack]
@@ -95,7 +98,7 @@ local function parse(str)
                     elseif buffer == "true" or buffer == "false" then
                         value = buffer == "true"
                     else
-                        error(("Unexpected token %s"):format(buffer))
+                        error(("Unexpected token %s at %d:%d"):format(buffer, row, column))
                     end
                 end
                 local list = stack[#stack]
@@ -103,14 +106,14 @@ local function parse(str)
                 layers[#layers] = nil
                 stack[#stack] = nil
             else
-                error("Unexpected token ]")
+                error(("Unexpected token ] at %d:%d"):format(row, column))
             end
         elseif char == ":" then
             if buffer ~= "" then
                 key = buffer
                 buffer = ""
             else
-                error("Unexpected token :")
+                error(("Unexpected token : at %d:%d"):format(row, column))
             end
             isString = false
         elseif char == "," then
@@ -122,35 +125,38 @@ local function parse(str)
                     elseif buffer == "true" or buffer == "false" then
                         value = buffer == "true"
                     else
-                        error(("Unexpected token %s"):format(buffer))
+                        error(("Unexpected token %s at %d:%d"):format(buffer, row, column))
                     end
                 end
                 if layers[#layers] == "{}" then
                     if key ~= "" then
                         stack[#stack] = value
                     else
-                        error(("Unexpected token %s"):format(buffer))
+                        error(("Unexpected token %s at %d:%d"):format(buffer, row, column))
                     end
                 else
                     local list = stack[#stack]
                     list[#list + 1] = value
                 end
             else
-                error("Unexpected token ,")
+                error(("Unexpected token , at %d:%d"):format(row, column))
             end
             isString = false
         elseif char == "\"" then
             if buffer == "" then
                 inStringLiteral = true
             else
-                error("Unexpected token \"")
+                error(("Unexpected token \" at %d:%d"):format(row, column))
             end
         elseif string.find(char, "%S") then
             if isString then
-                error("Unexpected token " .. char)
+                error(("Unexpected token %s at %d:%d"):format(char, row, column))
             else
                 buffer = buffer .. char
             end
+        elseif char == "\n" then
+            row = row + 1
+            column = 1
         end
     end
     
