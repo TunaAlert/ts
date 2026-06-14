@@ -377,8 +377,8 @@ local function save(data, file)
     end
     local yaml = encode(data)
     local handle = io.open(file, "w")
-    handle.write(yaml)
-    handle.close()
+    handle:write(yaml)
+    handle:close()
     return true    
 end
 
