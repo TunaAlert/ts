@@ -8,6 +8,9 @@ local termWidth, termHeight = term.getSize()
 local messageList = window.create(term.current(), 1, 3, termWidth, termHeight - 3)
 local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 4)
 
+local status = {}
+local messages = {}
+
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
@@ -34,37 +37,51 @@ local function nameOrID(id)
     return tostring(id)
 end
 
-local function displayDmailList(server, scroll)
-    shell.run("clear")
-    
-    local status = {}
-    local messages = dmail.fetchLocal()
+local function isMessageRead(messageId)
+    return false
+end
+
+local function loadMessages()
+    status = {}
+    messages = dmail.fetchLocal()
     for i, server in pairs(config.servers) do
         local s, m = dmail.fetch(server)
         status[#status + 1] = s
         for j, message in pairs(m) do
+            message.read = isMessageRead(message.id)
             messages[#messages + 1] = message
         end
     end
 
     table.sort(messages, function(a, b) return a.id > b.id end)
+end
 
+local function displayDmailList(scroll)
+    shell.run("clear")
+    
     local offset = 0
     
     for i, s in ipairs(status) do
         if s ~= dmail.SUCCESS then
             messageList.setCursorPos(1, 1+offset)
+            messageList.setTextColor(colors.red)
             messageList.write(("error status %d"):format(s))
             offset = offset + 1
         end
     end
     if #messages == 0 then
-        messageList.setCursorPos(1, 1 + offset)
+        messageList.setCursorPos(termWidth/2 - 5, 1 + offset)
+        messageList.setTextColor(colors.gray)
         messageList.write("No messages")
     end
     for i, message in ipairs(messages) do
         if i - scroll >= 1 and i - scroll <= termHeight - 3 then
             messageList.setCursorPos(1, i-scroll + offset)
+            if message.read then
+                messageList.setTextColor(colors.lightGray)
+            else
+                messageList.setTextColor(colors.white)
+            end
             messageList.write(
                 ("%s %s %s"):format(
                     "o",
@@ -75,10 +92,18 @@ local function displayDmailList(server, scroll)
     end
 end
 
-displayDmailList(settings.get("dmail.server"), 0)
+loadMessages()
+displayDmailList(0)
 
 while not exited do
     local event, a, b, c, d, e, f = os.pullEvent()
     term.setCursorPos(1, 1)
     term.write(event .. "               ")
+    if event == "mouse_click" then
+        local button, x, y = a, b, c
+        if y > 3 and y <= #messages + 3 then
+            messages[y-3].read = true
+        end
+    end
+    displayDmailList(0)
 end
