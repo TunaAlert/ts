@@ -22,12 +22,14 @@ local function send(server, recipient, subject, body, attachments)
 end
 
 local function openMail(server, mail)
-    local mailFile = ("/.data/dmail/inbox/%s"):format(mail)
+    local mailFile = ("/.data/dmail/inbox/%s.mail"):format(mail)
     if not fs.exists(mailFile) then
-        local status = ftp.pull(server, ("%d/inbox/%s"):format(os.getComputerID(), mail), mailFile)
+        local remoteFile = ("%d/inbox/%s.mail"):format(os.getComputerID(), mail)
+        local status = ftp.pull(server, remoteFile, mailFile)
         if status ~= ftp.SUCCESS then
             return status
         end
+        ftp.delete(server, remoteFile)
     end
     
     local message = {
@@ -59,6 +61,17 @@ local function openMail(server, mail)
             end
         end
     end
+
+    for i, attachment in pairs(message.attachments) do
+        local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
+        local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
+        if not fs.exists(mailFile) then
+            local status = ftp.pull(server, remoteFile, attachmentFile)
+            if status == ftp.SUCCESS then
+                ftp.delete(server, remoteFile)
+            end
+        end
+    end
     
     return ftp.SUCCESS, message
 end
@@ -68,7 +81,7 @@ local function fetch(server)
     if status == ftp.SUCCESS then
         local messages = {}
         for i, messageFile in pairs(messageFiles) do
-            local stat, message = openMail(server, messageFile)
+            local stat, message = openMail(server, string.sub(messageFile, 1, #messageFile - 5))
             if stat == ftp.SUCCESS then
             	messages[#messages+1] = message
             end
