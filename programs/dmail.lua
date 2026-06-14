@@ -47,7 +47,7 @@ local function displayDmailList(server, scroll)
         end
     end
 
-    table.sort(messages, function(a, b) return a > b end)
+    table.sort(messages, function(a, b) return a.id > b.id end)
 
     local offset = 0
     
