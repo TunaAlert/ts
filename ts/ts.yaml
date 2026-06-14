@@ -6,3 +6,4 @@ files:
   - startup/ts.lua
 dependencies:
   - yaml
+  - json
