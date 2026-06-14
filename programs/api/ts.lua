@@ -98,8 +98,8 @@ local function install(program, repo)
         for i, file in pairs(data.files) do
             request = fileUrlGetter(repo, file)
             local handle = io.open(file, "w")
-            gandle.write(request.readAll())
-            handle.close()
+            handle:write(request.readAll())
+            handle:close()
             request.close()
             if string.find(file, "^/?startup/") then
                 startupFile = file
