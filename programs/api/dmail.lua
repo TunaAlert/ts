@@ -4,6 +4,7 @@ local function send(server, recipient, subject, body, attachments)
     local mail_id = ("%s %d %d"):format(os.getComputerID(), recipient, os.date("%Y-%m-%d %H-%M-%S"))
     local mailFile = ("/.data/dmail/outbox/%s.mail"):format(mail_id)
     local handle = io.open(mailFile)
+    handle:write(("server:%d\n"):format(server))
     handle:write(("sender:%d\n"):format(os.getComputerID()))
     handle:write(("subject:%s\n"):format(subject))
     for i, attachment in ipairs(attachments) do
@@ -19,6 +20,19 @@ local function send(server, recipient, subject, body, attachments)
         status[#status + 1] = ftp.push(server, attachment, ("%d/attachments/%s/%s"):format(recipient, mail_id, fs.getName(attachment)))
     end
     return status
+end
+
+local function fetchAttachments(server, mail, attachments)
+    for i, attachment in ipairs(attachments) do
+        local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
+        if not fs.exists(attachmentFile) and server > 0 then
+            local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
+            local status = ftp.pull(server, remoteFile, attachmentFile)
+            if status == ftp.SUCCESS then
+                ftp.delete(server, remoteFile)
+            end
+        end
+    end
 end
 
 local function openMail(server, mail)
@@ -37,6 +51,7 @@ local function openMail(server, mail)
     end
     
     local message = {
+        server = 0,
         sender = 0,
         subject = "",
         attachments = {},
@@ -55,7 +70,9 @@ local function openMail(server, mail)
         else
             local key = string.match(line, "^%w+") or ""
             local value = string.sub(line, #key+2)
-            if key == "sender" then
+            if key == "server" then
+                message.server = tonumber(value)
+            elseif key == "sender" then
                 message.sender = tonumber(value)
             elseif key == "subject" then
                 message.subject = value
@@ -67,16 +84,7 @@ local function openMail(server, mail)
         end
     end
 
-    for i, attachment in ipairs(message.attachments) do
-        local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
-        if not fs.exists(attachmentFile) and server > 0 then
-            local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
-            local status = ftp.pull(server, remoteFile, attachmentFile)
-            if status == ftp.SUCCESS then
-                ftp.delete(server, remoteFile)
-            end
-        end
-    end
+    fetchAttachments(server, mail, message.attachments)
     
     return ftp.SUCCESS, message
 end
@@ -116,6 +124,7 @@ return {
     send = send,
     fetch = fetch,
     fetchLocal = fetchLocal,
+    fetchAttachments = fetchAttachments,
     openMail = openMail,
     SUCCESS = ftp.SUCCESS,
     UNKNOWN_RESPONSE = ftp.UNKNOWN_RESPONSE,
