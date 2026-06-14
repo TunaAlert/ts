@@ -1,4 +1,5 @@
 name: Precise GPS
+version: 1.0
 description: A rewrite of the builtin GPS using more satellites to achieve greater precision
 files:
   - programs/pgps.lua
