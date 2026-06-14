@@ -289,7 +289,7 @@ local function load(file)
     return parse(str)
 end
 
-local function constructInlineJSON(data)
+local function InlineJSON(data)
     if type(data) == "string" then
         return "\"" .. data .. "\""
     elseif type(data) == "number" or type(data) == "boolean" then
@@ -339,7 +339,7 @@ local function constructYaml(data, prefix, inList)
     
     if isList(data) then
         if inList then
-            return thisIterationPrefix .. constructInlineJSON(data)
+            return thisIterationPrefix .. constructInlineJSON(data) .. "\n"
         end
         for k, v in pairs(data) do
             if type(v) == "table" then
