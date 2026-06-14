@@ -38,7 +38,7 @@ local function displayDmailList(server, scroll)
     shell.run("clear")
     
     local status = {}
-    local messages = {}
+    local messages = dmail.fetchLocal()
     for i, server in pairs(config.servers) do
         local s, m = dmail.fetch(server)
         status[#status + 1] = s
@@ -47,9 +47,11 @@ local function displayDmailList(server, scroll)
         end
     end
 
+    table.sort(messages, function(a, b) return a > b end)
+
     local offset = 0
     
-    for i, s in pairs(status) do
+    for i, s in ipairs(status) do
         if s ~= dmail.SUCCESS then
             messageList.setCursorPos(1, 1+offset)
             messageList.write(("error status %d"):format(s))
