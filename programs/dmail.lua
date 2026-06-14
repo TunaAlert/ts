@@ -87,6 +87,12 @@ local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
 
+    term.setRedirect(parentTerm)
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    term.setRedirect(messageList)
+    
+    messageList.setBackgroundColor(colors.black)
     messageList.clear()
     
     local offset = 0
@@ -139,14 +145,14 @@ local function displayDmail()
     local message = messages[selectedDmail]
 
     term.redirect(parentTerm)
-    term.setBackgroundColor(color.black)
+    term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1, 1)
-    term.setTextColor(color.black)
-    term.setBackgroundColor(color.lightGray)
+    term.setTextColor(colors.black)
+    term.setBackgroundColor(colors.lightGray)
     term.clearLine()
     term.write(message.subject)
-    term.setTextColor(color.green)
+    term.setTextColor(colors.green)
     term.setCursorPos(1, 2)
     term.clearLine()
     term.write("  From: " .. message.sender)
