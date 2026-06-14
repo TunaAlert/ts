@@ -331,7 +331,7 @@ local function displayDmail()
     term.setTextColor(colors.lime)
     term.setCursorPos(1, 3)
     term.clearLine()
-    term.write("  From " .. message.sender)
+    term.write("  From " .. nameOrID(message.sender))
     
     term.redirect(messageBody)
 
