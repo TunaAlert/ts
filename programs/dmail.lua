@@ -607,3 +607,7 @@ local nextMenu = dmailListMenu
 while not exited and nextMenu ~= nil do
     nextMenu = nextMenu()
 end
+
+term.redirect(parentTerm)
+term.clear()
+term.setCursorPos(1, 1)
