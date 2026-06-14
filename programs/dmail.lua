@@ -320,11 +320,11 @@ local function displayDmail()
             defaultColor = colors.red
         end
         if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
-            messageBody.setTextColor(defailtColor)
+            messageBody.setTextColor(defaultColor)
             messageBody.write("  + ")
             messageBody.setTextColor(colors.orange)
             messageBody.write("[")
-            messageBody.setTextColor(defailtColor)
+            messageBody.setTextColor(defaultColor)
             messageBody.write(attachment)
             messageBody.setTextColor(colors.orange)
             messageBody.write("]\n")
