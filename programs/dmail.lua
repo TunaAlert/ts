@@ -148,8 +148,9 @@ local function writeNoPush(redirect, text)
         lines[#lines+1] = ""
     end
     for i, line in ipairs(lines) do
-        if i <= maxHeight then
-            redirect.setCursorPos(1, i)
+        local y = i - scroll
+        if y > 0 and y <= maxHeight then
+            redirect.setCursorPos(1, y)
             redirect.write(line)
         end
     end
@@ -335,8 +336,6 @@ local function displayDmail()
     messageBody.setTextColor(colors.white)
     messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
-    messageBody.scroll(scroll)
-    messageBody.setCursorPos(1, 1)
     message.lineCount = writeNoPush(messageBody, message.body)
     for i, attachment in ipairs(message.attachments) do
         messageBody.setCursorPos(3, message.lineCount+1+i)
