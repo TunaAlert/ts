@@ -134,7 +134,7 @@ local function install(program, repo, forceDependencies)
         yamlUrl = ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)
         fileUrlGetter = function(r, f) return ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
     elseif repo.type == "url" then
-        yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
+        yamlUrl = ("%s/ts/%s.yaml"):format(repo.url, program)
         fileUrlGetter = function(r, f) return ("%s/%s"):format(r.url, f) end
     else
         print("Unknown repo type " .. tostring(repo.type))
