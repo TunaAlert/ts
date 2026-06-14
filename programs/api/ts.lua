@@ -1,6 +1,30 @@
 local yaml = require("/programs/api/yaml")
 local json = require("/programs/api/json")
 
+local function versionEqualOrHigher(installed, required)
+    local iparts = {}
+    local rparts = {}
+
+    for part in string.gmatch(installed, "[^%.]+") do
+        iparts[iparts + 1] = part
+    end
+    for part in string.gmatch(required, "[^%.]+") do
+        rparts[rparts + 1] = part
+    end
+
+    for i = 1, math.min(#iparts, #rparts), 1 do
+        inum = tonumber(iparts[i])
+        rnum = tonumber(rparts[i])
+        if inum < rnum then
+            return false
+        elseif inum > rnum then
+            return true
+        end
+    end
+    
+    return true
+end
+
 local function getProgramsInRepo(repo)
     if repo.type ~= "github" then
         return {}
@@ -90,11 +114,19 @@ local function findRepoForProgram(program)
     return programRepo
 end
 
-local function install(program, repo)
+local function install(program, repo, forceDependencies)
+    print("Installing program " .. program)
     if repo == nil then
         repo = findRepoForProgram(program)
         if repo == nil then
+            print("No suitable repository found")
             return false
+        end
+        print("Fetching from repository:")
+        if repo.type == "github" then
+            print(("  github %s/%s/%s"):format(repo.owner, repo.repo, repo.branch))
+        else
+            print(("  url %s"):format(repo.url))
         end
     end
     local yamlUrl = nil
@@ -106,47 +138,83 @@ local function install(program, repo)
         yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
         fileUrlGetter = function(r, f) return ("%s/%s"):format(r.url, f) end
     else
+        print("Unknown repo type " .. tostring(repo.type))
         return false
     end
-    if yamlUrl ~= nil and fileUrlGetter ~= nil then
-        local request = http.get(yamlUrl)
-        if request == nil then
-            return false
-        end
-        local data = yaml.parse(request.readAll())
-        request.close()
-        if data == nil then
-            return false
-        end
-        data.repo = repo
-        yaml.save(data, ("/ts/%s.yaml"):format(program))
-        local startupFile = nil
-        for i, file in pairs(data.files) do
-            request = http.get(fileUrlGetter(repo, file))
-            if request ~= nil then
-                local handle = io.open(file, "w")
-                handle:write(request.readAll())
-                handle:close()
-                request.close()
-                if string.find(file, "^/?startup/") then
-                    startupFile = file
-                end
+    local request = http.get(yamlUrl)
+    if request == nil then
+        print("Couldn't fetch program data")
+        return false
+    end
+    local data = yaml.parse(request.readAll())
+    request.close()
+    if data == nil then
+        print("Malformed program data")
+        return false
+    end
+    local unmetDependencies = {}
+    if data.dependencies ~= nil then
+        for i, dependency in pairs(data.dependencies) do
+            local depData = yaml.load(("/ts/%s.yaml"):format(dependency.program))
+            if depData == nil then
+                unmetDependencies[#unmetDependencies+1] = dependency
+            elseif not versionEqualOrHigher(depData, dependency.version) then
+                unmetDependencies[#unmetDependencies+1] = dependency
             end
         end
-        if startupFile ~= nil then
-            shell.run(startupFile)
-        end
-        return true
-    else
-        return false
     end
+    if #unmetDependencies > 0 and not forceDependencies then
+        local userinput = ""
+        local firstPass = true
+        repeat
+            if firstPass then
+                print(("%d unmet dependencies for %s. Do you want to install them?"):format(#unmetDependencies, data.name))
+            else
+                print("please type y or n")
+            end
+            term.write("y/n > ")
+            userinput = io.stdin:read("l")
+        until userinput == "y" or userinput == "n"
+        if userinput == "n" then
+            print("installation aborted")
+            return false
+        end
+    end
+
+    data.repo = repo
+    yaml.save(data, ("/ts/%s.yaml"):format(program))
+    
+    for i, dependency in pairs(unmetDependencies) do
+        install(dependency.executable, findRepoForProgram(dependency.executable), true)
+    end
+    
+    local startupFile = nil
+    for i, file in pairs(data.files) do
+        request = http.get(fileUrlGetter(repo, file))
+        if request ~= nil then
+            local handle = io.open(file, "w")
+            handle:write(request.readAll())
+            handle:close()
+            request.close()
+            if string.find(file, "^/?startup/") then
+                startupFile = file
+            end
+        end
+    end
+    if startupFile ~= nil then
+        shell.run(startupFile)
+    end
+    print(("Installed %s"):format(data.name))
+    return true
 end
 
 local function remove(program)
     local data = yaml.load(("/ts/%s.yaml"):format(program))
     if data == nil then
+        print("Didn't find " .. program)
         return false
     end
+    print("Removing " .. (data.name or program))
     for i, file in data.files do
         if fs.exists(file) then
             fs.delete(file)
@@ -158,6 +226,7 @@ local function remove(program)
         end
     end
     fs.delete(("/ts/%s.yaml"):format(program))
+    print("Done")
     return true
 end
 
@@ -186,17 +255,20 @@ local function addRepo(repo)
     if config.repos == nil then
         config.repos = {}
     end
-    local addRepo = true
+    local add = true
     for i, preRepo in pairs(config.repos) do
         if reposEqual(preRepo, repo) then
-            addRepo = false
+            add = false
         end
     end
-    if addRepo then
+    if add then
         config.repos[#config.repos + 1] = repo
         yaml.save(config, "/.data/ts/config.yaml")
+        print("Added Repo")
+    else
+        print("Repo already in repo list")
     end
-    return addRepo
+    return add
 end
 
 local function removeRepo(repo)
@@ -218,6 +290,9 @@ local function removeRepo(repo)
     if removed then
         table.remove(config.repos, index)
         yaml.save(config, "/.data/ts/config.yaml")
+        print("Repo removed")
+    else
+        print("Repo not in repo list")
     end
     return removed
 end
