@@ -136,7 +136,7 @@ local function displayDmail()
     messageBody.setVisible(true)
     term.redirect(messageBody)
 
-    local message = mesages[selectedMessage]
+    local message = messages[selectedDmail]
 
     messageBody.setTextColor(colors.white)
     messageBody.setBackgroundColor(colors.black)
