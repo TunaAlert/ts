@@ -162,7 +162,7 @@ local function drawLoadingLoop()
             end
         end
             
-        sleep(0.5)
+        sleep(0.05)
     end
 end
 
