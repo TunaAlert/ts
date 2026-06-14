@@ -282,7 +282,7 @@ local function parse(str)
 end
 
 local function load(file)
-    if not fs.exists(fs) then
+    if not fs.exists(file) then
         return {}
     end
     local str = ""
