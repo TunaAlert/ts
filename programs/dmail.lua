@@ -290,7 +290,7 @@ local function displayDmail()
     term.setCursorPos(1, 1)
     term.clearLine()
     term.setTextColor(colors.yellow)
-    if selectedMenuButton[1] == 1 then
+    if menuButtonSelected[1] == 1 then
         term.blit("[Back]", "144441", "ffffff")
     else
         term.write("[Back]")
@@ -319,7 +319,7 @@ local function displayDmail()
         elseif attachmentsDownloaded[i] == false then
             defaultColor = colors.red
         end
-        if selectedMenuButton[1] == #menuButtons - #message.attachments + i then
+        if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
             essageBody.setTextColor(defailtColor)
             messageBody.write("  + ")
             essageBody.setTextColor(colors.orange)
