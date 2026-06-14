@@ -61,7 +61,7 @@ if cmd == "install" then
                 return
             end
             repo = {
-                type = "gitgub",
+                type = "github",
                 owner = arg[4],
                 repo = arg[5],
                 branch = arg[6],

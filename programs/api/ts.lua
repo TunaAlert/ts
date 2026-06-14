@@ -4,6 +4,8 @@ local json = require("/programs/api/json")
 local function versionEqualOrHigher(installed, required)
     local iparts = {}
     local rparts = {}
+    installed = tostring(installed)
+    required = tostring(required)
 
     for part in string.gmatch(installed, "[^%.]+") do
         iparts[#iparts + 1] = part
@@ -98,20 +100,19 @@ local function getInstalledPrograms()
 end
 
 local function findRepoForProgram(program)
-    local programRepo = nil
     local repos = getRepos()
     for i, repo in pairs(repos) do
         if repo.type == "github" then
             if http.get(("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)) ~= nil then
-                programRepo = repo
+                return repo
             end
         elseif repo.type == "url" then
             if http.get(("%s/ts/%s.yaml"):format(repo.url, program)) ~= nil then
-                programRepo = repo
+                return repo
             end
         end
     end
-    return programRepo
+    return nil
 end
 
 local function install(program, repo, forceDependencies)
@@ -135,7 +136,7 @@ local function install(program, repo, forceDependencies)
         yamlUrl = ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)
         fileUrlGetter = function(r, f) return ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
     elseif repo.type == "url" then
-        yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
+        yamlUrl = ("%s/ts/%s.yaml"):format(repo.url, program)
         fileUrlGetter = function(r, f) return ("%s/%s"):format(r.url, f) end
     else
         print("Unknown repo type " .. tostring(repo.type))
@@ -234,7 +235,7 @@ local function upgrade()
     local fileList = fs.list("/ts/")
     for i, file in pairs(fileList) do
         local data = yaml.load("/ts/" .. file)
-        local program = string.sub(file, 1, #file-4)
+        local program = string.sub(file, 1, #file-5)
         install(program, data.repo)
     end
 end

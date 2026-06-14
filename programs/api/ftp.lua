@@ -79,13 +79,21 @@ local function host(folder, readperm, writeperm)
                 path = path .. "/"
             end
 
+			print(("received %s request from %d"):format(cmd[1], id))
+
             if string.find(path, "[/\]%.%.[/\]") then
                 rednet.send(id, "denied forbidden", "ftp")
+				print("denied access: forbidden path")
             elseif cmd[1] == "list" then
-                if not fs.exists(path) then
+				if not readperm then
+					rednet.send(id, "denied permissions", "ftp")
+					print("denied access: no read permissions")
+				elseif not fs.exists(path) then
                     rednet.send(id, "denied nonexistant", "ftp")
+					print("denied access: dir doesn't exist")
                 elseif not fs.isDir(path) then
                     rednet.send(id, "denied file", "ftp")
+					print("denied access: path is a file")
                 else
                     local files = fs.list(path)
                     for i, file in pairs(files) do
@@ -94,16 +102,47 @@ local function host(folder, readperm, writeperm)
                         end
                     end
                     rednet.send(id, files, "ftp")
+					print("fulfilled")
                 end
+			elseif cmd[1] == "delete" then
+				if writeperm then
+					if not fs.exists(path) then
+						rednet.send(id, "denied nonexistant", "ftp")
+						print("denied access: file doesn't exist")
+					elseif fs.isReadOnly(path) then
+						rednet.send(id, "denied permissions", "ftp")
+						print("denied access: file is read-only")
+					else
+						fs.delete(path)
+						rednet.send(id, SUCCESS, "ftp")
+					print("fulfilled")
+					end
+				else
+					rednet.send(id, "denied permissions", "ftp")
+					print("denied access: no write permissions")
+				end
             elseif fs.isDir(path) then
                 rednet.send(id, "denied dir", "ftp")
+				print("denied access: path is a dir")
             elseif cmd[1] == "push" then
-                rednet.send(id, "start", "ftp")
-                download_from(id, path)
+				if writeperm then
+	                rednet.send(id, "start", "ftp")
+	                download_from(id, path)
+					print("fulfilled")
+				else
+					rednet.send(id, "denied permissions", "ftp")
+					print("denied access: no write permissions")
+				end
             elseif cmd[1] == "pull" then
-                rednet.send(id, "start", "ftp")
-                upload_to(id, path)
-            end
+				if readperm then
+	                rednet.send(id, "start", "ftp")
+	                upload_to(id, path)
+					print("fulfilled")
+				else
+					rednet.send(id, "denied permissions", "ftp")
+					print("denied access: no read permissions")
+				end
+			end
         end
     end
 end
@@ -208,6 +247,22 @@ local function pulldir(host, dir, name)
     return results
 end
 
+local function delete(host, fileOrDir)
+    rednet.send(host, ("delete %s"):format(fileOrDir), "ftp")
+	local id, status
+    local t = os.epoch()
+    repeat
+        id, message = rednet.receive("ftp", 0.1)
+    until id == host or os.epoch() - t >= 72000
+    if id == nil then
+        return NO_RESPONSE
+    elseif type(message) == "string" then
+		return ACCESS_DENIED
+	else
+        return SUCCESS
+    end
+end
+
 return {
     UNKNOWN_RESPONSE = UNKNOWN_RESPONSE,
     SUCCESS = SUCCESS,
@@ -218,5 +273,6 @@ return {
     push = push,
     pull = pull,
     pushdir = pushdir,
-    pulldir = pulldir
+    pulldir = pulldir,
+	delete = delete
 }
