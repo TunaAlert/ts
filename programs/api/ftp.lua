@@ -104,8 +104,26 @@ local function host(folder, readperm, writeperm)
                     rednet.send(id, files, "ftp")
 					print("fulfilled")
                 end
+			elseif cmd[1] == "delete" then
+				if writeperm then
+					if not fs.exists(path) then
+						rednet.send(id, "denied nonexistant", "ftp")
+						print("denied access: file doesn't exist")
+					elseif fs.isReadOnly(path) then
+						rednet.send(id, "denied permissions", "ftp")
+						print("denied access: file is read-only")
+					else
+						fs.delete(path)
+						rednet.send(id, ftp.SUCCESS, "ftp")
+					print("fulfilled")
+					end
+				else
+					rednet.send(id, "denied permissions", "ftp")
+					print("denied access: no write permissions")
+				end
             elseif fs.isDir(path) then
                 rednet.send(id, "denied dir", "ftp")
+				print("denied access: path is a dir")
             elseif cmd[1] == "push" then
 				if writeperm then
 	                rednet.send(id, "start", "ftp")
@@ -123,23 +141,6 @@ local function host(folder, readperm, writeperm)
 				else
 					rednet.send(id, "denied permissions", "ftp")
 					print("denied access: no read permissions")
-				end
-			elseif cmd[1] == "delete" then
-				if writeperm then
-					if not fs.exists(path) then
-						rednet.send(id, "denied nonexistant", "ftp")
-						print("denied access: file doesn't exist")
-					elseif fs.isReadOnly(path) then
-						rednet.send(id, "denied permissions", "ftp")
-						print("denied access: file is read-only")
-					else
-						fs.delete(path)
-						rednet.send(id, ftp.SUCCESS, "ftp")
-					print("fulfilled")
-					end
-				else
-					rednet.send(id, "denied permissions", "ftp")
-					print("denied access: no write permissions")
 				end
 			end
         end
