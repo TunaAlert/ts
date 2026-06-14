@@ -142,6 +142,8 @@ local function parse(str)
             else
                 error(("Unexpected token , at %d:%d"):format(row, column))
             end
+            buffer = ""
+            key = ""
             isString = false
         elseif char == "\"" then
             if buffer == "" then
