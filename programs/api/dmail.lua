@@ -95,7 +95,7 @@ local function fetchLocal()
             messages[#messages+1] = message
         end
     end
-    return status, messages
+    return messages
 end
 
 local function fetch(server)
