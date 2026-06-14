@@ -368,7 +368,7 @@ local function clampScrollInList(value)
 end
 
 local function clampScrollInDmail(value)
-    return math.max(math.min(value, messages[selectedDmail].lineCount + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
+    return math.max(math.min(value-1, messages[selectedDmail].lineCount + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
 end
 
 local function handleMenuKeyEvent(key)
@@ -500,7 +500,7 @@ dmailDisplayMenu = function()
             end
         }
     }
-    for i = 1, selectedMessage.lineCount + 2 + #selectedMessage.attachments - ({messageBody.getSize()})[2], 1 do
+    for i = 1, selectedMessage.lineCount - ({messageBody.getSize()})[2], 1 do
         local filler = {
             function() end
         }
