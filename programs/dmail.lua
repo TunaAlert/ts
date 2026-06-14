@@ -323,7 +323,7 @@ local function displayDmail()
             essageBody.setTextColor(defailtColor)
             messageBody.write(attachment)
             essageBody.setTextColor(colors.orange)
-            messageBody.write(("]\n")
+            messageBody.write("]\n")
         else
             essageBody.setTextColor(defailtColor)
             messageBody.write("  +  " .. attachment .. "\n")
