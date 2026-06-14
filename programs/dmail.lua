@@ -25,6 +25,9 @@ local dmailListMenu
 local dmailDisplayMenu
 local composeDmailMenu
 
+local menuButtons = {}
+local menuButtonSelected = {0, 0}
+
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
@@ -285,12 +288,56 @@ local function clampScrollInList(value)
 end
 
 dmailListMenu = function()
+    local nextMenu = nil
     scroll = 0
     
     parallel.waitForAny(loadMessages, drawLoadingLoop)
+
+    menuButtons = {
+        {
+            function()
+                local flagSet = hasUnselectedMessages()
+                for i, message in pairs(messages) do
+                    message.selected = flagSet
+                end
+            end,
+            function()
+                for i, message in pairs(messages) do
+                    message.selected = message.read
+                end
+            end,
+            function()
+                for i, message in pairs(messages) do
+                    if message.selected then
+                        deleteMessage(message.id)
+                    end
+                end
+                parallel.waitForAny(loadMessages, drawLoadingLoop)
+            end
+        }
+    }
+    for i, message in ipairs(messages) do
+        local buttons = {
+            function()
+               message.selected = not message.selected
+            end,
+            function()
+                selectedDmail = i
+                nextMenu = dmailDisplayMenu
+                setMessageRead(message.id)
+            end
+        }
+        menuButtons[#menuButtons + 1] = buttons
+    end
+    menuButtons[#menuButtons + 1] = {
+        function()
+            nextMenu = composeDmailMenu
+        end
+    }
+    menuButtonSelected = {0, 0}
+    
     displayDmailList()
 
-    local nextMenu = nil
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
@@ -299,34 +346,21 @@ dmailListMenu = function()
             local clickedLine = y-yoffs+scroll
             if y == 2 then
                 if x <= 6 then
-                    local flagSet = hasUnselectedMessages()
-                    for i, message in pairs(messages) do
-                        message.selected = flagSet
-                    end
+                    (menuButtons[1][1])()
                 elseif x >= 8 and x <= 13 then
-                    for i, message in pairs(messages) do
-                        message.selected = message.read
-                    end
+                    (menuButtons[1][2])()
                 elseif x >= 15 and x <= 22 then
-                    for i, message in pairs(messages) do
-                        if message.selected then
-                            deleteMessage(message.id)
-                        end
-                    end
-                    parallel.waitForAny(loadMessages, drawLoadingLoop)
+                    (menuButtons[1][3])()
                 end
-                displayDmailList()
             elseif y == termHeight then
                 if x >= termWidth - 12 then
-                    nextMenu = composeDmailMenu
+                    (menuButtons[#menuButtons][1])()
                 end
             elseif y > 3 and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
-                    messages[clickedLine].selected = not messages[clickedLine].selected
+                    (menuButtons[clickedLine+1][1])()
                 else
-                    selectedDmail = clickedLine
-                    nextMenu = dmailDisplayMenu
-                    setMessageRead(messages[clickedLine].id)
+                    (menuButtons[clickedLine+1][2])()
                 end
             end
             displayDmailList()
