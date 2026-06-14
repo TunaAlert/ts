@@ -260,7 +260,7 @@ local function displayDmailList()
                 messageList.setTextColor(defaultColor)
             end
             messageList.write(bullet)
-            if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 1 then
+            if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 2 then
                 messageList.setTextColor(colors.orange)
             else
                 messageList.setTextColor(defaultColor)
