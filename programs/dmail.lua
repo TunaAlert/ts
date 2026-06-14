@@ -135,8 +135,8 @@ local function writeNoPush(redirect, text)
     local lines = {}
     local paragraphs = {}
     local maxWidth, maxHeight = redirect.getSize()
-    for paragraph in string.gmatch(text, "[^\n]*") do 
-        for token in string.gmatch(paragraph, "%S*") do
+    for paragraph in string.gmatch(text, "[^\n]+") do 
+        for token in string.gmatch(paragraph, "%S+") do
            if #lines == 0 then
                 lines[#lines+1] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
