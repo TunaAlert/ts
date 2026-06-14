@@ -13,9 +13,11 @@ if config == nil then
 end
 
 local contacts = yaml.load("/.data/dmail/contacts.yaml")
-if contacts == nil then
+if contacts == nil or contacts.contacts == nil then
     contacts = {{name = "Tuna", id = 9}}
-    yaml.save(contacts, "/.data/dmail/contacts.yaml")
+    yaml.save({contacts = contacts}, "/.data/dmail/contacts.yaml")
+else
+    contacts = contacts.contacts
 end
 
 local function nameOrID(id)
