@@ -40,7 +40,8 @@ local function openMail(server, mail)
         sender = 0,
         subject = "",
         attachments = {},
-        body = ""
+        body = "",
+        id = mail
         }
     
     local inBody = false
