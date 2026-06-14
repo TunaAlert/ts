@@ -74,6 +74,21 @@ if arg[1] == "list" then
         print("couldn't fetch file list")
     end
 	return
+elseif arg[1] == "delete" then
+	if #arg > 3 then
+		usage()
+		return
+	end
+	local status = ftp.delete(host, file)
+	if status == ftp.SUCCESS then
+		print("File deleted")
+	elseif status == ftp.NO_RESPONSE then
+		print("No response from host")
+	elseif status == ftp.ACCESS_DENIED then
+		print("Access denied")
+	else
+		print("Unknown response")
+	end
 end
 
 if #arg < 3 then
