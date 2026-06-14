@@ -317,32 +317,21 @@ local function clampScrollInList(value)
     return math.max(math.min(value, #messages - ({messageList.getSize()})[2]), 0)
 end
 
-local function handleMenuKeyEvent(key, redrawFunc)
+local function handleMenuKeyEvent(key)
     if key == "down" then
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-            scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
-        end
-        redrawFunc()
     elseif key == "up" then
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-            scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
-        end
-        redrawFunc()
     elseif key == "left" then
         menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons + 1
-        redrawFunc()
     elseif key == "right" then
         menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
-        redrawFunc()
     elseif key == "enter" then
         menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
         menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
-        redrawFunc()
     end
 end
 
@@ -429,7 +418,11 @@ dmailListMenu = function()
             displayDmailList()
         elseif event == "key" then
             local key = keys.getName(a)
-            handleMenuKeyEvent(key, displayDmailList)
+            handleMenuKeyEvent(key)
+            if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+                scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
+            end
+            displayDmailList()
         end
     end
     return nextMenu
@@ -464,7 +457,8 @@ dmailDisplayMenu = function()
             displayDmail()
         elseif event == "key" then
             local key = keys.getName(a)
-            handleMenuKeyEvent(key, displayDmail)
+            handleMenuKeyEvent(key)
+            displayDmail()
         end
     end
     return nextMenu
