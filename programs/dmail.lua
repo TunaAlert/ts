@@ -87,10 +87,10 @@ local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
 
-    term.setRedirect(parentTerm)
+    term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.clear()
-    term.setRedirect(messageList)
+    term.redirect(messageList)
     
     messageList.setBackgroundColor(colors.black)
     messageList.clear()
