@@ -143,7 +143,7 @@ local function install(program, repo)
 end
 
 local function remove(program)
-    local data = yaml.load(("/ts/%s.lua"):format(program))
+    local data = yaml.load(("/ts/%s.yaml"):format(program))
     if data == nil then
         return false
     end
