@@ -78,7 +78,7 @@ local function install(program, repo)
         fileUrlGetter = function(r, f) return ("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s"):format(r.owner, r.repo, r.branch, f) end
     elseif repo.type == "url" then
         yamlurl = ("%s/ts/%s.yaml"):format(repo.url, program)
-        fileUrlGetter = function(r, f) ("%s/%s"):format(r.url, f) end
+        fileUrlGetter = function(r, f) return ("%s/%s"):format(r.url, f) end
     else
         return false
     end
