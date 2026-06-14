@@ -424,6 +424,7 @@ dmailListMenu = function()
                 menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
                 menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
                 menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
+                displayDmailList()
             end
         end
     end
