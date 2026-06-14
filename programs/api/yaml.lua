@@ -283,7 +283,7 @@ end
 
 local function load(file)
     if not fs.exists(file) then
-        return {}
+        return nil
     end
     local str = ""
     for line in io.lines(file) do
