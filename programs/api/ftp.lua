@@ -82,7 +82,9 @@ local function host(folder, readperm, writeperm)
             if string.find(path, "[/\]%.%.[/\]") then
                 rednet.send(id, "denied forbidden", "ftp")
             elseif cmd[1] == "list" then
-                if not fs.exists(path) then
+				if not readperm then
+					rednet.send(id, "denied permissions", "ftp")
+				elseif not fs.exists(path) then
                     rednet.send(id, "denied nonexistant", "ftp")
                 elseif not fs.isDir(path) then
                     rednet.send(id, "denied file", "ftp")
@@ -98,12 +100,33 @@ local function host(folder, readperm, writeperm)
             elseif fs.isDir(path) then
                 rednet.send(id, "denied dir", "ftp")
             elseif cmd[1] == "push" then
-                rednet.send(id, "start", "ftp")
-                download_from(id, path)
+				if writeperm then
+	                rednet.send(id, "start", "ftp")
+	                download_from(id, path)
+				else
+					rednet.send(id, "denied permissions", "ftp")
+				end
             elseif cmd[1] == "pull" then
-                rednet.send(id, "start", "ftp")
-                upload_to(id, path)
-            end
+				if readperm then
+	                rednet.send(id, "start", "ftp")
+	                upload_to(id, path)
+				else
+					rednet.send(id, "denied permissions", "ftp")
+				end
+			elseif cmd[1] == "delete" then
+				if writeperm then
+					if not fs.exists(path) then
+						rednet.send(id, "denied nonexistant", "ftp")
+					elseif fs.isReadOnly(path) then
+						rednet.send(id, "denied permissions", "ftp")
+					else
+						fs.delete(path)
+						rednet.send(id, ftp.SUCCESS, "ftp")
+					end
+				else
+					rednet.send(id, "denied permissions", "ftp")
+				end
+			end
         end
     end
 end
@@ -206,6 +229,22 @@ local function pulldir(host, dir, name)
         end
     end
     return results
+end
+
+local function delete(host, fileOrDir)
+    rednet.send(host, ("delete %s"):format(fileOrDir), "ftp")
+	local id, status
+    local t = os.epoch()
+    repeat
+        id, message = rednet.receive("ftp", 0.1)
+    until id == host or os.epoch() - t >= 72000
+    if id == nil then
+        return NO_RESPONSE
+    elseif type(message) == "string" then
+		return ACCESS_DENIED
+	else
+        return SUCCESS
+    end
 end
 
 return {
