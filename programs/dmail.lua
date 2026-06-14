@@ -68,6 +68,26 @@ local function setMessageRead(messageId)
     yaml.save({read = readMessages}, "/.data/dmail/read.yaml")
 end
 
+local function deleteMessage(messageId)
+    local messageFile = ("/.data/dmail/inbox/%s.mail"):format(messageId)
+    local attachmentDir = ("/.data/dmail/attachments/%s"):format(messageId)
+    if fs.exists(messageFile) then
+        fs.delete(messageFile)
+    end
+    if fs.exists(attachmentDir) then
+        fs.delete(attachmentDir)
+    end
+    local readIndex = 0
+    for i, message in pairs(readMessages) do
+        if message == messageId then
+            readIndex = i
+        end
+    end
+    if readIndex ~= 0 then
+        table.remove(readMessages, readIndex)
+    end
+end
+
 local function loadMessages()
     status = {}
     messages = dmail.fetchLocal()
@@ -276,13 +296,30 @@ dmailListMenu = function()
             local button, x, y = a, b, c
             local yoffs = ({messageList.getPosition()})[2]
             local clickedLine = y-yoffs+scroll
-            if y == 2 then
-
+            if y == 3 then
+                if x <= 6 then
+                    local flagSet = hasUnselectedMessages()
+                    for i, message in pairs(messages) do
+                        message.selected = flagSet
+                    end
+                elseif x >= 8 and x <= 13 then
+                    for i, message in pairs(messages) do
+                        message.selected = message.read
+                    end
+                elseif x >= 15 and x <= 22 then
+                    for i, message in pairs(messages) do
+                        if message.selected then
+                            deleteMessage(message.id)
+                        end
+                    end
+                    parallel.waitForAny(loadMessages, drawLoadingLoop)
+                end
+                displayDmailList()
             elseif y == termHeight then
                 if x >= termWidth - 12 then
                     nextMenu = composeDmailMenu
                 end
-            elseif y > 2 and clickedLine > 0 and clickedLine <= #messages then
+            elseif y > 3 and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
                     messages[clickedLine].selected = not messages[clickedLine].selected
                 else
