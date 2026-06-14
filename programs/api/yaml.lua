@@ -289,7 +289,7 @@ local function load(file)
     return parse(str)
 end
 
-local function InlineJSON(data)
+local function constructInlineJSON(data)
     if type(data) == "string" then
         return "\"" .. data .. "\""
     elseif type(data) == "number" or type(data) == "boolean" then
