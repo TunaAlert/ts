@@ -98,20 +98,19 @@ local function getInstalledPrograms()
 end
 
 local function findRepoForProgram(program)
-    local programRepo = nil
     local repos = getRepos()
     for i, repo in pairs(repos) do
         if repo.type == "github" then
             if http.get(("https://raw.githubusercontent.com/%s/%s/refs/heads/%s/ts/%s.yaml"):format(repo.owner, repo.repo, repo.branch, program)) ~= nil then
-                programRepo = repo
+                return repo
             end
         elseif repo.type == "url" then
             if http.get(("%s/ts/%s.yaml"):format(repo.url, program)) ~= nil then
-                programRepo = repo
+                return repo
             end
         end
     end
-    return programRepo
+    return nil
 end
 
 local function install(program, repo, forceDependencies)
