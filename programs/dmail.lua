@@ -21,7 +21,7 @@ else
 end
 
 local function nameOrID(id)
-    for i, contact in contacts do
+    for i, contact in pairs(contacts) do
         if contact.id == id then
             return contact.name
         end
