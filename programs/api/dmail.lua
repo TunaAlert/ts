@@ -76,11 +76,20 @@ local function openMail(server, mail)
     return ftp.SUCCESS, message
 end
 
+local function compareDescending(a, b)
+    return a > b
+end
+
 local function fetch(server)
     local status, messageFiles = ftp.list(server, ("%d/inbox/"):format(os.getComputerID()))
+    local localInbox = fs.list("/.data/dmail/inbox")
+    for i, localMessage in pairs(localInbox) do
+        messageFiles[#messageFiles + 1] = string.sub(localMessage, 1, #localMessage - 5)
+    end
+    table.sort(messageFiles, compareDescending)
     if status == ftp.SUCCESS then
         local messages = {}
-        for i, messageFile in pairs(messageFiles) do
+        for i, messageFile in ipairs(messageFiles) do
             local stat, message = openMail(server, string.sub(messageFile, 1, #messageFile - 5))
             if stat == ftp.SUCCESS then
             	messages[#messages+1] = message
