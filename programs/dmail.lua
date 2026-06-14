@@ -367,7 +367,7 @@ end
 
 local function clampScrollInDmail(value)
     if selectedDmail > 0 then
-        return math.max(math.min(value - 1, messages[selectedDmail].lineCount + 2 + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
+        return math.max(math.min(value, messages[selectedDmail].lineCount + 2 + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
     else
         return 0
     end
@@ -556,7 +556,7 @@ dmailDisplayMenu = function()
             local key = keys.getName(a)
             handleMenuKeyEvent(key)
             if menuButtonSelected[1] >= 1 and menuButtonSelected[1] <= #menuButtons then
-                scroll = clampScrollInDmail(menuButtonSelected[1])
+                scroll = clampScrollInDmail(menuButtonSelected[1]- 1)
             end
             displayDmail()
         end
