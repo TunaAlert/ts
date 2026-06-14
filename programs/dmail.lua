@@ -402,6 +402,11 @@ local function handleMenuKeyEvent(key)
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
         menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
     end
+
+end
+
+local function composeDmail()
+
 end
 
 dmailListMenu = function()
