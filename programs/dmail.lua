@@ -21,6 +21,7 @@ local attachmentsDownloaded = {}
 
 local scroll = 0
 local selectedDmail = 0
+local composedMessage = {}
 
 local dmailListMenu
 local dmailDisplayMenu
@@ -381,8 +382,63 @@ local function composeDmail()
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.clear()
+
+    term.setTextColor(colors.yellow)
+    term.setCursorPos(1, 1)
+    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
+        term.blit("[Back]", "144441", "ffffff")
+    else
+        term.write("[Back]")
+    end
+    term.setCursorPos(termWidth-6, 1)
+    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
+        term.blit("[Send]", "144441", "ffffff")
+    else
+        term.write("[Send]")
+    end
+    
+    term.setTextColor(colors.white)
+    term.setCursorPos(1, 2)
+    term.write("To:")
+    term.setCursorPos(1, 3)
+    term.write("Sub:")
+    
+    term.setCursorPos(5, 2)
+    if type(composedMessage.recipient) == "string" then
+        term.setTextColor(colors.red)
+        term.write(composedMessage.recipient)
+    elseif type(composedMessage.recipient) == "number" and composedMessage.recipient ~= 0 then
+        term.setTextColor(colors.green)
+        term.write(nameOrID(composedMessage.recipient))
+    else
+        term.setTextColor(colors.gray)
+        term.write("recipient")
+    end
+
+    term.setCursorPos(5, 3)
+    if composedMessage.subject == "" then
+        term.setTextColor(colors.gray)
+        term.write("subject")
+    else
+        term.setTextColor(colors.white)
+        term.write(composedMessage.subject)
+    end
+    
     messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
+
+    if menuButtonSelected[1] > 1 then
+        term.setCursorBlink(true)
+        if menuButtonSelected[1] == 2 then
+            term.setCursorPos(4+menuButtonSelected[2], 2)
+        elseif menuButtonSelected[1] == 3 then
+            term.setCursorPos(4+menuButtonSelected[2], 3)
+        else
+            term.setCursorPos(menuButtonSelected[2], 5)
+        end
+    else
+        term.setCursorBlink(false)
+    end
 end
 
 local function clampScrollInList(value)
@@ -395,6 +451,10 @@ local function clampScrollInDmail(value)
     else
         return 0
     end
+end
+
+local function clampScrollInCompose(value)
+    return math.max(math.min(value, 100), 0)
 end
 
 local function handleMenuKeyEvent(key)
@@ -627,6 +687,9 @@ composeDmailMenu = function()
         if event == "mouse_click" then
             composeDmail()
         elseif event == "mouse_scroll" then
+            local dir = a
+            menuButtonSelected = {0, 0}
+            scroll = clampScrollInCompose(scroll + dir)
             composeDmail()
         elseif event == "key" then
             local key = keys.getName(a)
