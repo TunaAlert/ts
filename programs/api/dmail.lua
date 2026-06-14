@@ -83,7 +83,7 @@ local function openMail(server, mail)
 end
 
 local function fetchLocal()
-    local messageFiels = {}
+    local messageFiles = {}
     local localInbox = fs.list("/.data/dmail/inbox")
     for i, localMessage in pairs(localInbox) do
         messageFiles[#messageFiles + 1] = string.sub(localMessage, 1, #localMessage)
