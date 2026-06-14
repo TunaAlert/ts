@@ -67,7 +67,7 @@ local function openMail(server, mail)
         end
     end
 
-    for i, attachment in pairs(message.attachments) do
+    for i, attachment in ipairs(message.attachments) do
         local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
         if not fs.exists(attachmentFile) then
             local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
