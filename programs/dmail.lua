@@ -320,16 +320,16 @@ local function displayDmail()
             defaultColor = colors.red
         end
         if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
-            essageBody.setTextColor(defailtColor)
+            messageBody.setTextColor(defailtColor)
             messageBody.write("  + ")
-            essageBody.setTextColor(colors.orange)
+            messageBody.setTextColor(colors.orange)
             messageBody.write("[")
-            essageBody.setTextColor(defailtColor)
+            messageBody.setTextColor(defailtColor)
             messageBody.write(attachment)
-            essageBody.setTextColor(colors.orange)
+            messageBody.setTextColor(colors.orange)
             messageBody.write("]\n")
         else
-            essageBody.setTextColor(defailtColor)
+            messageBody.setTextColor(defailtColor)
             messageBody.write("  +  " .. attachment .. "\n")
         end
     end
@@ -426,7 +426,7 @@ dmailListMenu = function()
                 if x >= termWidth - 12 then
                     menuButtons[#menuButtons][1]()
                 end
-            elseif y > 3 and clickedLine > 0 and clickedLine <= #messages then
+            elseif y > yoffs and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
                     menuButtons[clickedLine+1][1]()
                 else
