@@ -10,6 +10,12 @@ local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 
 
 local status = {}
 local messages = {}
+local readMessages = yaml.load("./data/dmail/read.yaml")
+if readMessages ~= nil and readMessages.read ~= nil then
+    readMessages = readMessages.read
+else
+    readMessages = {}
+end
 
 local scroll = 0
 local selectedDmail = 0
@@ -44,7 +50,20 @@ local function nameOrID(id)
 end
 
 local function isMessageRead(messageId)
+    for i, message in pairs(readMessages) do
+        if message == messageId then
+            return true
+        end
+    end
     return false
+end
+
+local function setMessageRead(messageId)
+    if isMessageRead(messageId) then
+        return
+    end
+    readMessages[#readMessages] = messageId
+    yaml.save({read = readMessages}, "./data/dmail/read.yaml")
 end
 
 local function loadMessages()
@@ -55,6 +74,7 @@ local function loadMessages()
         status[#status + 1] = s
         for j, message in pairs(m) do
             message.read = isMessageRead(message.id)
+            message.selected = false
             messages[#messages + 1] = message
         end
     end
@@ -91,9 +111,19 @@ local function displayDmailList()
             else
                 messageList.setTextColor(colors.white)
             end
+            local bullet = "o"
+            if message.selected then
+                bullet = "\xf8"
+            end
+            if selectedDmail == i then
+                messageList.setBackgroundColor(colors.gray)
+            else
+                messageList.setBackgroundColor(colors.black)
+            end
+            messageList.clearLine()
             messageList.write(
                 ("%s %s %s"):format(
-                    "o",
+                    bullet,
                     string.sub(nameOrID(message.sender) .. "      ", 1, 6),
                     message.subject
                 ))
@@ -104,9 +134,20 @@ end
 local function displayDmail()
     messageList.setVisible(false)
     messageBody.setVisible(true)
-    
+    term.redirect(messageBody)
+
+    local message = mesages[selectedMessage]
+
+    messageBody.setTextColor(colors.white)
+    messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
-    
+    messageBody.scroll(scroll)
+    messageBody.setCursorPos(1, 1)
+    write(message.body .. "\n\n")
+    messageBody.setTextColor(colors.yellow)
+    for i, attachment in pairs(message.attachments) do
+        messageBody.write("  + " .. attachment .. "\n")
+    end
 end
 
 local function clampScrollInList(value)
@@ -129,7 +170,14 @@ dmailListMenu = function()
             local yoffs = ({messageList.getPosition()})[2]
             local clickedLine = y-yoffs+scroll
             if clickedLine > 0 and clickedLine <= #messages then
-                messages[clickedLine].read = true
+                if x < 3 then
+                    messages[clickedLine].selected = not messages[clickedLine].selected
+                elseif x < 10 then
+                else
+                    selectedDmail = clickedLine
+                    nextMenu = dmailDisplayMenu
+                    setMessageRead(messages[clickedLine].id)
+                end
             end
             displayDmailList()
         elseif event == "mouse_scroll" then
