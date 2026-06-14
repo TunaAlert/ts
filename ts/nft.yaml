@@ -1,4 +1,5 @@
 name: NFT Tools
+version: 0.1
 description: A program cleaning and displaying Nitrogen Fingers Text files
 files:
   - programs/nft.lua
