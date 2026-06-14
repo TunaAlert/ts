@@ -9,4 +9,4 @@ dependencies:
   - program: yaml
     version: 0.1
   - program: ftp
-    version: 1.0
+    version: 1.1
