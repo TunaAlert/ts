@@ -548,7 +548,7 @@ dmailDisplayMenu = function()
                     menuButtons[1][1]()
                 end
             elseif y >= pos[2] and y < pos[2] + size[2] then
-                local lineClicked = y - pos[2] + 1 + scroll
+                local lineClicked = y - pos[2] + scroll
                 if lineClicked > selectedMessage.lineCount + 2 and lineClicked <= selectedMessage.lineCount + 2 + #selectedMessage.attachments then
                     local attachmentClicked = lineClicked - selectedMessage.lineCount - 2
                     menuButtons[#menuButtons - #selectedMessage.attachments + attachmentClicked][1]()
