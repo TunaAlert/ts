@@ -60,7 +60,7 @@ local function displayDmailList(server, scroll)
         messageList.setCursorPos(1, 1 + offset)
         messageList.write("No messages")
     end
-    for i, message in pairs(messages) do
+    for i, message in ipairs(messages) do
         if i - scroll >= 1 and i - scroll <= termHeight - 3 then
             messageList.setCursorPos(1, i-scroll + offset)
             messageList.write(
