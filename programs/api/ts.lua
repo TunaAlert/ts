@@ -27,7 +27,10 @@ local function getPrograms()
 
     local programs = {}
     for i, repo in pairs(repos) do
-        table.append(programs, getProgramsInRepo(repo))
+        local repoprograms = getProgramsInRepo(repo)
+        for i, program in pairs(repoprograms) do
+            programs[#programs + 1] = program
+        end
     end
     return programs
 end
