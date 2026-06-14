@@ -185,17 +185,38 @@ local function displayDmailList()
     end
     term.setCursorPos(1, 2)
     if hasUnselectedMessages() then
-        term.write("[all]  ")
+        if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
+            term.blit("[all]  ", "1000100", "fffffff")
+        else
+            term.write("[all]  ")
+        end
     else
-        term.write("[none] ")
+        if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
+            term.blit("[none] ", "1000010", "fffffff")
+        else
+            term.write("[none] ")
+        end
     end
-    term.write("[read] ")
     
-    term.write("[delete]")
-
+    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
+        term.blit("[read] ", "1000010", "fffffff")
+    else
+        term.write("[read] ")
+    end
+    
+    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 3 then
+        term.blit("[delete]", "10000001", "ffffffff")
+    else
+        term.write("[delete]")
+    end
+    
     term.setCursorPos(termWidth-12, termHeight)
     term.setTextColor(colors.yellow)
-    term.write("[New DMail]")
+    if menuButtonSelected[1] == #menuButtons then
+        term.blit("[New DMail]", "10000000001", "fffffffffff")
+    else
+        term.write("[New DMail]")
+    end
     term.redirect(messageList)
     
     messageList.setBackgroundColor(colors.black)
@@ -219,24 +240,33 @@ local function displayDmailList()
     for i, message in ipairs(messages) do
         if i - scroll >= 1 and i - scroll <= termHeight - 3 then
             messageList.setCursorPos(1, i-scroll + offset)
+            local defaultColor = colors.white
             if message.read then
-                messageList.setTextColor(colors.lightGray)
-            else
-                messageList.setTextColor(colors.white)
+                defaultColor = colors.lightGray
             end
             local bullet = "o"
             if message.selected then
                 bullet = "\xf8"
             end
-            if selectedDmail == i then
+            if menuButtonSelected[1] == i+1 then
                 messageList.setBackgroundColor(colors.gray)
             else
                 messageList.setBackgroundColor(colors.black)
             end
             messageList.clearLine()
+            if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 1 then
+                messageList.setTextColor(colors.orange)
+            else
+                messageList.setTextColor(defaultColor)
+            end
+            message.write(bullet)
+            if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 1 then
+                messageList.setTextColor(colors.orange)
+            else
+                messageList.setTextColor(defaultColor)
+            end
             messageList.write(
-                ("%s %s %s"):format(
-                    bullet,
+                (" %s %s"):format(
                     string.sub(nameOrID(message.sender) .. "      ", 1, 6),
                     message.subject
                 ))
