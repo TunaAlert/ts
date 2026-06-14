@@ -131,6 +131,31 @@ local function hasUnselectedMessages()
     return false
 end
 
+local function writeNoPush(redirect, text)
+    local lines = {}
+    local paragraphs = {}
+    local maxWidth, maxHeight = redirect.getSize()
+    for paragraph in string.gmatch(text, "[^\n]*") do 
+        for token in string.gmatch(paragraph, "%S*") do
+           if #lines == 0 then
+                lines[#lines+1] = token
+            elseif #lines[#lines] + #token + 1 > maxWidth then
+                lines[#lines+1] = token
+            else
+                lines[#lines] = lines[#lines] .. " " .. token
+            end
+        end
+        lines[#lines+1] = ""
+    end
+    for i, line in ipairs(lines) do
+        if i <= maxHeight then
+            redirect.setCursorPos(1, i)
+            redirect.write(line)
+        end
+    end
+    return #lines
+end
+
 local function drawLoadingLoop()
     local bufferx = math.random(0, 16)
     while true do
@@ -311,7 +336,7 @@ local function displayDmail()
     messageBody.clear()
     messageBody.scroll(scroll)
     messageBody.setCursorPos(1, 1)
-    message.lineCount = write(message.body)
+    message.lineCount = writeNoPush(messageBody, message.body)
     for i, attachment in ipairs(message.attachments) do
         messageBody.setCursorPos(3, message.lineCount+1+i)
         local defaultColor = colors.yellow
