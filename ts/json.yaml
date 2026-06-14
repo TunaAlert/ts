@@ -1,0 +1,5 @@
+name: JSON Library
+version: 0.1
+description: A Library for parsing and generating JSON files
+files:
+  - programs/api/json.lua
