@@ -139,6 +139,8 @@ local function writeNoPush(redirect, text)
         for token in string.gmatch(paragraph, "%S+") do
            if #lines == 0 then
                 lines[#lines+1] = token
+            elseif lines[#lines] == "" then
+                lines[#lines] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
                 lines[#lines+1] = token
             else
@@ -338,7 +340,7 @@ local function displayDmail()
     messageBody.clear()
     message.lineCount = writeNoPush(messageBody, message.body)
     for i, attachment in ipairs(message.attachments) do
-        messageBody.setCursorPos(3, message.lineCount+1+i)
+        messageBody.setCursorPos(3, message.lineCount+1+i - scroll)
         local defaultColor = colors.yellow
         if attachmentsDownloaded[i] == true then
             defaultColor = colors.lime
