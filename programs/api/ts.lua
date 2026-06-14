@@ -88,8 +88,8 @@ local function getInstalledPrograms()
     for i, file in pairs(fileList) do
         local data = yaml.load("/ts/" .. file)
         local info = {
-            command = string.sub(file, 1, #file-4),
-            name = data.name or string.sub(file, 1, #file-4),
+            command = string.sub(file, 1, #file-5),
+            name = data.name or string.sub(file, 1, #file-5),
             description = data.description or ""
         }
         programList[#programList+1] = info
@@ -158,7 +158,7 @@ local function install(program, repo, forceDependencies)
             local depData = yaml.load(("/ts/%s.yaml"):format(dependency.program))
             if depData == nil then
                 unmetDependencies[#unmetDependencies+1] = dependency
-            elseif not versionEqualOrHigher(depData, dependency.version) then
+            elseif not versionEqualOrHigher(depData.version, dependency.version) then
                 unmetDependencies[#unmetDependencies+1] = dependency
             end
         end
