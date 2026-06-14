@@ -157,7 +157,7 @@ local function remove(program)
             end
         end
     end
-    fs.delete(("/ts/%s.lua"):format(program))
+    fs.delete(("/ts/%s.yaml"):format(program))
     return true
 end
 
