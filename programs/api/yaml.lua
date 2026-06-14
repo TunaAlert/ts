@@ -130,11 +130,15 @@ end
 
 local function parse(str)
 
-    local lines = string.gmatch(str, "[^\n]+")
+    local lines = {}
+    
+    for line in string.gmatch(str, "[^\n]+") do
+        lines[#lines + 1] = line
+    end
     
     local indentStep = 0
     local lineData = {}
-    for i, line in lines do
+    for i, line in pairs(lines) do
         if line ~= nil then
             local data = {
                 indent = 0,
