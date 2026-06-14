@@ -147,7 +147,7 @@ local function parse(str)
                 inList = false,
                 line = i
             }
-            if string.find(line, "^%s*%w+: ?.*$") then
+            if string.find(line, "^%s*[%w_-]+: ?.*$") then
                 if string.find(line, "^%s+") then
                     data.indent = #(string.match(line, "^%s+"))
                     if indentStep == 0 then
@@ -157,7 +157,7 @@ local function parse(str)
                     end
                     data.indent = data.indent / indentStep
                 end
-                data.key = string.match(line, "%w+")
+                data.key = string.match(line, "[%w_-]+")
                 if string.find(line, ": .+$") then
                     local value = string.match(line, ": .+$")
                     value = string.sub(value, 3)
@@ -170,7 +170,7 @@ local function parse(str)
                     end
                     data.value = value
                 end
-            elseif string.find(line, "^%s+%- %w+: ?.*$") then
+            elseif string.find(line, "^%s+%- [%w_-]+: ?.*$") then
                 data.indent = #(string.match(line, "^%s+"))
                 if indentStep == 0 then
                     indentStep = data.indent
@@ -178,7 +178,7 @@ local function parse(str)
                     error("malformed Yaml indentation in line " .. tostring(i))
                 end
                 data.indent = data.indent / indentStep
-                data.key = string.match(line, "%w+")
+                data.key = string.match(line, "[%w_-]+")
                 local value = string.match(line, ": .+$")
                 value = string.sub(value, 3)
                 if isnumber(tonumber(value)) then
