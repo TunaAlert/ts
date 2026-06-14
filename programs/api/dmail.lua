@@ -84,23 +84,22 @@ end
 
 local function fetch(server)
     local status, messageFiles = ftp.list(server, ("%d/inbox/"):format(os.getComputerID()))
+    if status ~= ftp.SUCCESS then
+        messageFiles = {}
+    end
     local localInbox = fs.list("/.data/dmail/inbox")
     for i, localMessage in pairs(localInbox) do
         messageFiles[#messageFiles + 1] = string.sub(localMessage, 1, #localMessage - 5)
     end
     table.sort(messageFiles, compareDescending)
-    if status == ftp.SUCCESS then
-        local messages = {}
-        for i, messageFile in ipairs(messageFiles) do
-            local stat, message = openMail(server, string.sub(messageFile, 1, #messageFile - 5))
-            if stat == ftp.SUCCESS then
-            	messages[#messages+1] = message
-            end
+    local messages = {}
+    for i, messageFile in ipairs(messageFiles) do
+        local stat, message = openMail(server, string.sub(messageFile, 1, #messageFile - 5))
+        if stat == ftp.SUCCESS then
+            messages[#messages+1] = message
         end
-    	return ftp.SUCCESS, messages
-    else
-        return status, {}
     end
+    return status, messages
 end
 
 return {
