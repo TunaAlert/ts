@@ -19,6 +19,7 @@ local function parse(str)
         if inStringLiteral then
             if char == "\\" then
                 i = i + 1
+                column = column + 1
                 local nextChar = string.sub(str, i, i)
                 if nextChar == "\\" then
                     buffer = buffer .. "\\"
@@ -156,8 +157,9 @@ local function parse(str)
             end
         elseif char == "\n" then
             row = row + 1
-            column = 1
+            column = 0
         end
+        column = column + 1
     end
     
     return data
