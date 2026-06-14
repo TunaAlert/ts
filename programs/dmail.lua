@@ -83,6 +83,25 @@ local function loadMessages()
     table.sort(messages, function(a, b) return a.id > b.id end)
 end
 
+local function unreadCount()
+    local count = 0
+    for i, message in pairs(messages) do
+        if not message.read then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+local function hasUnselectedMessages()
+    for i, message in pairs(messages) do
+        if not message.selected then
+            return true
+        end
+    end
+    return false
+end
+
 local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
@@ -90,6 +109,23 @@ local function displayDmailList()
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.clear()
+    term.setCursorPos(1, 1)
+    local unread = unreadCount()
+    if unread == 0 then
+        term.write("no unread messages")
+    elseif unread == 1 then
+        term.write("1 unread message")
+    else
+        term.write(("%d unread messages"):format(unread))
+    end
+    term.setCursorPos(1, 2)
+    if hasUnselectedMessages() then
+        term.write("[all]  ")
+    else
+        term.write("[none] ")
+    end
+    term.write("[all]  [delete] ")
+    term.write("")
     term.redirect(messageList)
     
     messageList.setBackgroundColor(colors.black)
@@ -188,10 +224,11 @@ dmailListMenu = function()
             local button, x, y = a, b, c
             local yoffs = ({messageList.getPosition()})[2]
             local clickedLine = y-yoffs+scroll
-            if clickedLine > 0 and clickedLine <= #messages then
+            if y == 2 then
+                
+            elseif y > 2 and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
                     messages[clickedLine].selected = not messages[clickedLine].selected
-                elseif x < 10 then
                 else
                     selectedDmail = clickedLine
                     nextMenu = dmailDisplayMenu
