@@ -68,6 +68,7 @@ local function parse(str)
                         end
                     end
                     stack[#stack][key] = value
+                    buffer = ""
                 end
                 layers[#layers] = nil
                 stack[#stack] = nil
@@ -107,6 +108,7 @@ local function parse(str)
                     end
                     local list = stack[#stack]
                     list[#list + 1] = value
+                    buffer = ""
                 end
                 layers[#layers] = nil
                 stack[#stack] = nil
