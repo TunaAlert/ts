@@ -63,7 +63,7 @@ local function setMessageRead(messageId)
     if isMessageRead(messageId) then
         return
     end
-    readMessages[#readMessages] = messageId
+    readMessages[#readMessages + 1] = messageId
     yaml.save({read = readMessages}, "./data/dmail/read.yaml")
 end
 
@@ -102,6 +102,38 @@ local function hasUnselectedMessages()
     return false
 end
 
+local function drawLoadingLoop()
+    local bufferx = 1
+    while true do
+        term.redirect(parentTerm)
+        term.setBackgoundColor(colors.black)
+        term.setTextColor(colors.white)
+        term.clear()
+
+        bufferx = bufferx + 1
+
+        term.setCursorPos(termwidth/2 - 7, 3)
+        term.write("Loading Dmails")
+
+        for i = 1, 4, 1 do
+            if i % 16 ~= buffer then
+                term.setCursorPos(termwidth/2 - 3 + i, termheight/2 - 2)
+            end
+            if (i + 4) % 16 ~= buffer then
+                term.setCursorPos(termwidth/2 + 2, termheight/2 - 3 + i)
+            end
+            if (i + 8) % 16 ~= buffer then
+                term.setCursorPos(termwidth/2 + 3 - i, termheight/2 + 2)
+            end
+            if (i + 12) % 16 ~= buffer then
+                term.setCursorPos(termwidth/2 - 2, termheight/2 + 3 - i)
+            end
+        end
+            
+        sleep(0.25)
+    end
+end
+
 local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
@@ -124,8 +156,9 @@ local function displayDmailList()
     else
         term.write("[none] ")
     end
-    term.write("[all]  [delete] ")
-    term.write("")
+    term.write("[read] ")
+    
+    term.write("[delete]")
     term.redirect(messageList)
     
     messageList.setBackgroundColor(colors.black)
@@ -184,14 +217,12 @@ local function displayDmail()
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1, 1)
-    term.setTextColor(colors.black)
-    term.setBackgroundColor(colors.lightGray)
     term.clearLine()
     term.write(message.subject)
-    term.setTextColor(colors.green)
+    term.setTextColor(colors.lime)
     term.setCursorPos(1, 2)
     term.clearLine()
-    term.write("  From: " .. message.sender)
+    term.write("  From " .. message.sender)
     
     term.redirect(messageBody)
 
@@ -214,7 +245,7 @@ end
 dmailListMenu = function()
     scroll = 0
     
-    loadMessages()
+    parallel.waitForAny(loadMessages, drawLoadingLoop)
     displayDmailList()
 
     local nextMenu = nil
