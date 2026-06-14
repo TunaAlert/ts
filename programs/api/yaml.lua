@@ -198,7 +198,7 @@ local function parse(str)
                     error("malformed Yaml indentation in line " .. tostring(i))
                 end
                 data.indent = data.indent / indentStep
-                local value = string.match(line, ": .+$")
+                local value = string.match(line, "- .+$")
                 value = string.sub(value, 3)
                 if isnumber(tonumber(value)) then
                     value = tonumber(value)
