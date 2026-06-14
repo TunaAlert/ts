@@ -341,7 +341,7 @@ local function clampScrollInList(value)
 end
 
 local function clampScrollInDmail(value)
-    return math.max(math.min(value, #messages - ({messageBody.getSize()})[2]), 0)
+    return math.max(math.min(value, messages[selectedDmail].lineCount + 2 + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
 end
 
 local function handleMenuKeyEvent(key)
