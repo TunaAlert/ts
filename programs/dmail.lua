@@ -128,7 +128,7 @@ local function hasUnselectedMessages()
 end
 
 local function drawLoadingLoop()
-    local bufferx = 1
+    local bufferx = math.random(0, 16)
     while true do
         term.redirect(parentTerm)
         term.setBackgroundColor(colors.black)
@@ -159,7 +159,7 @@ local function drawLoadingLoop()
             end
         end
             
-        sleep(0.25)
+        sleep(0.5)
     end
 end
 
