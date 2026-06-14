@@ -6,7 +6,7 @@ local function send(server, recipient, subject, body, attachments)
     local handle = io.open(mailFile)
     handle:write(("sender:%d\n"):format(os.getComputerID()))
     handle:write(("subject:%s\n"):format(subject))
-    for i, attachment in attachments do
+    for i, attachment in ipairs(attachments) do
         handle:write(("attachment:%s\n"):format(fs.getName(attachment)))
     end
     handle:write("body\n" .. body)
@@ -15,7 +15,7 @@ local function send(server, recipient, subject, body, attachments)
     local status = {}
     
     status[#status + 1] = ftp.push(server, mailFile, ("%d/inbox/%s.mail"):format(recipient, mail_id))
-    for i, attachment in attachments do
+    for i, attachment in ipairs(attachments) do
         status[#status + 1] = ftp.push(server, attachment, ("%d/attachments/%s/%s"):format(recipient, mail_id, fs.getName(attachment)))
     end
     return status
@@ -69,7 +69,7 @@ local function openMail(server, mail)
 
     for i, attachment in ipairs(message.attachments) do
         local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
-        if not fs.exists(attachmentFile) then
+        if not fs.exists(attachmentFile) and server > 0 then
             local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
             local status = ftp.pull(server, remoteFile, attachmentFile)
             if status == ftp.SUCCESS then
