@@ -46,7 +46,7 @@ local function displayDmailList(server, scroll)
     for i, s in pairs(status) do
         if s ~= dmail.SUCCESS then
             messageList.setCursorPos(1, 1+offset)
-            messageList.write(("error status %d"):format(status))
+            messageList.write(("error status %d"):format(s))
             offset = offset + 1
         end
     end
