@@ -171,6 +171,7 @@ local function displayDmailList()
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1, 1)
+    term.setTextColor(colors.white)
     local unread = unreadCount()
     if unread == 0 then
         term.write("no unread messages")
