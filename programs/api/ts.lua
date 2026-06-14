@@ -6,10 +6,10 @@ local function versionEqualOrHigher(installed, required)
     local rparts = {}
 
     for part in string.gmatch(installed, "[^%.]+") do
-        iparts[iparts + 1] = part
+        iparts[#iparts + 1] = part
     end
     for part in string.gmatch(required, "[^%.]+") do
-        rparts[rparts + 1] = part
+        rparts[#rparts + 1] = part
     end
 
     for i = 1, #rparts, 1 do
