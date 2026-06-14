@@ -17,6 +17,7 @@ if readMessages ~= nil and readMessages.read ~= nil then
 else
     readMessages = {}
 end
+local attachmentsDownloaded = {}
 
 local scroll = 0
 local selectedDmail = 0
@@ -307,9 +308,26 @@ local function displayDmail()
     messageBody.scroll(scroll)
     messageBody.setCursorPos(1, 1)
     write(message.body .. "\n\n")
-    messageBody.setTextColor(colors.yellow)
-    for i, attachment in pairs(message.attachments) do
-        messageBody.write("  + " .. attachment .. "\n")
+    for i, attachment in ipairs(message.attachments) do
+        local defaultColor = colors.yellow
+        if attachmentsDownloaded[i] == true then
+            defaultColor = colors.lime
+        elseif attachmentsDownloaded[i] == false then
+            defaultColor = colors.red
+        end
+        if selectedMenuButton[1] == #menuButtons - #message.attachments + i then
+            essageBody.setTextColor(defailtColor)
+            messageBody.write("  + ")
+            essageBody.setTextColor(colors.orange)
+            messageBody.write("[")
+            essageBody.setTextColor(defailtColor)
+            messageBody.write(attachment)
+            essageBody.setTextColor(colors.orange)
+            messageBody.write(("]\n")
+        else
+            essageBody.setTextColor(defailtColor)
+            messageBody.write("  +  " .. attachment .. "\n")
+        end
     end
 end
 
@@ -441,7 +459,35 @@ dmailDisplayMenu = function()
             end
         }
     }
+    local selectedMessage = messages[selectedDmail]
+    for i, attachment in ipairs(selectedMessage.attachments) do
+        local buttons = {
+            function()
+                local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(selectedMessage.id, attachment)
+                if not fs.exists(attachmentFile) then
+                    attachmentsDownloaded[i] = false
+                    return
+                end
+                local extensionpos = {string.find(attachment, "%.%w$")}
+                local extension = ""
+                if #extensionpos > 0 then
+                    extension = string.sub(attachment, extensionpos[1], extensionpos[2])
+                end
+                local saveFile = "/downloads/" .. attachment
+                local x = 1
+                while fs.exists(saveFile) do
+                    saveFile = ("/downloads/%s %d%s"):format(string.sub(attachment, 1, #attachment - #extension), x, extension)
+                    x = x + 1
+                end
+                fs.copy(attachmentFile, saveFile)
+                attachmentsDownloaded[i] = true
+            end
+        }
+        menuButtons[#menuButtons + 1] = buttons
+    end
     menuButtonSelected = {0, 0}
+
+    attachmentsDownloaded = {}
     
     displayDmail()
     
