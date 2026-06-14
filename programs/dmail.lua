@@ -311,8 +311,7 @@ local function displayDmail()
     messageBody.clear()
     messageBody.scroll(scroll)
     messageBody.setCursorPos(1, 1)
-    write(message.body)
-    message.lineCount = ({messageBody.getCursorPos()})[2]
+    message.lineCount = write(message.body)
     for i, attachment in ipairs(message.attachments) do
         messageBody.setCursorPos(3, message.lineCount+1+i)
         local defaultColor = colors.yellow
@@ -511,6 +510,10 @@ dmailDisplayMenu = function()
                     menuButtons[1][1]()
                 end
             end
+            displayDmail()
+        elseif event == "mouse_scroll" then
+            local dir = a
+            scroll = clampScrollInList(scroll + dir)
             displayDmail()
         elseif event == "key" then
             local key = keys.getName(a)
