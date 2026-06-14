@@ -64,11 +64,13 @@ local function openMail(server, mail)
 
     for i, attachment in pairs(message.attachments) do
         local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
-        local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
-        if not fs.exists(mailFile) then
-            local status = ftp.pull(server, remoteFile, attachmentFile)
-            if status == ftp.SUCCESS then
-                ftp.delete(server, remoteFile)
+        if not fs.exists(attachmentFile) then
+            local remoteFile = ("%d/attachments/%s/%s"):format(os.getComputerID(), mail, attachment)
+            if not fs.exists(mailFile) then
+                local status = ftp.pull(server, remoteFile, attachmentFile)
+                if status == ftp.SUCCESS then
+                    ftp.delete(server, remoteFile)
+                end
             end
         end
     end
