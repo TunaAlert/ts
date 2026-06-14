@@ -145,8 +145,6 @@ local function parse(str)
                     local list = stack[#stack]
                     list[#list + 1] = value
                 end
-            else
-                error(("Unexpected token , at %d:%d"):format(row, column))
             end
             buffer = ""
             key = ""
