@@ -52,6 +52,17 @@ local function parse(str)
             layers[#layers + 1] = "{}"
         elseif char == "}" then
             if layers[#layers] == "{}" then
+                local value = buffer
+                if not isString then
+                    if isnumber(tonumber(buffer)) then
+                        value = tonumber(buffer)
+                    elseif buffer == "true" or buffer == "false" then
+                        value = buffer == "true"
+                    else
+                        error(("Unexpected token %s"):format(buffer))
+                    end
+                end
+                stack[#stack][key] = value
                 layers[#layers] = nil
                 stack[#stack] = nil
             else
@@ -77,6 +88,18 @@ local function parse(str)
             layers[#layers + 1] = "[]"
         elseif char == "]" then
             if layers[#layers] == "[]" then
+                local value = buffer
+                if not isString then
+                    if isnumber(tonumber(buffer)) then
+                        value = tonumber(buffer)
+                    elseif buffer == "true" or buffer == "false" then
+                        value = buffer == "true"
+                    else
+                        error(("Unexpected token %s"):format(buffer))
+                    end
+                end
+                local list = stack[#stack]
+                list[#list + 1] = value
                 layers[#layers] = nil
                 stack[#stack] = nil
             else
