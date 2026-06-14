@@ -135,14 +135,14 @@ local function parse(str)
     local indentStep = 0
     local lineData = {}
     for i, line in lines do
-        local data = {
-            indent = 0,
-            key = nil,
-            value = nil,
-            inList = false,
-            line = i
-        }
         if line ~= nil then
+            local data = {
+                indent = 0,
+                key = nil,
+                value = nil,
+                inList = false,
+                line = i
+            }
             if string.find(line, "^%s*%w+:( .+)?$") then
                 if string.find(line, "^%s+") then
                     data.indent = #(string.match(line, "^%s+"))
@@ -339,7 +339,7 @@ local function constructYaml(data, prefix, inList)
         end
         for k, v in pairs(data) do
             if type(v) == "table" then
-                yaml = yaml .. constructYaml(v, nextLayerPrefix, true)
+                yaml = yaml .. constructYaml(v, prefix, true)
             elseif type(v) == "number" or type(v) == "boolean" or type(v) == "string" then
                 yaml = yaml .. thisIterationPrefix .. "- " .. tostring(v) .. "\n"
             end
