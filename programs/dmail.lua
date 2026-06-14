@@ -1,7 +1,12 @@
 local dmail = require("/programs/api/dmail")
 local yaml = require("/programs/api/yaml")
 
+local exited = false
+
 local termWidth, termHeight = term.getSize()
+
+local messageList = window.create(term.current(), 1, 3, termWidth, termHeight - 3)
+local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 4)
 
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
@@ -32,7 +37,6 @@ end
 local function displayDmailList(server, scroll)
     shell.run("clear")
     
-    local messageList = window.create(term.current(), 1, 3, termWidth, termHeight - 3)
     local status = {}
     local messages = {}
     for i, server in pairs(config.servers) do
@@ -70,3 +74,9 @@ local function displayDmailList(server, scroll)
 end
 
 displayDmailList(settings.get("dmail.server"), 0)
+
+while not exited do
+    local event, a, b, c, d, e, f = os.pullEvent()
+    term.setCursor(1, 1)
+    term.write(event .. "               ")
+end
