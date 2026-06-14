@@ -257,5 +257,6 @@ return {
     push = push,
     pull = pull,
     pushdir = pushdir,
-    pulldir = pulldir
+    pulldir = pulldir,
+	delete = delete
 }
