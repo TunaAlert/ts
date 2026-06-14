@@ -376,21 +376,21 @@ dmailListMenu = function()
             local clickedLine = y-yoffs+scroll
             if y == 2 then
                 if x <= 6 then
-                    (menuButtons[1][1])()
+                    menuButtons[1][1]()
                 elseif x >= 8 and x <= 13 then
-                    (menuButtons[1][2])()
+                    menuButtons[1][2]()
                 elseif x >= 15 and x <= 22 then
-                    (menuButtons[1][3])()
+                    menuButtons[1][3]()
                 end
             elseif y == termHeight then
                 if x >= termWidth - 12 then
-                    (menuButtons[#menuButtons][1])()
+                    menuButtons[#menuButtons][1]()
                 end
             elseif y > 3 and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
-                    (menuButtons[clickedLine+1][1])()
+                    menuButtons[clickedLine+1][1]()
                 else
-                    (menuButtons[clickedLine+1][2])()
+                    menuButtons[clickedLine+1][2]()
                 end
             end
             displayDmailList()
@@ -423,7 +423,7 @@ dmailListMenu = function()
             elseif key == "enter" then
                 menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
                 menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-                (menuButtons[menuButtonSelected[1]][menuButtonSelected[2]])()
+                menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
             end
         end
     end
