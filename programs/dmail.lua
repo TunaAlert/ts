@@ -106,7 +106,7 @@ local function drawLoadingLoop()
     local bufferx = 1
     while true do
         term.redirect(parentTerm)
-        term.setBackgoundColor(colors.black)
+        term.setBackgroundColor(colors.black)
         term.setTextColor(colors.white)
         term.clear()
 
