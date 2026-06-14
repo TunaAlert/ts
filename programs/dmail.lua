@@ -11,7 +11,7 @@ local parentTerm = term.current()
 
 local status = {}
 local messages = {}
-local readMessages = yaml.load("./data/dmail/read.yaml")
+local readMessages = yaml.load("/.data/dmail/read.yaml")
 if readMessages ~= nil and readMessages.read ~= nil then
     readMessages = readMessages.read
 else
@@ -65,7 +65,7 @@ local function setMessageRead(messageId)
         return
     end
     readMessages[#readMessages + 1] = messageId
-    yaml.save({read = readMessages}, "./data/dmail/read.yaml")
+    yaml.save({read = readMessages}, "/.data/dmail/read.yaml")
 end
 
 local function loadMessages()
