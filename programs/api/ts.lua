@@ -1,4 +1,5 @@
 local yaml = require("/programs/api/yaml")
+local json = require("/programs/api/json")
 
 local function getProgramsInRepo(repo)
     if repo.type ~= "github" then
@@ -6,12 +7,34 @@ local function getProgramsInRepo(repo)
     end
     
     local request = http.get(("https://api.github.com/repos/%s/%s/git/trees/%s"):format(repo.owner, repo.repo, repo.branch))
-    
-    --TODO: load response to programs. We retrieve the ts branch of the returned tree and request another tree from that hash. You'll get it.
-    print(request.readAll())
-    
+    if request == nil then
+        return {}
+    end
+
+    local tree_data = json.parse(request.readAll()).tree
     request.close()
-    return {}
+    local ts_url = nil
+    for i, branch in pairs(tree_data) do
+        if branch.path == "ts" then
+            ts_url = branch.url
+        end
+    end
+
+    request = http.get(ts_url)
+    if request == nil then
+        return {}
+    end
+
+    tree_data = json.parse(request.readAll()).tree
+    request.close()
+    local programs = {}
+    for i, branch in pairs(tree_data) do
+        if branch.type == "blob" then
+            programs[#programs + 1] = string.sub(branch.path, 1, #branch.path - 5)
+        end
+    end
+    
+    return programs
 end
 
 local function getRepos()
