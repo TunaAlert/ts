@@ -5,8 +5,8 @@ local exited = false
 
 local termWidth, termHeight = term.getSize()
 
-local messageList = window.create(term.current(), 1, 3, termWidth, termHeight - 3)
-local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 4)
+local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
+local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
 local parentTerm = term.current()
 
 local status = {}
@@ -23,6 +23,7 @@ local selectedDmail = 0
 
 local dmailListMenu
 local dmailDisplayMenu
+local composeDmailMenu
 
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
@@ -163,6 +164,10 @@ local function displayDmailList()
     term.write("[read] ")
     
     term.write("[delete]")
+
+    term.setCursorPos(termWidth-12, termHeight)
+    term.setTextColor(colors.yellow)
+    term.write("[New DMail]")
     term.redirect(messageList)
     
     messageList.setBackgroundColor(colors.black)
@@ -222,9 +227,14 @@ local function displayDmail()
     term.clear()
     term.setCursorPos(1, 1)
     term.clearLine()
+    term.setTextColor(colors.yellow)
+    term.write("[Back]")
+    term.setCursorPos(1, 2)
+    term.clearLine()
+    term.setTextColor(colors.white)
     term.write(message.subject)
     term.setTextColor(colors.lime)
-    term.setCursorPos(1, 2)
+    term.setCursorPos(1, 3)
     term.clearLine()
     term.write("  From " .. message.sender)
     
@@ -260,7 +270,11 @@ dmailListMenu = function()
             local yoffs = ({messageList.getPosition()})[2]
             local clickedLine = y-yoffs+scroll
             if y == 2 then
-                
+
+            elseif y == termHeight then
+                if x >= termWidth - 12 then
+                    nextMenu = composeDmailMenu
+                end
             elseif y > 2 and clickedLine > 0 and clickedLine <= #messages then
                 if x < 3 then
                     messages[clickedLine].selected = not messages[clickedLine].selected
@@ -293,6 +307,28 @@ dmailDisplayMenu = function()
     scroll = 0
 
     displayDmail()
+    
+    local nextMenu = nil
+    while not exited and nextMenu == nil do
+        local event, a, b, c, d, e, f = os.pullEvent()
+        if event == "mouse_click" then
+            local button, x, y = a, b, c
+            if y == 1 then
+                if x <= 6 then
+                    nextMenu = dmailListMenu
+                    selectedDmail = 0
+                end
+            end
+            displayDmail()
+        end
+    end
+    return nextMenu
+end
+
+composeDmailMenu = function()
+    scroll = 0
+
+    composeDmail()
     
     local nextMenu = nil
     while not exited and nextMenu == nil do
