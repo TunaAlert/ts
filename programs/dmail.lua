@@ -101,7 +101,9 @@ local function loadMessages()
     end
     for i, server in pairs(config.servers) do
         local s, m = dmail.fetch(server)
-        status[#status + 1] = s
+        if s ~= dmail.SUCCESS then
+            status[#status + 1] = {server = server, status = s}
+        end
         for j, message in pairs(m) do
             message.read = isMessageRead(message.id)
             message.selected = false
@@ -252,12 +254,16 @@ local function displayDmailList()
     local offset = 0
     
     for i, s in ipairs(status) do
-        if s ~= dmail.SUCCESS then
-            messageList.setCursorPos(1, 1+offset)
-            messageList.setTextColor(colors.red)
-            messageList.write(("  error status %d"):format(s))
-            offset = offset + 1
+        messageList.setCursorPos(1, 1+offset)
+        messageList.setTextColor(colors.red)
+        local errorString = "unknown error"
+        if s.status == dmail.ACCESS_DENIED then
+            errorString = "access denied"
+        elseif s.status == dmail.NO_RESPONSE then
+            errorString = "no response"
         end
+        messageList.write(("  server %d: %s"):format(s.server, errorString))
+        offset = offset + 1
     end
     if #messages == 0 then
         messageList.setCursorPos(termWidth/2 - 5, 1 + offset)
@@ -447,7 +453,7 @@ dmailListMenu = function()
         if event == "mouse_click" then
             local button, x, y = a, b, c
             local yoffs = ({messageList.getPosition()})[2] - 1
-            local clickedLine = y-yoffs+scroll
+            local clickedLine = y-yoffs+scroll-#status
             if y == 2 then
                 if x <= 6 then
                     menuButtons[1][1]()
