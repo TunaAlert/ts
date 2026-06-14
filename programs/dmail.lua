@@ -414,7 +414,7 @@ dmailListMenu = function()
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
             local button, x, y = a, b, c
-            local yoffs = ({messageList.getPosition()})[2]
+            local yoffs = ({messageList.getPosition()})[2] - 1
             local clickedLine = y-yoffs+scroll
             if y == 2 then
                 if x <= 6 then
