@@ -262,7 +262,7 @@ local function parse(str)
                     error("malformed yaml indent in line " .. tostring(ld.line))
                 end
             end
-        elseif inList then
+        elseif ld.inList then
             if ld.indent < #stack then
                 if ld.value ~= nil then
                     local list = stack[ld.indent+1]
