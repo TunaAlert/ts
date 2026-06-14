@@ -21,6 +21,14 @@ if not fs.exists("/programs/api/yaml.lua") then
     request.close()
 end
 
+if not fs.exists("/programs/api/json.lua") then
+    local request = http.get(("https://raw.githubusercontent.com/TunaAlert/ts/refs/heads/main/programs/api/json.lua?cb=%x"):format(math.random(0, 2 ^ 30)))
+    local handle = io.open("/programs/api/json.lua", "w")
+    handle:write(request.readAll())
+    handle:close()
+    request.close()
+end
+
 local ts = require("/programs/api/ts")
 
 local function usage()
