@@ -290,7 +290,11 @@ local function displayDmail()
     term.setCursorPos(1, 1)
     term.clearLine()
     term.setTextColor(colors.yellow)
-    term.write("[Back]")
+    if selectedMenuButton[1] == 1 then
+        term.blit("[Back]", "144441", "ffffff")
+    else
+        term.write("[Back]")
+    end
     term.setCursorPos(1, 2)
     term.clearLine()
     term.setTextColor(colors.white)
