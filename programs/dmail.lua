@@ -334,7 +334,6 @@ local function displayDmail()
     else
         term.write("[Back]")
     end
-    term.write("   scroll: " .. tostring(scroll))
     term.setCursorPos(1, 2)
     term.clearLine()
     term.setTextColor(colors.white)
