@@ -131,7 +131,7 @@ local function parse(str)
                 end
                 if layers[#layers] == "{}" then
                     if key ~= "" then
-                        stack[#stack] = value
+                        stack[#stack][key] = value
                     else
                         error(("Unexpected token %s at %d:%d"):format(buffer, row, column))
                     end
