@@ -12,6 +12,10 @@ local status = {}
 local messages = {}
 
 local scroll = 0
+local selectedDmail = 0
+
+local dmailListMenu
+local dmailDisplayMenu
 
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
@@ -60,6 +64,9 @@ end
 
 local function displayDmailList()
     shell.run("clear")
+
+    messageList.setVisible(true)
+    messageBody.setVisible(false)
     
     local offset = 0
     
@@ -94,22 +101,67 @@ local function displayDmailList()
     end
 end
 
-loadMessages()
-displayDmailList()
+local function displayDmail()
+    shell.run("clear")
+    
+    messageList.setVisible(false)
+    messageBody.setVisible(true)
+end
 
-while not exited do
-    local event, a, b, c, d, e, f = os.pullEvent()
-    term.setCursorPos(1, 1)
-    term.write(event .. "               ")
-    if event == "mouse_click" then
-        local button, x, y = a, b, c
-        if y > 3 and y <= #messages + 3 then
-            messages[y-3].read = true
+local function clampScrollInList(value)
+    return math.max(math.min(value, #messages - {messageList.getSize()}[2]), 0)
+end
+
+dmailListMenu = function()
+    scroll = 0
+    
+    loadMessages()
+    displayDmailList()
+
+    local nextMenu = nil
+    while not exited and nextMenu == nil do
+        local event, a, b, c, d, e, f = os.pullEvent()
+        term.setCursorPos(1, 1)
+        term.write(event .. "               ")
+        if event == "mouse_click" then
+            local button, x, y = a, b, c
+            local yoffs = {messageList.getPosition()}[2]
+            if y > yoffs and y <= #messages + yoffs then
+                messages[y-yoffs+scroll].read = true
+            end
+            displayDmailList()
+        elseif event == "mouse_scroll" then
+            local dir = a
+            scroll = clampScrollInList(scroll + dir)
+            displayDmailList()
+        elseif event == "key" then
+            local key = keys.getName(a)
+            if key == "down" then
+                scroll = clampScrollInList(scroll - 1)
+                displayDmailList()
+            elseif key == "up" then
+                scroll = clampScrollInList(scroll + 1)
+                displayDmailList()
+            end
         end
-        displayDmailList()
-    elseif event == "mouse_scroll" then
-        local dir = a
-        scroll = scroll + dir
-        displayDmailList()
     end
+    return nextMenu
+end
+
+dmailDisplayMenu = function()
+    scroll = 0
+
+    displayDmail()
+    
+    local nextMenu = nil
+    while not exited and nextMenu == nil do
+        
+    end
+    return nextMenu
+end
+
+local nextMenu = dmailListMenu
+
+while not exited and nextMenu ~= nil do
+    nextMenu = nextMenu()
 end
