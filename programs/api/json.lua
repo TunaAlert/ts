@@ -219,7 +219,28 @@ local function encode(data)
     return ""
 end
 
+local function load(file)
+    if not fs.exists(file) then
+        return nil
+    end
+    local str = ""
+    for line in io.lines(file) do
+        str = str .. line .. "\n"
+    end
+    return parse(str)
+end
+
+local function save(data, file)
+    local json = encode(data)
+    local handle = io.open(file, "w")
+    handle:write(json)
+    handle:close()
+    return true
+end
+
 return {
     parse = parse,
-    encode = encode
+    encode = encode,
+    load = load,
+    save = save
 }
