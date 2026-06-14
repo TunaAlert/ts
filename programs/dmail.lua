@@ -473,7 +473,7 @@ dmailDisplayMenu = function()
             end
         }
     }
-    for i = 1, ({messageBody.getSize()})[2] - selectedMessage.lineCount, 1 do
+    for i = 1, selectedMessage.lineCount + 2 + #selectedMessage.attachments - ({messageBody.getSize()})[2], 1 do
         local filler = {
             function() end
         }
@@ -525,7 +525,7 @@ dmailDisplayMenu = function()
             local key = keys.getName(a)
             handleMenuKeyEvent(key)
             if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-                scroll = clampScrollInDmail(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
+                scroll = clampScrollInDmail(menuButtonSelected[1])
             end
             displayDmail()
         end
