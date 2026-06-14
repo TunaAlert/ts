@@ -239,7 +239,7 @@ local function displayDmailList()
         messageList.write("No messages")
     end
     for i, message in ipairs(messages) do
-        if i - scroll >= 1 and i - scroll <= termHeight - 3 then
+        if i - scroll + offset >= 1 and i - scroll + offset <= ({messageList.getSize()})[2] then
             messageList.setCursorPos(1, i-scroll + offset)
             local defaultColor = colors.white
             if message.read then
