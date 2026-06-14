@@ -185,7 +185,7 @@ local function install(program, repo, forceDependencies)
     yaml.save(data, ("/ts/%s.yaml"):format(program))
     
     for i, dependency in pairs(unmetDependencies) do
-        install(dependency.executable, findRepoForProgram(dependency.program), true)
+        install(dependency.program, findRepoForProgram(dependency.program), true)
     end
     
     local startupFile = nil
