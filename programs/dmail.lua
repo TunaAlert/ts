@@ -317,6 +317,35 @@ local function clampScrollInList(value)
     return math.max(math.min(value, #messages - ({messageList.getSize()})[2]), 0)
 end
 
+local function handleMenuKeyEvent(key)
+    if key == "down" then
+        menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
+        menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
+        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+            scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
+        end
+        displayDmailList()
+    elseif key == "up" then
+        menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
+        menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
+        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+            scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
+        end
+        displayDmailList()
+    elseif key == "left" then
+        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons + 1
+        displayDmailList()
+    elseif key == "right" then
+        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
+        displayDmailList()
+    elseif key == "enter" then
+        menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
+        menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
+        menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
+        displayDmailList()
+    end
+end
+
 dmailListMenu = function()
     local nextMenu = nil
     scroll = 0
@@ -400,54 +429,42 @@ dmailListMenu = function()
             displayDmailList()
         elseif event == "key" then
             local key = keys.getName(a)
-            if key == "down" then
-                menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1)) % #menuButtons + 1
-                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-                if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-                    scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
-                end
-                displayDmailList()
-            elseif key == "up" then
-                menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
-                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-                if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-                    scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
-                end
-                displayDmailList()
-            elseif key == "left" then
-                menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons + 1
-                displayDmailList()
-            elseif key == "right" then
-                menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
-                displayDmailList()
-            elseif key == "enter" then
-                menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
-                menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
-                menuButtons[menuButtonSelected[1]][menuButtonSelected[2]]()
-                displayDmailList()
-            end
+            handleMenuKeyEvent(key)
         end
     end
     return nextMenu
 end
 
 dmailDisplayMenu = function()
+    local nextMenu = nil
+    
     scroll = 0
 
+    menuButtons = {
+        {
+            function()
+                nextMenu = dmailListMenu
+                selectedDmail = 0
+            end
+        }
+    }
+    menuButtonSelected = {0, 0}
+    
     displayDmail()
     
-    local nextMenu = nil
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
             local button, x, y = a, b, c
             if y == 1 then
                 if x <= 6 then
-                    nextMenu = dmailListMenu
-                    selectedDmail = 0
+                    menuButtons[1][1]()
                 end
             end
             displayDmail()
+        elseif event == "key" then
+            local key = keys.getName(a)
+            handleMenuKeyEvent(key)
         end
     end
     return nextMenu
