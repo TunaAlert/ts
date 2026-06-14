@@ -118,15 +118,19 @@ local function drawLoadingLoop()
         for i = 1, 4, 1 do
             if i % 16 ~= buffer then
                 term.setCursorPos(termWidth/2 - 3 + i, termHeight/2 - 2)
+                term.write("#")
             end
             if (i + 4) % 16 ~= buffer then
                 term.setCursorPos(termWidth/2 + 2, termHeight/2 - 3 + i)
+                term.write("#")
             end
             if (i + 8) % 16 ~= buffer then
                 term.setCursorPos(termWidth/2 + 3 - i, termHeight/2 + 2)
+                term.write("#")
             end
             if (i + 12) % 16 ~= buffer then
                 term.setCursorPos(termWidth/2 - 2, termHeight/2 + 3 - i)
+                term.write("#")
             end
         end
             
