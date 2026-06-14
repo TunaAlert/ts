@@ -157,7 +157,7 @@ local function writeNoPush(redirect, text)
             redirect.write(line)
         end
     end
-    return #lines
+    return lines
 end
 
 local function drawLoadingLoop()
@@ -350,7 +350,7 @@ local function displayDmail()
     messageBody.setTextColor(colors.white)
     messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
-    message.lineCount = writeNoPush(messageBody, message.body)
+    message.lineCount = #writeNoPush(messageBody, message.body)
     for i, attachment in ipairs(message.attachments) do
         messageBody.setCursorPos(3, message.lineCount+1+i - scroll)
         local defaultColor = colors.yellow
@@ -427,6 +427,9 @@ local function composeDmail()
     messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
 
+    messageBody.setCursorPos(1, 1)
+    
+    composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
     if menuButtonSelected[1] > 1 then
         term.setCursorBlink(true)
         if menuButtonSelected[1] == 2 then
@@ -434,7 +437,7 @@ local function composeDmail()
         elseif menuButtonSelected[1] == 3 then
             term.setCursorPos(4+menuButtonSelected[2], 3)
         else
-            term.setCursorPos(menuButtonSelected[2], 5)
+            messageBody.setCursorPos(1, 1)
         end
     else
         term.setCursorBlink(false)
@@ -674,6 +677,7 @@ composeDmailMenu = function()
         subject = "",
         recipient = 0,
         body = "",
+        lines = {},
         attachments = {}
     }
 
