@@ -77,6 +77,6 @@ displayDmailList(settings.get("dmail.server"), 0)
 
 while not exited do
     local event, a, b, c, d, e, f = os.pullEvent()
-    term.setCursor(1, 1)
+    term.setCursorPos(1, 1)
     term.write(event .. "               ")
 end
