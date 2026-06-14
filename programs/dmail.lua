@@ -537,8 +537,13 @@ dmailDisplayMenu = function()
             function()
                 local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(selectedMessage.id, attachment)
                 if not fs.exists(attachmentFile) then
-                    attachmentsDownloaded[i] = false
-                    return
+                    attachmentsDownloaded[i] = nil
+                    displayDmail()
+                    dmail.fetchAttachments(selectedMessage.server, selectedMessage.id, {attachment})
+                    if not fs.exists(attachmentFile) then
+                        attachmentsDownloaded[i] = false
+                        return
+                    end
                 end
                 local extensionpos = {string.find(attachment, "%.%w$")}
                 local extension = ""
