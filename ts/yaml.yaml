@@ -1,4 +1,5 @@
 name: Yaml Library
+version: 0.1
 description: A Library for parsing and generating Yaml documents
 files:
   - programs/api/yaml.lua
