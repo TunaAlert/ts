@@ -368,7 +368,7 @@ local function displayDmail()
 end
 
 local function clampScrollInList(value)
-    return math.max(math.min(value, #messages - ({messageList.getSize()})[2]), 0)
+    return math.max(math.min(value, #messages + #status - ({messageList.getSize()})[2]), 0)
 end
 
 local function clampScrollInDmail(value)
