@@ -23,6 +23,9 @@ local function send(server, recipient, subject, body, attachments)
 end
 
 local function fetchAttachments(server, mail, attachments)
+    if server == 0 then
+        return
+    end
     for i, attachment in ipairs(attachments) do
         local attachmentFile = ("/.data/dmail/attachments/%s/%s"):format(mail, attachment)
         if not fs.exists(attachmentFile) and server > 0 then
