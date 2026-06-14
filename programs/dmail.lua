@@ -456,7 +456,12 @@ dmailDisplayMenu = function()
     local nextMenu = nil
     
     scroll = 0
-
+    menuButtonSelected = {0, 0}
+    attachmentsDownloaded = {}
+    local selectedMessage = messages[selectedDmail]
+    
+    displayDmail()
+    
     menuButtons = {
         {
             function()
@@ -465,7 +470,12 @@ dmailDisplayMenu = function()
             end
         }
     }
-    local selectedMessage = messages[selectedDmail]
+    for i = 1, ({messageBody.getSize()})[2] - selectedMessage.lineCount, 1 do
+        local filler = {
+            function() end
+        }
+        menuButtons[#menuButtons + 1] = filler
+    end
     for i, attachment in ipairs(selectedMessage.attachments) do
         local buttons = {
             function()
@@ -491,11 +501,6 @@ dmailDisplayMenu = function()
         }
         menuButtons[#menuButtons + 1] = buttons
     end
-    menuButtonSelected = {0, 0}
-
-    attachmentsDownloaded = {}
-    
-    displayDmail()
     
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
