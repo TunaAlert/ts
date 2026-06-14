@@ -143,7 +143,7 @@ local function parse(str)
                 inList = false,
                 line = i
             }
-            if string.find(line, "^%s*%w+:( .+)?$") then
+            if string.find(line, "^%s*%w+: ?.*$") then
                 if string.find(line, "^%s+") then
                     data.indent = #(string.match(line, "^%s+"))
                     if indentStep == 0 then
@@ -166,7 +166,7 @@ local function parse(str)
                     end
                     data.value = value
                 end
-            elseif string.find(line, "^%s+%- %w+:( .+)?$") then
+            elseif string.find(line, "^%s+%- %w+: ?.*$") then
                 data.indent = #(string.match(line, "^%s+"))
                 if indentStep == 0 then
                     indentStep = data.indent
