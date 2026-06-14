@@ -234,7 +234,7 @@ local function upgrade()
     local fileList = fs.list("/ts/")
     for i, file in pairs(fileList) do
         local data = yaml.load("/ts/" .. file)
-        local program = string.sub(filr, 1, #file-4)
+        local program = string.sub(file, 1, #file-4)
         install(program, data.repo)
     end
 end
