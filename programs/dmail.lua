@@ -11,6 +11,8 @@ local messageBody = window.create(term.current(), 1, 4, termWidth, termHeight - 
 local status = {}
 local messages = {}
 
+local scroll = 0
+
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
@@ -56,7 +58,7 @@ local function loadMessages()
     table.sort(messages, function(a, b) return a.id > b.id end)
 end
 
-local function displayDmailList(scroll)
+local function displayDmailList()
     shell.run("clear")
     
     local offset = 0
@@ -93,7 +95,7 @@ local function displayDmailList(scroll)
 end
 
 loadMessages()
-displayDmailList(0)
+displayDmailList()
 
 while not exited do
     local event, a, b, c, d, e, f = os.pullEvent()
@@ -104,6 +106,10 @@ while not exited do
         if y > 3 and y <= #messages + 3 then
             messages[y-3].read = true
         end
+        displayDmailList()
+    elseif event == "mouse_scroll" then
+        local dir = a
+        scroll = scroll + dir
+        displayDmailList()
     end
-    displayDmailList(0)
 end
