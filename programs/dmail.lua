@@ -215,7 +215,14 @@ local function writeNoPush(redirect, text)
         local y = i - scroll
         if y > 0 and y <= maxHeight then
             redirect.setCursorPos(1, y)
-            redirect.write("^" .. line .. "$")
+            if config.drawInvisibleCharacters then
+                redirect.write(string.gsub(line, " ", "\xb7"))
+                if string.sub(line, #line) == "\n" then
+                    redirect.write("\xb6")
+                end
+            else
+                redirect.write(line)
+            end
         end
     end
     return lines
