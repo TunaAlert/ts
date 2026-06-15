@@ -511,7 +511,7 @@ local function composeDmail()
             messageBody.write("  +  " .. fs.getName(attachment))
         end
         
-        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+        if menuButtonSelected[1] > 1 then
             if menuButtonSelected[1] == 2 then
                 term.setCursorPos(4+menuButtonSelected[2], 2)
             elseif menuButtonSelected[1] == 3 then
@@ -526,6 +526,7 @@ local function composeDmail()
     end
     
     if popUp ~= nil then
+        term.setCursorBlink(false)
         local w = popUp.getWidth()
         local h = popUp.getHeight()
         local x = (termWidth - w) / 2
