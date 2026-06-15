@@ -829,6 +829,8 @@ composeDmailMenu = function()
                     attachmentList.setVisible(false)
                 else
                     if composedMessage.body == "" and #composedMessage.attachments == 0 then
+                        nextMenu = dmailListMenu
+                    else
                         popUp = PopUp.new()
                         popUp.title = "Are you sure?"
                         popUp.messages = {"Your message will", "be discarded."}
@@ -847,8 +849,6 @@ composeDmailMenu = function()
                                 end
                             }
                         }
-                    else
-                        nextMenu = dmailListMenu
                     end
                 end
             end,
