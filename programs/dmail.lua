@@ -187,11 +187,18 @@ local function getLinePosInBody(body, maxWidth, lineIndex, columnIndex)
         croppedBody = string.sub(croppedBody, e+1)
         index = index + e + 1
     end
-    index = index + math.min(columnIndex, #lines[lineIndex])
+    return index + math.min(columnIndex, #lines[lineIndex])
 end
 
 local function getBodyPosInLine(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
+    local line = 1
+    local accumulativeLength = 0
+    while accumulativeLength + #lines[line] + 1 < index do
+        accumulativeLength = accumulativeLength + #lines[line] + 1
+    end
+    local column = index - accumulativeLength
+    return line, column
 end
 
 local function writeNoPush(redirect, text)
@@ -933,6 +940,13 @@ composeDmailMenu = function()
             composeDmail()
         elseif event == "char" then
             local char = a
+            if menuButtonSelected[1] > 1 and menuButtonSelected[1] - 1 <= #composedMessage.lines then
+                local index = getBodyPosInLine(composedmessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 1)
+                message.body = string.sub(message.body, 1, index) .. char .. string.sub(message.body, index + 1)
+                message.lines = getLines(message.body, termWidth - 1)
+                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedmessage.body, termWidth - 1, index + 1)
+                menuButtonSelected[1] = menuButtonSelected[1] + 1
+            end
             composeDmail()
         end
     end
