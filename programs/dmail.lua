@@ -8,7 +8,7 @@ local termWidth, termHeight = term.getSize()
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
 local attachmentList = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
-local popupWindow = window.create(term.current(), 2, 1, term.width-4, 5)
+local popupWindow = window.create(term.current(), 2, 1, termWidth-4, 5)
 local parentTerm = term.current()
 
 local status = {}
