@@ -499,7 +499,7 @@ local function composeDmail()
         if composedMessage.body == "" then
             messageBody.setTextColor(colors.gray)
             messageBody.write("Your message")
-            composedMessage.lines = {}
+            composedMessage.lines = {""}
         else
             messageBody.setTextColor(colors.white)
             composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
@@ -519,6 +519,7 @@ local function composeDmail()
             else
                 messageBody.setCursorPos(1 + menuButtonSelected[2], menuButtonSelected[1] - scroll)
             end
+            term.setTextColor(colors.white)
             term.setCursorBlink(true)
         else
             term.setCursorBlink(false)
@@ -937,7 +938,7 @@ composeDmailMenu = function()
                 end
             elseif y >= 5 and y < termHeight then
                 menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
-                math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3]), 1)
+                menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3]), 1)
             end
             composeDmail()
         elseif event == "mouse_scroll" then
@@ -975,7 +976,7 @@ composeDmailMenu = function()
                 end
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
                 local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
-                composedMessage.body = string.sub(composedMessage.body, 1, index) .. char .. string.sub(composedMessage.body, index + 1)
+                composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. char .. string.sub(composedMessage.body, index)
                 composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
                 menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
                 menuButtonSelected[1] = menuButtonSelected[1] + 3
