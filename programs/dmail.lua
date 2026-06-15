@@ -1026,7 +1026,7 @@ composeDmailMenu = function()
                             composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 1) .. string.sub(composedMessage.recipient, menuButtonSelected[2] + 1)
                         end
                     end
-                else
+                elseif menuButtonSelected[1] >= 4 then
                     columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
                     menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
