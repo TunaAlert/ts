@@ -952,9 +952,9 @@ composeDmailMenu = function()
                 menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
                 local line = composedMessage.lines[menuButtonSelected[1]-3]
                 if string.sub(line, #line) == "\n" then
-                    menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3] + 1), 1)
-                else
                     menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3]), 1)
+                else
+                    menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3] + 1), 1)
                 end
             end
             composeDmail()
@@ -1032,9 +1032,9 @@ composeDmailMenu = function()
                         menuButtonSelected[1] = 4
                         local line = composedMessage.lines[1]
                         if string.sub(line, #line) == "\n" then
-                            menuButtonSelected[2] = math.min(menuButtonSelected[2] + 3, #composedMessage.lines[1] + 1)
-                        else
                             menuButtonSelected[2] = math.min(menuButtonSelected[2] + 3, #composedMessage.lines[1])
+                        else
+                            menuButtonSelected[2] = math.min(menuButtonSelected[2] + 3, #composedMessage.lines[1] + 1)
                         end
                     elseif key == keys.backspace then
                         if menuButtonSelected[2] > 1 then
@@ -1049,9 +1049,9 @@ composeDmailMenu = function()
                 elseif menuButtonSelected[1] >= 4 then
                     local line = composedMessage.lines[menuButtonSelected[1]-3]
                     if string.sub(line, #line) == "\n" then
-                        columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
-                    else
                         columnCount = #composedMessage.lines[menuButtonSelected[1]-3]
+                    else
+                        columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
                     end
                     menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
@@ -1071,9 +1071,9 @@ composeDmailMenu = function()
                                 menuButtonSelected[1] = menuButtonSelected[1] - 1
                                 local line = composedMessage.lines[menuButtonSelected[1]-3]
                                 if string.sub(line, #line) == "\n" then
-                                    menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3] + 1
-                                else
                                     menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3]
+                                else
+                                    menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3] + 1
                                 end
                             else
                                 menuButtonSelected[2] = 1
