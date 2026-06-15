@@ -706,7 +706,7 @@ dmailListMenu = function()
             scroll = clampScrollInList(scroll + dir)
             displayDmailList()
         elseif event == "key" then
-            local key = keys.getName(a)
+            local key = a
             handleMenuKeyEvent(key)
             if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
                 scroll = clampScrollInList(menuButtonSelected[1] - ({messageList.getSize()})[2] / 2)
@@ -798,7 +798,7 @@ dmailDisplayMenu = function()
             scroll = clampScrollInDmail(scroll + dir)
             displayDmail()
         elseif event == "key" then
-            local key = keys.getName(a)
+            local key = a
             handleMenuKeyEvent(key)
             if menuButtonSelected[1] >= 1 and menuButtonSelected[1] <= #menuButtons then
                 scroll = clampScrollInDmail(menuButtonSelected[1]- 1)
@@ -956,7 +956,7 @@ composeDmailMenu = function()
             scroll = clampScrollInCompose(scroll + dir)
             composeDmail()
         elseif event == "key" then
-            local key = keys.getName(a)
+            local key = a
             if popUp ~= nil then
                 if key == keys.left then
                     menuButtonSelected[2] = (menuButtonSelected[2] - 2) % #popUp.buttons + 1
