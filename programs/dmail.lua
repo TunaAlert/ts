@@ -962,7 +962,8 @@ composeDmailMenu = function()
                         menuButtonSelected[2] = #nameOrID(composedMessage.recipient)
                     end
                 else
-                    composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2]) .. char .. string.sub(composedMessage.subject, menuButtonSelected[2] + 1)
+                    composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.subject, menuButtonSelected[2])
+                    menuButtonSelected[2] = menuButtonSelected[2] + 1
                 end
             elseif menuButtonSelected[1] == 3 then
                 if char == "\n" then
@@ -972,10 +973,11 @@ composeDmailMenu = function()
                     if type(composedMessage.recipient) == "string" then
                         composedMessage.recipient = nameOrID(composedMessage.recipient)
                     end
-                    composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2]) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2] + 1)
+                    composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2])
+                    menuButtonSelected[2] = menuButtonSelected[2] + 1
                 end
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
-                local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
+                local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
                 composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. char .. string.sub(composedMessage.body, index)
                 composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
                 menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
