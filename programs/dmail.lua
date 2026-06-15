@@ -179,7 +179,7 @@ local function getLines(text, maxWidth)
                 lines[#lines] = lines[#lines] .. " " .. token
             end
         end
-        lines[#lines] = lines[#lines]
+        lines[#lines] = lines[#lines] .. "\n"
     end
     return lines
 end
@@ -216,10 +216,7 @@ local function writeNoPush(redirect, text)
         if y > 0 and y <= maxHeight then
             redirect.setCursorPos(1, y)
             if config.drawInvisibleCharacters then
-                redirect.write(string.gsub(line, " ", "\xb7"))
-                if string.sub(line, #line) == "\n" then
-                    redirect.write("\xb6")
-                end
+                redirect.write(string.gsub(string.gsub(line, " ", "\xb7"), "\n", "\xb6")
             else
                 redirect.write(line)
             end
