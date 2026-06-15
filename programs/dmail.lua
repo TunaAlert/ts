@@ -462,11 +462,20 @@ local function composeDmail()
     
     term.setTextColor(colors.white)
     term.setCursorPos(1, 2)
-    term.write("To:")
-    term.setCursorPos(1, 3)
     term.write("Sub:")
+    term.setCursorPos(1, 3)
+    term.write("To:")
     
     term.setCursorPos(5, 2)
+    if composedMessage.subject == "" then
+        term.setTextColor(colors.gray)
+        term.write("subject")
+    else
+        term.setTextColor(colors.white)
+        term.write(composedMessage.subject)
+    end
+
+    term.setCursorPos(5, 3)
     if type(composedMessage.recipient) == "string" then
         term.setTextColor(colors.red)
         term.write(composedMessage.recipient)
@@ -476,15 +485,6 @@ local function composeDmail()
     else
         term.setTextColor(colors.gray)
         term.write("recipient")
-    end
-
-    term.setCursorPos(5, 3)
-    if composedMessage.subject == "" then
-        term.setTextColor(colors.gray)
-        term.write("subject")
-    else
-        term.setTextColor(colors.white)
-        term.write(composedMessage.subject)
     end
 
     if attachmentList.isVisible() then
@@ -807,7 +807,7 @@ composeDmailMenu = function()
 
     composedMessage = {
         subject = "",
-        recipient = 0,
+        recipient = "",
         body = "",
         lines = {},
         attachments = {}
