@@ -164,7 +164,7 @@ local function getLines(text, maxWidth)
     local lines = {""}
     local paragraphs = {}
     for paragraph in string.gmatch(text, "([^\n]*)\n?") do
-        for token in string.gmatch(paragraph, "(%S*)%s") do
+        for token in string.gmatch(paragraph, "(%S*)%s?") do
            if lines[#lines] == "" then
                 lines[#lines] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
@@ -517,7 +517,7 @@ local function composeDmail()
             elseif menuButtonSelected[1] == 3 then
                 term.setCursorPos(4+menuButtonSelected[2], 3)
             else
-                messageBody.setCursorPos(1 + menuButtonSelected[2], menuButtonSelected[1] - scroll)
+                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 4)
             end
             term.setTextColor(colors.white)
             term.setCursorBlink(true)
