@@ -48,6 +48,9 @@ local PopUp = {
                 end
             end
         }
+        if menuButtonSelected[1] > 0 then
+            menuButtonSelected = {1, 1}
+        end
         return popUp
     end
 }
@@ -402,8 +405,7 @@ end
 
 local function composeDmail()
     messageList.setVisible(false)
-    messageBody.setVisible(true)
-    attachmentList.setVisible(false)
+    messageBody.setVisible(not attachmentList.isVisible())
     
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
@@ -416,6 +418,13 @@ local function composeDmail()
     else
         term.write("[Back]")
     end
+    term.setCursorPos(termWidth/2 - 6, termHeight)
+    if menuButtonSelected[1] == #menuButtons then
+        term.blit("[Attachments]", "1444444444441", "fffffffffffff")
+    else
+        term.write("[Attachments]")
+    end
+
     term.setCursorPos(termWidth-6, 1)
     if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
         term.blit("[Send]", "144441", "ffffff")
@@ -449,28 +458,32 @@ local function composeDmail()
         term.setTextColor(colors.white)
         term.write(composedMessage.subject)
     end
+
+    if attachmentList.isVisible() then
+        attachmentList.setBackgroundColor(colors.black)
+        attachmentList.clear()
+        
+    else
+        messageBody.setBackgroundColor(colors.black)
+        messageBody.clear()
     
-    messageBody.setBackgroundColor(colors.black)
-    messageBody.clear()
+        messageBody.setCursorPos(1, 1 - scroll)
+        if composedMessage.body == "" then
+            messageBody.setTextColor(colors.gray)
+            messageBody.write("Your message")
+            composedMessage.lines = {}
+        else
+            messageBody.setTextColor(colors.white)
+            composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+        end
 
-    messageBody.setCursorPos(1, 1)
-    if composedMessage.body == "" then
-        messageBody.setTextColor(colors.gray)
-        messageBody.write("Your message")
-        composedMessage.lines = {}
-    else
-        messageBody.setTextColor(colors.white)
-        composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+        messageBody.setTextColor(colors.lime)
+        for i, attachment in ipairs(composedMessage.attachments) do
+            messageBody.setCursorPos(1, #composedMessage.lines + 1 + i - scroll)
+            messageBody.write("  +  " .. fs.getName(attachment))
+        end
     end
-
-    term.setCursorPos(termWidth - 10, termHeight)
-    term.setTextColor(colors.yellow)
-    if menuButtonSelected[1] == #menuButtons then
-        term.blit("[Attachments]", "1444444444441", "fffffffffffff")
-    else
-        term.write("[Attachments]")
-    end
-
+    
     if popUp ~= nil then
         local w = popUp.getWidth()
         local h = popUp.getHeight()
@@ -760,6 +773,7 @@ dmailDisplayMenu = function()
 end
 
 composeDmailMenu = function()
+    attachmentList.setVisible(false)
     local nextMenu = nil
     scroll = 0
 
@@ -774,7 +788,36 @@ composeDmailMenu = function()
     menuButtons = {
         {
             function()
-                nextMenu = dmailListMenu
+                if attachmentList.isVisible() then
+                    attachmentList.setVisible(false)
+                else
+                    if composedMessage.body == "" and #composedMessage.attachments == 0 then
+                        popUp = PopUp.new()
+                        popUp.title = "Are you sure?"
+                        popUp.messages = {"Your message will be", "discarded."}
+                        popUp.buttons{
+                            {
+                                label = "Cancel",
+                                click = function()
+                                    popUp = nil
+                                end
+                            },
+                            {
+                                label = "Discard",
+                                click = function()
+                                    popUp = nil
+                                    nextMenu = dmailListMenu
+                                end
+                            }
+                        }
+                    else
+                        nextMenu = dmailListMenu
+                    end
+                end
+            end,
+            function()
+                attachmentList.setVisible(true)
+                scroll = 0
             end,
             function()
                 if type(recipient) == "number" and recipient ~= 0 then
@@ -836,11 +879,11 @@ composeDmailMenu = function()
             if y == 1 then
                 if x <= 6 then
                     menuButtons[1][1]()
-                elseif x >= termWidth - 6 then
+                elseif x >= termWidth/2 - 6 and x <= termWidth/2 + 6 then
                     menuButtons[1][2]()
+                elseif x >= termWidth - 6 then
+                    menuButtons[1][3]()
                 end
-            elseif y == termHeight then
-                
             elseif popUp ~= nil then
                 local w = popUp.getWidth()
                 local h = popUp.getHeight()
