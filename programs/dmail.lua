@@ -510,6 +510,19 @@ local function composeDmail()
             messageBody.setCursorPos(1, #composedMessage.lines + 1 + i - scroll)
             messageBody.write("  +  " .. fs.getName(attachment))
         end
+        
+        if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
+            if menuButtonSelected[1] == 2 then
+                term.setCursorPos(4+menuButtonSelected[2], 2)
+            elseif menuButtonSelected[1] == 3 then
+                term.setCursorPos(4+menuButtonSelected[2], 3)
+            else
+                messageBody.setCursorPos(1 + menuButtonSelected[2], menuButtonSelected[1] - scroll)
+            end
+            term.setCursorBlink(true)
+        else
+            term.setCursorBlink(false)
+        end
     end
     
     if popUp ~= nil then
@@ -558,19 +571,6 @@ local function composeDmail()
                 term.write("[" .. button.label .. "] ")
             end
         end
-    end
-    
-    if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
-        term.setCursorBlink(true)
-        if menuButtonSelected[1] == 2 then
-            term.setCursorPos(4+menuButtonSelected[2], 2)
-        elseif menuButtonSelected[1] == 3 then
-            term.setCursorPos(4+menuButtonSelected[2], 3)
-        else
-            messageBody.setCursorPos(1 + menuButtonSelected[2], menuButtonSelected[1] - scroll)
-        end
-    else
-        term.setCursorBlink(false)
     end
 end
 
@@ -915,8 +915,8 @@ composeDmailMenu = function()
             elseif popUp ~= nil then
                 local pw = popUp.getWidth()
                 local ph = popUp.getHeight()
-                local px = (termWidth - w) / 2
-                local py = (termHeight - h) / 2
+                local px = (termWidth - pw) / 2
+                local py = (termHeight - ph) / 2
                 if y == py + ph - 2 then
                     local offs = px + 2
                     for i, button in ipairs(popUp.buttons), 1 do
