@@ -1013,7 +1013,7 @@ composeDmailMenu = function()
                         str = tostring(nameOrID(composedMessage.recipient))
                     end
                     columnCount = #str + 1
-                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                    menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
                         menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
