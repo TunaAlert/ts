@@ -33,7 +33,7 @@ local menuButtonSelected = {0, 0}
 
 local PopUp = {
     new = function()
-        local popUp = {
+        local pu = {
             title = "",
             messages = {},
             buttons = {},
@@ -41,8 +41,8 @@ local PopUp = {
                 return termWidth - 4
             end,
             getHeight = function()
-                if #popUp.messages == 0 then
-                    return #popUp.messages + 6
+                if #pu.messages == 0 then
+                    return #pu.messages + 6
                 else
                     return 5
                 end
@@ -51,7 +51,7 @@ local PopUp = {
         if menuButtonSelected[1] > 0 then
             menuButtonSelected = {1, 1}
         end
-        return popUp
+        return pu
     end
 }
 local popUp
@@ -795,7 +795,7 @@ composeDmailMenu = function()
                         popUp = PopUp.new()
                         popUp.title = "Are you sure?"
                         popUp.messages = {"Your message will be", "discarded."}
-                        popUp.buttons{
+                        popUp.buttons = {
                             {
                                 label = "Cancel",
                                 click = function()
