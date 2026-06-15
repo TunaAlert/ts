@@ -162,18 +162,24 @@ end
 
 local function getLines(text, maxWidth)
     local lines = {""}
-    local paragraphs = {}
+    local firstParagraph = true
     for paragraph in string.gmatch(text, "([^\n]*)\n?") do
+        if firstParagraph then
+            firstParagraph = false
+        else
+            lines[#lines] = lines[#lines] .. "\n"
+            lines[#lines+1] = ""
+        end
         for token in string.gmatch(paragraph, "(%S*)%s?") do
            if lines[#lines] == "" then
                 lines[#lines] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
+                lines[#lines] = lines[#lines] .. " "
                 lines[#lines+1] = token
             else
                 lines[#lines] = lines[#lines] .. " " .. token
             end
         end
-        lines[#lines+1] = ""
     end
     return lines
 end
@@ -194,8 +200,8 @@ local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
-    while accumulativeLength + #lines[line] + 1 < index do
-        accumulativeLength = accumulativeLength + #lines[line] + 1
+    while accumulativeLength + #lines[line] < index do
+        accumulativeLength = accumulativeLength + #lines[line]
         line = line + 1
     end
     local column = index - accumulativeLength
