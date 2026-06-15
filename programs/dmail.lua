@@ -8,6 +8,7 @@ local termWidth, termHeight = term.getSize()
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
 local attachmentList = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
+local popupWindow = window.create(term.current(), 2, 1, term.width-4, 5)
 local parentTerm = term.current()
 
 local status = {}
@@ -540,51 +541,54 @@ local function composeDmail()
     
     if popUp ~= nil then
         term.setCursorBlink(false)
-        local w = popUp.getWidth()
-        local h = popUp.getHeight()
-        local x = (termWidth - w) / 2 + 1
-        local y = (termHeight - h) / 2
+        local w, h = popupWindow.getSize()
+        popupWindow.setVisible(true)
 
-        term.setTextColor(colors.orange)
-        term.setBackgroundColor(colors.gray)
+        popupWindow.setBackgroundColor(colors.black)
+        popupWindow.clear()
+        
+        popupWindow.setTextColor(colors.orange)
+        popupWindow.setBackgroundColor(colors.gray)
         for i = 1, w, 1 do
-            term.setCursorPos(x+i-1, y)
-            term.write("#")
-            term.setCursorPos(x+i-1, y+h-1)
-            term.write("#")
+            popupWindow.setCursorPos(i, 1)
+            popupWindow.write("#")
+            popupWindow.setCursorPos(i, h)
+            popupWindow.write("#")
         end
         for i = 2, h-1, 1 do
-            term.setCursorPos(x, y+i-1)
-            term.write("#")
-            term.setCursorPos(x+w-1, y+i-1)
-            term.write("#")
+            popupWindow.setCursorPos(1, i)
+            popupWindow.write("#")
+            popupWindow.setCursorPos(w, i)
+            popupWindow.write("#")
         end
-        term.setBackgroundColor(colors.black)
+        popupWindow.setBackgroundColor(colors.black)
         
-        term.setTextColor(colors.yellow)
-        term.setCursorPos(x+2, y+1)
-        term.write(string.sub(popUp.title, 1, w-4))
+        popupWindow.setTextColor(colors.yellow)
+        popupWindow.setCursorPos(3, 2)
+        popupWindow.write(string.sub(popUp.title, 1, w-4))
 
-        term.setTextColor(colors.red)
+        popupWindow.setTextColor(colors.red)
         for i, message in ipairs(popUp.messages) do
-            term.setCursorPos(x+3, y+2+i)
-            term.write(string.sub(message, 1, w-5))
+            popupWindow.setCursorPos(4, 3+i)
+            popupWindow.write(string.sub(message, 1, w-5))
         end
 
-        term.setCursorPos(x+2, y+h-2)
+        popupWindow.setCursorPos(3, h-1)
         for i, button in ipairs(popUp.buttons) do
             if menuButtonSelected[2] == i then
-                term.setTextColor(colors.orange)
-                term.write("[")
-                term.setTextColor(colors.yellow)
-                term.write(button.label)
-                term.setTextColor(colors.orange)
-                term.write("] ")
+                popupWindow.setTextColor(colors.orange)
+                popupWindow.write("[")
+                popupWindow.setTextColor(colors.yellow)
+                popupWindow.write(button.label)
+                popupWindow.setTextColor(colors.orange)
+                popupWindow.write("] ")
             else
-                term.setTextColor(colors.yellow)
-                term.write("[" .. button.label .. "] ")
+                popupWindow.setTextColor(colors.yellow)
+                popupWindow.write("[" .. button.label .. "] ")
             end
         end
+    else
+        popupWindow.setVisible(false)
     end
 end
 
