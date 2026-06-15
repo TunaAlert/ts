@@ -179,7 +179,7 @@ local function getLines(text, maxWidth)
                 lines[#lines] = lines[#lines] .. " " .. token
             end
         end
-        lines[#lines] = lines[#lines] .. "\n"
+        lines[#lines] = lines[#lines]
     end
     return lines
 end
