@@ -476,7 +476,7 @@ local function composeDmail()
     end
 
     term.setCursorPos(5, 3)
-    if type(composedMessage.recipient) == "string" then
+    if type(composedMessage.recipient) == "string" and #composedMessage.recipient > 0 then
         term.setTextColor(colors.red)
         term.write(composedMessage.recipient)
     elseif type(composedMessage.recipient) == "number" and composedMessage.recipient ~= 0 then
@@ -517,7 +517,7 @@ local function composeDmail()
             elseif menuButtonSelected[1] == 3 then
                 term.setCursorPos(4+menuButtonSelected[2], 3)
             else
-                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 4)
+                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
             end
             term.setTextColor(colors.white)
             term.setCursorBlink(true)
