@@ -418,7 +418,7 @@ local function composeDmail()
     else
         term.write("[Back]")
     end
-    term.setCursorPos(termWidth/2 - 6, termHeight)
+    term.setCursorPos(termWidth/2 - 6, 1)
     if menuButtonSelected[1] == #menuButtons then
         term.blit("[Attachments]", "1444444444441", "fffffffffffff")
     else
