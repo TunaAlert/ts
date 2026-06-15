@@ -178,7 +178,7 @@ local function getLines(text, maxWidth)
     return lines
 end
 
-local function getLinePosInBody(body, maxWidth, lineIndex, columnIndex)
+local function getBodyPosInLine(body, maxWidth, lineIndex, columnIndex)
     local lines = getLines(body, maxWidth)
     local index = 1
     local croppedBody = body
@@ -190,7 +190,7 @@ local function getLinePosInBody(body, maxWidth, lineIndex, columnIndex)
     return index + math.min(columnIndex, #lines[lineIndex])
 end
 
-local function getBodyPosInLine(body, maxWidth, index)
+local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
