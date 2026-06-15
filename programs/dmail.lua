@@ -931,7 +931,7 @@ composeDmailMenu = function()
             elseif y == 3 then
                 menuButtonSelected = {3, math.max(math.min(x - 4), 1)}
             elseif y >= 5 and y < termHeight then
-                menuButtonSelected = {y - 4 + scroll, math.max(math.min(x - 1), 1)}
+                menuButtonSelected = {y - 1 + scroll, math.max(math.min(x - 1), 1)}
             end
             composeDmail()
         elseif event == "mouse_scroll" then
