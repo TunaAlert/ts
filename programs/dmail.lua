@@ -927,9 +927,13 @@ composeDmailMenu = function()
                     end
                 end
             elseif y == 2 then
-                menuButtonSelected = {2, math.max(math.min(x - 4), 1)}
+                menuButtonSelected = {2, math.max(math.min(x - 4, #composedMessage.subject), 1)}
             elseif y == 3 then
-                menuButtonSelected = {3, math.max(math.min(x - 4), 1)}
+                if type(composedMessage.recipient) == "string" then
+                    menuButtonSelected = {3, math.max(math.min(x - 4, #composedMessage.recipient), 1)}
+                else
+                    menuButtonSelected = {3, math.max(math.min(x - 4, #nameOrID(composedMessage.recipient)), 1)}
+                end
             elseif y >= 5 and y < termHeight then
                 menuButtonSelected = {y - 1 + scroll, math.max(math.min(x - 1), 1)}
             end
