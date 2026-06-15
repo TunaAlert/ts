@@ -216,7 +216,7 @@ local function writeNoPush(redirect, text)
         if y > 0 and y <= maxHeight then
             redirect.setCursorPos(1, y)
             if config.drawInvisibleCharacters then
-                redirect.write(string.gsub(string.gsub(line, " ", "\xb7"), "\n", "\xb6")
+                redirect.write(string.gsub(string.gsub(line, " ", "\xb7"), "\n", "\xb6"))
             else
                 redirect.write(line)
             end
@@ -541,7 +541,7 @@ local function composeDmail()
         term.setCursorBlink(false)
         local w = popUp.getWidth()
         local h = popUp.getHeight()
-        local x = (termWidth - w) / 2
+        local x = (termWidth - w) / 2 + 1
         local y = (termHeight - h) / 2
 
         term.setTextColor(colors.orange)
@@ -928,7 +928,7 @@ composeDmailMenu = function()
             elseif popUp ~= nil then
                 local pw = popUp.getWidth()
                 local ph = popUp.getHeight()
-                local px = (termWidth - pw) / 2
+                local px = (termWidth - pw) / 2 + 1
                 local py = (termHeight - ph) / 2
                 if y == py + ph - 2 then
                     local offs = px + 2
