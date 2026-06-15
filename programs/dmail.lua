@@ -782,14 +782,14 @@ composeDmailMenu = function()
                         popUp.title = "Dmail Sent"
                         popUp.buttons = {
                             {
-                                label = "Menu"
+                                label = "Menu",
                                 click = function()
                                     popUp = nil
                                     nextMenu = dmailListMenu
                                 end
                             },
                             {
-                                label = "New"
+                                label = "New",
                                 click = function()
                                     popUp = nil
                                     nextMenu = composeDmailMenu
