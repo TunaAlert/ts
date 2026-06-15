@@ -163,14 +163,14 @@ end
 local function getLines(text, maxWidth)
     local lines = {""}
     local firstParagraph = true
-    for paragraph in string.gmatch(text, "([^\n]*)\n?") do
+    for paragraph in string.gmatch(text .. "\n", "([^\n]*)\n?") do
         if firstParagraph then
             firstParagraph = false
         else
             lines[#lines] = lines[#lines] .. "\n"
             lines[#lines+1] = ""
         end
-        for token in string.gmatch(paragraph, "(%S*)%s?") do
+        for token in string.gmatch(paragraph .. " ", "(%S*)%s?") do
            if lines[#lines] == "" then
                 lines[#lines] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
