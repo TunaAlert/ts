@@ -38,15 +38,12 @@ local PopUp = {
         pu.title = ""
         pu.messages = {}
         pu.buttons = {}
-        pu.getWidth = function()
-            return termWidth - 4
-        end
-        pu.getHeight = function()
-            if #pu.messages == 0 then
-                return 5
-            else
-                return #pu.messages + 6
+        pu.calculateSize = function()
+            local h = 5
+            if #pu.messages > 0 then
+                h = #pu.messages + 6
             end
+            popupWindow.reposition(3, (termHeight - h) / 2, termWidth - 4, h)
         end
         
         if menuButtonSelected[1] > 0 then
@@ -858,6 +855,7 @@ composeDmailMenu = function()
                                 end
                             }
                         }
+                        popUp.recalculateSize()
                     end
                 end
             end,
@@ -879,6 +877,7 @@ composeDmailMenu = function()
                                 end
                             }
                         }
+                        popUp.recalculateSize()
                     else
                         local failed = {}
                         for i, s in ipairs(status) do
@@ -908,6 +907,7 @@ composeDmailMenu = function()
                             table.insert(failed, 1, "Failed to send:")
                             popUp.messages = failed
                         end
+                        popUp.recalculateSize()
                     end
                 end
             end
@@ -931,10 +931,8 @@ composeDmailMenu = function()
                     menuButtons[1][3]()
                 end
             elseif popUp ~= nil then
-                local pw = popUp.getWidth()
-                local ph = popUp.getHeight()
-                local px = (termWidth - pw) / 2 + 1
-                local py = (termHeight - ph) / 2
+                local pw, ph = popUp.getSize()
+                local px, py = popUp.getPosition()
                 if y == py + ph - 2 then
                     local offs = px + 2
                     for i, button in ipairs(popUp.buttons) do
