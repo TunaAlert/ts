@@ -975,7 +975,7 @@ composeDmailMenu = function()
                 end
                 if menuButtonSelected[1] == 1 then
                     columnCount = 3
-                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                    menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
                         menuButtonSelected[2] = (menuButtonSelected[2]) % columnCount + 1
                     elseif key == keys.left then
@@ -985,7 +985,7 @@ composeDmailMenu = function()
                     end
                 elseif menuButtonSelected[1] == 2 then
                     columnCount = #composedMessage.subject + 1
-                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                    menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
                         menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
