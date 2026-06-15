@@ -162,7 +162,13 @@ end
 
 local function getLines(text, maxWidth)
     local lines = {""}
-    for paragraph in string.gmatch(text, "([^\n]*)\n?") do
+    local firstParagraph = true
+    for paragraph in string.gmatch(text .. "\n", "([^\n]*)\n?") do
+        if firstParagraph then
+            firstParagraph = false
+        else
+            lines[#lines + 1] = ""
+        end
         for token in string.gmatch(paragraph .. " ", "(%S*)%s?") do
            if lines[#lines] == "" then
                 lines[#lines] = token
@@ -994,6 +1000,7 @@ composeDmailMenu = function()
                     elseif key == keys.backspace then
                         if menuButtonSelected[2] > 1 then
                             composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 2) .. string.sub(composedMessage.subject, menuButtonSelected[2])
+                            menuButtonSelected[2] = menuButtonSelected[2] - 1
                         end
                     elseif key == keys.delete then
                         if menuButtonSelected[2] <= #composedMessage.subject then
@@ -1017,6 +1024,7 @@ composeDmailMenu = function()
                     elseif key == keys.backspace then
                         if menuButtonSelected[2] > 1 then
                             composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 2) .. string.sub(composedMessage.recipient, menuButtonSelected[2])
+                            menuButtonSelected[2] = menuButtonSelected[2] - 1
                         end
                     elseif key == keys.delete then
                         if menuButtonSelected[2] <= #composedMessage.recipient then
@@ -1057,7 +1065,7 @@ composeDmailMenu = function()
                         if index > 1 then
                             composedMessage.body = string.sub(composedMessage.body, 1, index - 2) .. string.sub(composedMessage.body, index)
                             composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
-                            menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                            menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index - 1)
                             menuButtonSelected[1] = menuButtonSelected[1] + 3
                         end
                     elseif key == keys.delete then
