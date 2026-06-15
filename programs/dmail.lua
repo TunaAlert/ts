@@ -454,14 +454,14 @@ local function composeDmail()
         term.write("[Back]")
     end
     term.setCursorPos(termWidth/2 - 6, 1)
-    if menuButtonSelected[1] == #menuButtons then
+    if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
         term.blit("[Attachments]", "1444444444441", "fffffffffffff")
     else
         term.write("[Attachments]")
     end
 
     term.setCursorPos(termWidth-6, 1)
-    if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
+    if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 3 then
         term.blit("[Send]", "144441", "ffffff")
     else
         term.write("[Send]")
@@ -975,15 +975,17 @@ composeDmailMenu = function()
                 end
                 if menuButtonSelected[1] == 1 then
                     columnCount = 3
+                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
-                        menuButtonSelected[2] = math.min(menuButtonSelected[2], #composedMessage.subject + 1) % columnCount + 1
+                        menuButtonSelected[2] = menuButtonSelected[2], #composedMessage.subject + 1) % columnCount + 1
                     elseif key == keys.left then
-                        menuButtonSelected[2] = math.max(menuButtonSelected[2] - 2, 1) % columnCount + 1
+                        menuButtonSelected[2] = menuButtonSelected[2] - 2, 1) % columnCount + 1
                     elseif key == keys.enter then
                         menuButtons[1][menuButtonSelected[2]]()
                     end
                 elseif menuButtonSelected[1] == 2 then
                     columnCount = #composedMessage.subject + 1
+                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
                         menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
@@ -1010,6 +1012,7 @@ composeDmailMenu = function()
                         str = tostring(nameOrID(composedMessage.recipient))
                     end
                     columnCount = #str + 1
+                    menumenuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
                         menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
