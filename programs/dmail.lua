@@ -935,8 +935,8 @@ composeDmailMenu = function()
                     menuButtons[1][3]()
                 end
             elseif popUp ~= nil then
-                local pw, ph = popUp.getSize()
-                local px, py = popUp.getPosition()
+                local pw, ph = popupWindow.getSize()
+                local px, py = popupWindow.getPosition()
                 if y == py + ph - 2 then
                     local offs = px + 2
                     for i, button in ipairs(popUp.buttons) do
@@ -1110,7 +1110,7 @@ composeDmailMenu = function()
                     end
                 end
             end
-            local selectedLineY = menuButtonSelected[1] + 4 - scroll
+            local selectedLineY = menuButtonSelected[1] + 1 - scroll
             if selectedLineY < 6 then
                 scroll = clampScrollInCompose(scroll - (6 - selectedLineY))
             elseif selectedLineY > termHeight - 1 then
