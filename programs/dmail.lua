@@ -200,7 +200,7 @@ local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
-    while line <= #lines and accumulativeLength + #lines[line] < index - 1 do
+    while accumulativeLength + #lines[line] < index - 1 do
         accumulativeLength = accumulativeLength + #lines[line]
         line = line + 1
     end
@@ -215,7 +215,7 @@ local function writeNoPush(redirect, text)
         local y = i - scroll
         if y > 0 and y <= maxHeight then
             redirect.setCursorPos(1, y)
-            redirect.write(line)
+            redirect.write("^" .. line .. "$")
         end
     end
     return lines
