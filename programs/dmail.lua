@@ -1110,7 +1110,12 @@ composeDmailMenu = function()
                     end
                 end
             end
-            scroll = clampScrollInCompose(scroll)
+            local selectedLineY = menuButtonSelected[1] + 4 - scroll
+            if selectedLineY < 6 then
+                scroll = clampScrollInCompose(scroll - (6 - selectedLineY))
+            elseif selectedLineY > termHeight - 1 then
+                scroll = clampScrollInCompose(scroll + selectedLineY - (termHeight - 1))
+            end
             composeDmail()
         elseif event == "char" then
             local char = a
