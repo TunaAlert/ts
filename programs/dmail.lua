@@ -199,7 +199,7 @@ local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
-    while line <= #lines and accumulativeLength + #lines[line] < index - 1 do
+    while line <= #lines and accumulativeLength + #lines[line] < index do
         accumulativeLength = accumulativeLength + #lines[line]
         line = line + 1
     end
@@ -855,7 +855,7 @@ composeDmailMenu = function()
                                 end
                             }
                         }
-                        popUp.recalculateSize()
+                        popUp.calculateSize()
                     end
                 end
             end,
@@ -877,7 +877,7 @@ composeDmailMenu = function()
                                 end
                             }
                         }
-                        popUp.recalculateSize()
+                        popUp.calculateSize()
                     else
                         local failed = {}
                         for i, s in ipairs(status) do
@@ -907,7 +907,7 @@ composeDmailMenu = function()
                             table.insert(failed, 1, "Failed to send:")
                             popUp.messages = failed
                         end
-                        popUp.recalculateSize()
+                        popUp.calculateSize()
                     end
                 end
             end
