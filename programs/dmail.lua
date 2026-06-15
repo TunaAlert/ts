@@ -822,7 +822,7 @@ composeDmailMenu = function()
                     if composedMessage.body == "" and #composedMessage.attachments == 0 then
                         popUp = PopUp.new()
                         popUp.title = "Are you sure?"
-                        popUp.messages = {"Your message will be", "discarded."}
+                        popUp.messages = {"Your message will", "be discarded."}
                         popUp.buttons = {
                             {
                                 label = "Cancel",
