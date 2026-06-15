@@ -567,7 +567,7 @@ local function composeDmail()
         elseif menuButtonSelected[1] == 3 then
             term.setCursorPos(4+menuButtonSelected[2], 3)
         else
-            messageBody.setCursorPos(1, 1)
+            messageBody.setCursorPos(1 + menuButtonSelected[2], menuButtonSelected[1] - scroll)
         end
     else
         term.setCursorBlink(false)
