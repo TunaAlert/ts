@@ -190,8 +190,8 @@ local function getBodyPosInLine(body, maxWidth, lineIndex, columnIndex)
     local croppedBody = body
     for i = 1, lineIndex - 1, 1 do
         local s, e = string.find(croppedBody, lines[i])
-        croppedBody = string.sub(croppedBody, e + 1)
-        index = index + e + 1
+        croppedBody = string.sub(croppedBody, e)
+        index = index + e
     end
     return index + math.min(columnIndex, #lines[lineIndex] + 1)
 end
@@ -936,16 +936,16 @@ composeDmailMenu = function()
                     end
                 end
             elseif y == 2 then
-                menuButtonSelected = {2, math.max(math.min(x - 4, #composedMessage.subject), 1)}
+                menuButtonSelected = {2, math.max(math.min(x - 4, #composedMessage.subject + 1), 1)}
             elseif y == 3 then
                 if type(composedMessage.recipient) == "string" then
-                    menuButtonSelected = {3, math.max(math.min(x - 4, #composedMessage.recipient), 1)}
+                    menuButtonSelected = {3, math.max(math.min(x - 4, #composedMessage.recipient + 1), 1)}
                 else
-                    menuButtonSelected = {3, math.max(math.min(x - 4, #nameOrID(composedMessage.recipient)), 1)}
+                    menuButtonSelected = {3, math.max(math.min(x - 4, #nameOrID(composedMessage.recipient) + 1), 1)}
                 end
             elseif y >= 5 and y < termHeight then
                 menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
-                menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3]), 1)
+                menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3] + 1), 1)
             end
             composeDmail()
         elseif event == "mouse_scroll" then
