@@ -517,7 +517,7 @@ local function composeDmail()
             elseif menuButtonSelected[1] == 3 then
                 term.setCursorPos(4+menuButtonSelected[2], 3)
             else
-                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
+                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 4)
             end
             term.setTextColor(colors.white)
             term.setCursorBlink(true)
@@ -981,7 +981,7 @@ composeDmailMenu = function()
                 composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. char .. string.sub(composedMessage.body, index)
                 composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
                 menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
-                menuButtonSelected[1] = menuButtonSelected[1] + 3
+                menuButtonSelected[1] = menuButtonSelected[1] + 4
             end
             composeDmail()
         end
