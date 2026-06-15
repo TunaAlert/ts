@@ -33,21 +33,21 @@ local menuButtonSelected = {0, 0}
 
 local PopUp = {
     new = function()
-        local pu = {
-            title = "",
-            messages = {},
-            buttons = {},
-            getWidth = function()
-                return termWidth - 4
-            end,
-            getHeight = function()
-                if #pu.messages == 0 then
-                    return #pu.messages + 6
-                else
-                    return 5
-                end
+        local pu = {}
+        pu.title = ""
+        pu.messages = {}
+        pu.buttons = {}
+        pu.getWidth = function()
+            return termWidth - 4
+        end
+        pu.getHeight = function()
+            if #pu.messages == 0 then
+                return #pu.messages + 6
+            else
+                return 5
             end
-        }
+        end
+        
         if menuButtonSelected[1] > 0 then
             menuButtonSelected = {1, 1}
         end
