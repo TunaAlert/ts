@@ -450,7 +450,14 @@ local function composeDmail()
     messageBody.clear()
 
     messageBody.setCursorPos(1, 1)
-    composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+    if composedMessage.body == "" then
+        messageBody.setTextColor(colors.gray)
+        messageBody.write("Your message")
+        composedMessage.lines = {}
+    else
+        messageBody.setTextColor(colors.white)
+        composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+    end
 
     if popUp ~= nil then
         local w = popUp.getWidth()
