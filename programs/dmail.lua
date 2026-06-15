@@ -7,6 +7,7 @@ local termWidth, termHeight = term.getSize()
 
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
+local composeBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 4)
 local attachmentList = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
 local popupWindow = window.create(term.current(), 2, 1, termWidth-4, 5)
 local parentTerm = term.current()
@@ -263,6 +264,7 @@ end
 local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
+    composeBody.setVisible(false)
     attachmentList.setVisible(false)
 
     term.redirect(parentTerm)
@@ -384,6 +386,7 @@ end
 local function displayDmail()
     messageList.setVisible(false)
     messageBody.setVisible(true)
+    composeBody.setVisible(false)
     attachmentList.setVisible(false)
 
     local message = messages[selectedDmail]
@@ -443,7 +446,8 @@ end
 
 local function composeDmail()
     messageList.setVisible(false)
-    messageBody.setVisible(not attachmentList.isVisible())
+    messageBody.setVisible(false)
+    composeBody.setVisible(not attachmentList.isVisible())
     
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
@@ -502,23 +506,23 @@ local function composeDmail()
         attachmentList.clear()
         
     else
-        messageBody.setBackgroundColor(colors.black)
-        messageBody.clear()
+        composeBody.setBackgroundColor(colors.black)
+        composeBody.clear()
     
-        messageBody.setCursorPos(1, 1 - scroll)
+        composeBody.setCursorPos(1, 1 - scroll)
         if composedMessage.body == "" then
-            messageBody.setTextColor(colors.gray)
-            messageBody.write("Your message")
+            composeBody.setTextColor(colors.gray)
+            composeBody.write("Your message")
             composedMessage.lines = {"\n"}
         else
-            messageBody.setTextColor(colors.white)
-            composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+            composeBody.setTextColor(colors.white)
+            composedMessage.lines = writeNoPush(composeBody, composedMessage.body)
         end
 
-        messageBody.setTextColor(colors.lime)
+        composeBody.setTextColor(colors.lime)
         for i, attachment in ipairs(composedMessage.attachments) do
-            messageBody.setCursorPos(1, #composedMessage.lines + 1 + i - scroll)
-            messageBody.write("  +  " .. fs.getName(attachment))
+            composeBody.setCursorPos(1, #composedMessage.lines + 1 + i - scroll)
+            composeBody.write("  +  " .. fs.getName(attachment))
         end
         
         if menuButtonSelected[1] > 1 then
@@ -527,7 +531,7 @@ local function composeDmail()
             elseif menuButtonSelected[1] == 3 then
                 term.setCursorPos(4+menuButtonSelected[2], 3)
             else
-                messageBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
+                composeBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
             end
             term.setTextColor(colors.white)
             term.setCursorBlink(true)
@@ -602,7 +606,7 @@ local function clampScrollInDmail(value)
 end
 
 local function clampScrollInCompose(value)
-    return math.max(math.min(value, 100), 0)
+    return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments - (termHeight - 4)), 0)
 end
 
 local function handleMenuKeyEvent(key)
@@ -1106,6 +1110,7 @@ composeDmailMenu = function()
                     end
                 end
             end
+            scroll = clampScrollInCompose(scroll)
             composeDmail()
         elseif event == "char" then
             local char = a
