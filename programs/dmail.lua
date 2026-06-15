@@ -919,8 +919,7 @@ composeDmailMenu = function()
                 local py = (termHeight - ph) / 2
                 if y == py + ph - 2 then
                     local offs = px + 2
-                    local buttons = popUp.buttons
-                    for i, button in ipairs(buttons), 1 do
+                    for i, button in ipairs(popUp.buttons) do
                         if x >= offs and x < offs + #button.label + 2 then
                             button.click()
                         end
