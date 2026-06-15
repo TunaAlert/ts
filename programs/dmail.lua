@@ -957,21 +957,129 @@ composeDmailMenu = function()
             composeDmail()
         elseif event == "key" then
             local key = keys.getName(a)
+            if popUp ~= nil then
+                if key == keys.left then
+                    menuButtonSelected[2] = (menuButtonSelected[2] - 2) % #popUp.buttons + 1
+                elseif key == keys.right then
+                    menuButtonSelected[2] = (menuButtonSelected[2]) % #popUp.buttons + 1
+                elseif key == keys.enter then
+                    popUp.buttons[menuButtonSelected[2]].click()
+                end
+            else
+                local rows = #composedMessage.lines + 3
+                local columnCount = 1
+                if key == keys.up then
+                    menuButtonsSelected[1] = (menuButtonsSelected[1] - 2) % columns + 1
+                elseif key == keys.down then
+                    menuButtonsSelected[1] = (menuButtonsSelected[1]) % columns + 1
+                end
+                if menuButtonsSelected[1] == 1 then
+                    columnCount = 3
+                    if key == keys.right then
+                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2], #composedMessage.subject + 1) % columnCount + 1
+                    elseif key == keys.left then
+                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 2, 1) % columnCount + 1
+                    elseif key == keys.enter then
+                        menuButtons[1][menuButtonsSelected[2]]
+                    end
+                elseif menuButtonsSelected[1] == 2 then
+                    columnCount = #composedMessage.subject + 1
+                    if key == keys.right then
+                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2] + 1, columnCount)
+                    elseif key == keys.left then
+                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 1, 1)
+                    elseif key == keys.enter then
+                        menuButtonSelected[1] = 3
+                        if type(composedMessage.recipient) == "string" then
+                            menuButtonSelected[2] = #composedMessage.recipient
+                        else
+                            menuButtonSelected[2] = #nameOrID(composedMessage.recipient)
+                        end
+                    elseif key == keys.backspace then
+                        if menuButtonSelected[2] > 1 then
+                            composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 2) .. string.sub(composedMessage.subject, menuButtonSelected[2])
+                        end
+                    elseif key == keys.delete then
+                        if menuButtonSelected[2] <= #composedMessage.subject then
+                            composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 1) .. string.sub(composedMessage.subject, menuButtonSelected[2] + 1)
+                        end
+                    end
+                elseif menuButtonsSelected[1] == 3 then
+                    local str = menuButtonSelected[2] = #composedMessage.recipient
+                    if type(composedMessage.recipient) == "number" then
+                        str = nameOrID(composedMessage.recipient)
+                    end
+                    columnCount = #str + 1
+                    if key == keys.right then
+                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2] + 1, columnCount)
+                    elseif key == keys.left then
+                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 1, 1)
+                    elseif key == keys.enter then
+                        menuButtonSelected[1] = 4
+                        menuButtonSelected[2] = math.min(menuButtonSelected[2] + 3, #composedMessage.lines[1] + 1)
+                    elseif key == keys.backspace then
+                        if menuButtonSelected[2] > 1 then
+                            composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 2) .. string.sub(composedMessage.recipient, menuButtonSelected[2])
+                        end
+                    elseif key == keys.delete then
+                        if menuButtonSelected[2] <= #composedMessage.recipient then
+                            composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 1) .. string.sub(composedMessage.recipient, menuButtonSelected[2] + 1)
+                        end
+                    end
+                else
+                    columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
+                    menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                    if key == keys.right then
+                        menuButtonsSelected[2] = menuButtonsSelected[2] + 1
+                        if menuButtonSelected[2] > columnCount then
+                            if menuButtonSelected[1] - 3 < #composedMessage.lines then
+                                menuButtonSelected[1] = menuButtonSelected[1] + 1
+                                menuButtonSelected[2] = 1
+                            else
+                                menuButtonSelected[2] = columnCount
+                            end
+                        end
+                    elseif key == keys.left then
+                        menuButtonsSelected[2] = menuButtonsSelected[2] - 1
+                        if menuButtonSelected[2] < 1 then
+                            if menuButtonSelected[1] - 3 > 1 then
+                                menuButtonSelected[1] = menuButtonSelected[1] - 1
+                                menuButtonSelected[2] = columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
+                            else
+                                menuButtonSelected[2] = 1
+                            end
+                        end
+                    elseif key == keys.enter then
+                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                        composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. "\n" .. string.sub(composedMessage.body, index)
+                        composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                        menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                        menuButtonSelected[1] = menuButtonSelected[1] + 3
+                    elseif key == keys.backspace then
+                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                        if index > 1 then
+                            composedMessage.body = string.sub(composedMessage.body, 1, index - 2) .. string.sub(composedMessage.body, index)
+                            composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                            menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                            menuButtonSelected[1] = menuButtonSelected[1] + 3
+                        end
+                    elseif key == keys.delete then
+                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                        if index <= #composedMessage.body then
+                            composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. string.sub(composedMessage.body, index + 1)
+                            composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                            menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                            menuButtonSelected[1] = menuButtonSelected[1] + 3
+                        end
+                    end
+                end
+            end
             composeDmail()
         elseif event == "char" then
             local char = a
             if menuButtonSelected[1] == 2 then
-                if char == "\n" then
-                    menuButtonSelected[1] = 3
-                    if type(composedMessage.recipient) == "string" then
-                        menuButtonSelected[2] = #composedMessage.recipient
-                    else
-                        menuButtonSelected[2] = #nameOrID(composedMessage.recipient)
-                    end
-                else
-                    composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.subject, menuButtonSelected[2])
-                    menuButtonSelected[2] = menuButtonSelected[2] + 1
-                end
+                composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.subject, menuButtonSelected[2])
+                menuButtonSelected[2] = menuButtonSelected[2] + 1
             elseif menuButtonSelected[1] == 3 then
                 if char == "\n" then
                     menuButtonSelected[1] = 4
