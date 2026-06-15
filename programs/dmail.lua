@@ -965,7 +965,7 @@ composeDmailMenu = function()
                     if type(composedMessage.recipient) == "string" then
                         composedMessage.recipient = nameOrID(composedMessage.recipient)
                     end
-                    composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2]) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2] + 1)\
+                    composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2]) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2] + 1)
                 end
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
                 local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
