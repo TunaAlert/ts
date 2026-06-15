@@ -1005,7 +1005,7 @@ composeDmailMenu = function()
                         end
                     end
                 elseif menuButtonsSelected[1] == 3 then
-                    local str = menuButtonSelected[2] = #composedMessage.recipient
+                    local str = #composedMessage.recipient
                     if type(composedMessage.recipient) == "number" then
                         str = nameOrID(composedMessage.recipient)
                     end
