@@ -1044,7 +1044,7 @@ composeDmailMenu = function()
                         if menuButtonSelected[2] < 1 then
                             if menuButtonSelected[1] - 3 > 1 then
                                 menuButtonSelected[1] = menuButtonSelected[1] - 1
-                                menuButtonSelected[2] = columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
+                                menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3] + 1
                             else
                                 menuButtonSelected[2] = 1
                             end
