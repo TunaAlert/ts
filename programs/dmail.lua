@@ -175,9 +175,6 @@ local function getLines(text, maxWidth)
         end
         lines[#lines+1] = ""
     end
-    if #lines[#lines] == 0 then
-        lines[#lines] = "\n"
-    end
     return lines
 end
 
@@ -187,8 +184,8 @@ local function getBodyPosInLine(body, maxWidth, lineIndex, columnIndex)
     local croppedBody = body
     for i = 1, lineIndex - 1, 1 do
         local s, e = string.find(croppedBody, lines[i])
-        croppedBody = string.sub(croppedBody, e+1)
-        index = index + e + 1
+        croppedBody = string.sub(croppedBody, e)
+        index = index + e
     end
     return index + math.min(columnIndex, #lines[lineIndex])
 end
@@ -197,8 +194,8 @@ local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
-    while accumulativeLength + #lines[line] < index do
-        accumulativeLength = accumulativeLength + #lines[line]
+    while accumulativeLength + #lines[line] + 1 < index do
+        accumulativeLength = accumulativeLength + #lines[line] + 1
         line = line + 1
     end
     local column = index - accumulativeLength
@@ -503,7 +500,7 @@ local function composeDmail()
         if composedMessage.body == "" then
             messageBody.setTextColor(colors.gray)
             messageBody.write("Your message")
-            composedMessage.lines = {"\n"}
+            composedMessage.lines = {""}
         else
             messageBody.setTextColor(colors.white)
             composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
@@ -815,7 +812,7 @@ composeDmailMenu = function()
         subject = "",
         recipient = "",
         body = "",
-        lines = {"\n"},
+        lines = {""},
         attachments = {}
     }
 
