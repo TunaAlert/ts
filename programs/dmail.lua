@@ -176,7 +176,7 @@ local function getLines(text, maxWidth)
         lines[#lines+1] = ""
     end
     if #lines[#lines] == 0 then
-        #lines[#lines] = "\n"
+        lines[#lines] = "\n"
     end
     return lines
 end
