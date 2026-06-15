@@ -30,6 +30,28 @@ local composeDmailMenu
 local menuButtons = {}
 local menuButtonSelected = {0, 0}
 
+local PopUp = {
+    new = function()
+        local popUp = {
+            title = "",
+            messages = {},
+            buttons = {},
+            getWidth = function()
+                return termWidth - 4
+            end,
+            getHeight = function()
+                if #popUp.messages == 0 then
+                    return #popUp.messages + 6
+                else
+                    return 5
+                end
+            end
+        }
+        return popUp
+    end
+}
+local popUp
+
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
@@ -428,8 +450,56 @@ local function composeDmail()
     messageBody.clear()
 
     messageBody.setCursorPos(1, 1)
-    
     composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+
+    if popUp ~= nil then
+        local w = popUp.getWidth()
+        local h = popUp.getHeight()
+        local x = (termWidth - w) / 2
+        local y = (termHeight - h) / 2
+
+        term.setTextColor(colors.orange)
+        term.setBackgroundColor(colors.gray)
+        for i = 1, w, 1 do
+            term.setCursorPos(x+i-1, y)
+            term.write("#")
+            term.setCursorPos(x+i-1, y+h-1)
+            term.write("#")
+        end
+        for i = 2, h-1, 1 do
+            term.setCursorPos(x, y+i-1)
+            term.write("#")
+            term.setCursorPos(x+w-1, y+i-1)
+            term.write("#")
+        end
+        term.setBackgroundColor(colors.black)
+        
+        term.setTextColor(colors.yellow)
+        term.setCursorPos(x+2, y+1)
+        term.write(string.sub(popUp.title, 1, w-4))
+
+        term.setTextColor(colors.red)
+        for i, message in ipairs(popUp.messages) do
+            term.setCursorPos(x+3, y+2+i)
+            term.write(string.sub(message, 1, w-5))
+        end
+
+        term.setCursorPos(x+2, y+h-2)
+        for i, button in ipairs(popUp.buttons) do
+            if menuButtonSelected[2] == i then
+                term.setTextColor(colors.orange)
+                term.write("[")
+                term.setTextColor(colors.yellow)
+                term.write(button.label)
+                term.setTextColor(colors.orange)
+                term.write("] ")
+            else
+                term.setTextColor(colors.yellow)
+                term.write("[" .. button.label .. "] ")
+            end
+        end
+    end
+    
     if menuButtonSelected[1] > 1 then
         term.setCursorBlink(true)
         if menuButtonSelected[1] == 2 then
@@ -671,6 +741,7 @@ dmailDisplayMenu = function()
 end
 
 composeDmailMenu = function()
+    local nextMenu = nil
     scroll = 0
 
     composedMessage = {
@@ -681,11 +752,64 @@ composeDmailMenu = function()
         attachments = {}
     }
 
+    menuButtons = {
+        {
+            function()
+                nextMenu = dmailListMenu
+            end,
+            function()
+                if type(recipient) == "number" and recipient ~= 0 then
+                    local status = dmail.send(config.mainServer, composedMessage.recipient, composedMessage.subject, composedMessage.body, composedMessage.attachments)
+                    if status[1] ~= dmail.SUCCESS then
+                        popUp = PopUp.new()
+                        popUp.title = "Dmail not Sent"
+                        popUp.buttons = {
+                            {
+                                label = "Close",
+                                click = function()
+                                    popUp = nil
+                                end
+                            }
+                        }
+                    else
+                        local failed = {}
+                        for i, s in ipairs(status) do
+                            if s ~= dmail.SUCCESS then
+                                failed[#failed+1] = fs.getName(composedMessage.attachments[i-1])
+                            end
+                        end
+                        popUp = PopUp.new()
+                        popUp.title = "Dmail Sent"
+                        popUp.buttons = {
+                            {
+                                label = "Menu"
+                                click = function()
+                                    popUp = nil
+                                    nextMenu = dmailListMenu
+                                end
+                            },
+                            {
+                                label = "New"
+                                click = function()
+                                    popUp = nil
+                                    nextMenu = composeDmailMenu
+                                end
+                            }
+                        }
+                        if #failed > 0 then
+                            table.insert(failed, 1, "Failed to send:")
+                            popUp.messages = failed
+                        end
+                    end
+                end
+            end
+        }
+    }
+
     menuButtonSelected = {0, 0}
     
     composeDmail()
     
-    local nextMenu = nil
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
