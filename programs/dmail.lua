@@ -200,7 +200,7 @@ local function getLinePosInBody(body, maxWidth, index)
     local lines = getLines(body, maxWidth)
     local line = 1
     local accumulativeLength = 0
-    while accumulativeLength + #lines[line] < index do
+    while accumulativeLength + #lines[line] < index - 1 do
         accumulativeLength = accumulativeLength + #lines[line]
         line = line + 1
     end
