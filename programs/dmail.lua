@@ -175,6 +175,9 @@ local function getLines(text, maxWidth)
         end
         lines[#lines+1] = ""
     end
+    if #lines[#lines] == 0 then
+        #lines[#lines] = "\n"
+    end
     return lines
 end
 
@@ -500,7 +503,7 @@ local function composeDmail()
         if composedMessage.body == "" then
             messageBody.setTextColor(colors.gray)
             messageBody.write("Your message")
-            composedMessage.lines = {""}
+            composedMessage.lines = {"\n"}
         else
             messageBody.setTextColor(colors.white)
             composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
@@ -812,7 +815,7 @@ composeDmailMenu = function()
         subject = "",
         recipient = "",
         body = "",
-        lines = {""},
+        lines = {"\n"},
         attachments = {}
     }
 
