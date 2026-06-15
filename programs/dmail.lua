@@ -42,9 +42,9 @@ local PopUp = {
         end
         pu.getHeight = function()
             if #pu.messages == 0 then
-                return #pu.messages + 6
-            else
                 return 5
+            else
+                return #pu.messages + 6
             end
         end
         
