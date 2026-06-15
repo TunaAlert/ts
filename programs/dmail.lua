@@ -885,10 +885,19 @@ composeDmailMenu = function()
                     menuButtons[1][3]()
                 end
             elseif popUp ~= nil then
-                local w = popUp.getWidth()
-                local h = popUp.getHeight()
-                local x = (termWidth - w) / 2
-                local y = (termHeight - h) / 2
+                local pw = popUp.getWidth()
+                local ph = popUp.getHeight()
+                local px = (termWidth - w) / 2
+                local py = (termHeight - h) / 2
+                if y == py + ph - 2 then
+                    local offs = px + 2
+                    for i, button in ipairs(popUp.buttons), 1 do
+                        if x >= offs and x < offs + #button.label + 2 then
+                            button.click()
+                        end
+                        offs = offs + #button.label + 3
+                    end
+                end
             else
                 
             end
