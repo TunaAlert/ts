@@ -180,14 +180,14 @@ end
 
 local function getBodyPosInLine(body, maxWidth, lineIndex, columnIndex)
     local lines = getLines(body, maxWidth)
-    local index = 1
+    local index = 0
     local croppedBody = body
     for i = 1, lineIndex - 1, 1 do
         local s, e = string.find(croppedBody, lines[i])
-        croppedBody = string.sub(croppedBody, e)
-        index = index + e
+        croppedBody = string.sub(croppedBody, e + 1)
+        index = index + e + 1
     end
-    return index + math.min(columnIndex, #lines[lineIndex])
+    return index + math.min(columnIndex, #lines[lineIndex] + 1)
 end
 
 local function getLinePosInBody(body, maxWidth, index)
