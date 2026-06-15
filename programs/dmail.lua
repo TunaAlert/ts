@@ -945,10 +945,10 @@ composeDmailMenu = function()
         elseif event == "char" then
             local char = a
             if menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
-                local index = getBodyPosInLine(composedmessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
+                local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
                 message.body = string.sub(message.body, 1, index) .. char .. string.sub(message.body, index + 1)
                 message.lines = getLines(message.body, termWidth - 1)
-                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedmessage.body, termWidth - 1, index + 1)
+                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
                 menuButtonSelected[1] = menuButtonSelected[1] + 3
             end
             composeDmail()
