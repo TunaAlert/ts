@@ -161,11 +161,12 @@ local function hasUnselectedMessages()
 end
 
 local function getLines(text, maxWidth)
-    local lines = {""}
+    local lines = {"\n"}
     local firstParagraph = true
     for paragraph in string.gmatch(text .. "\n", "([^\n]*)\n?") do
         if firstParagraph then
             firstParagraph = false
+            lines[1] = ""
         else
             lines[#lines + 1] = ""
         end
@@ -510,7 +511,7 @@ local function composeDmail()
         if composedMessage.body == "" then
             messageBody.setTextColor(colors.gray)
             messageBody.write("Your message")
-            composedMessage.lines = {""}
+            composedMessage.lines = {"\n"}
         else
             messageBody.setTextColor(colors.white)
             composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
@@ -822,7 +823,7 @@ composeDmailMenu = function()
         subject = "",
         recipient = "",
         body = "",
-        lines = {""},
+        lines = {"\n"},
         attachments = {}
     }
 
