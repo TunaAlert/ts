@@ -1,5 +1,6 @@
 local dmail = require("/programs/api/dmail")
 local yaml = require("/programs/api/yaml")
+local nft = require("cc.images.nft")
 
 local exited = false
 
@@ -70,6 +71,11 @@ if contacts == nil or contacts.contacts == nil then
     yaml.save({contacts = contacts}, "/.data/dmail/contacts.yaml")
 else
     contacts = contacts.contacts
+end
+
+local buffer = {}
+for i, file in ipairs(fs.list("/programs/dmail/buffer/")) do
+    buffer[i] = nft.load("/programs/dmail/buffer/" .. file)
 end
 
 local function nameOrID(id)
@@ -226,36 +232,20 @@ local function writeNoPush(redirect, text)
 end
 
 local function drawLoadingLoop()
-    local bufferx = math.random(0, 16)
+    local bufferx = math.random(1, #buffer)
     while true do
         term.redirect(parentTerm)
         term.setBackgroundColor(colors.black)
         term.setTextColor(colors.white)
         term.clear()
 
-        bufferx = bufferx + 1
+        bufferx = (bufferx % #buffer) + 1
 
         term.setCursorPos(termWidth/2 - 7, 3)
         term.write("Loading Dmails")
 
-        for i = 1, 4, 1 do
-            if (i + bufferx) % 16 ~= 0 then
-                term.setCursorPos(termWidth/2 - 3 + i, termHeight/2 - 2)
-                term.write("#")
-            end
-            if (i + 4 + bufferx) % 16 ~= 0 then
-                term.setCursorPos(termWidth/2 + 2, termHeight/2 - 3 + i)
-                term.write("#")
-            end
-            if (i + 8 + bufferx) % 16 ~= 0 then
-                term.setCursorPos(termWidth/2 + 3 - i, termHeight/2 + 2)
-                term.write("#")
-            end
-            if (i + 12 + bufferx) % 16 ~= 0 then
-                term.setCursorPos(termWidth/2 - 2, termHeight/2 + 3 - i)
-                term.write("#")
-            end
-        end
+        local frame = buffer[bufferx]        
+        nft.draw(frame, (termWidth - #frame[1]) / 2, (termHeight - #frame) / 2)
             
         sleep(0.05)
     end
@@ -504,6 +494,7 @@ local function composeDmail()
     if attachmentList.isVisible() then
         attachmentList.setBackgroundColor(colors.black)
         attachmentList.clear()
+
         
     else
         composeBody.setBackgroundColor(colors.black)
@@ -954,7 +945,7 @@ composeDmailMenu = function()
                 else
                     menuButtonSelected = {3, math.max(math.min(x - 4, #nameOrID(composedMessage.recipient) + 1), 1)}
                 end
-            elseif y >= 5 and y < termHeight then
+            elseif y >= 5 then
                 menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
                 local line = composedMessage.lines[menuButtonSelected[1]-3]
                 if string.sub(line, #line) == "\n" then
