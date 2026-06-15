@@ -6,7 +6,8 @@ local exited = false
 local termWidth, termHeight = term.getSize()
 
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
-local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
+local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
+local attachmentList = window.create(term.current(), 2, 5, termWidth-1, termHeight - 5)
 local parentTerm = term.current()
 
 local status = {}
@@ -221,6 +222,7 @@ end
 local function displayDmailList()
     messageList.setVisible(true)
     messageBody.setVisible(false)
+    attachmentList.setVisible(false)
 
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
@@ -341,6 +343,7 @@ end
 local function displayDmail()
     messageList.setVisible(false)
     messageBody.setVisible(true)
+    attachmentList.setVisible(false)
 
     local message = messages[selectedDmail]
     if message == nil then
@@ -400,6 +403,7 @@ end
 local function composeDmail()
     messageList.setVisible(false)
     messageBody.setVisible(true)
+    attachmentList.setVisible(false)
     
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
@@ -407,13 +411,13 @@ local function composeDmail()
 
     term.setTextColor(colors.yellow)
     term.setCursorPos(1, 1)
-    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
+    if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 1 then
         term.blit("[Back]", "144441", "ffffff")
     else
         term.write("[Back]")
     end
     term.setCursorPos(termWidth-6, 1)
-    if menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
+    if popUp == nil and menuButtonSelected[1] == 1 and menuButtonSelected[2] == 2 then
         term.blit("[Send]", "144441", "ffffff")
     else
         term.write("[Send]")
@@ -457,6 +461,14 @@ local function composeDmail()
     else
         messageBody.setTextColor(colors.white)
         composedMessage.lines = writeNoPush(messageBody, composedMessage.body)
+    end
+
+    term.setCursorPos(termWidth - 10, termHeight)
+    term.setTextColor(colors.yellow)
+    if menuButtonSelected[1] == #menuButtons then
+        term.blit("[Attachments]", "1444444444441", "fffffffffffff")
+    else
+        term.write("[Attachments]")
     end
 
     if popUp ~= nil then
@@ -507,7 +519,7 @@ local function composeDmail()
         end
     end
     
-    if menuButtonSelected[1] > 1 then
+    if menuButtonSelected[1] > 1 and menuButtonSelected[1] < #menuButtons then
         term.setCursorBlink(true)
         if menuButtonSelected[1] == 2 then
             term.setCursorPos(4+menuButtonSelected[2], 2)
@@ -820,6 +832,23 @@ composeDmailMenu = function()
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
+            local button, x, y = a, b, c
+            if y == 1 then
+                if x <= 6 then
+                    menuButtons[1][1]()
+                elseif x >= termWidth - 6 then
+                    menuButtons[1][2]()
+                end
+            elseif y == termHeight then
+                
+            elseif popUp ~= nil then
+                local w = popUp.getWidth()
+                local h = popUp.getHeight()
+                local x = (termWidth - w) / 2
+                local y = (termHeight - h) / 2
+            else
+                
+            end
             composeDmail()
         elseif event == "mouse_scroll" then
             local dir = a
