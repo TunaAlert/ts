@@ -969,25 +969,25 @@ composeDmailMenu = function()
                 local rows = #composedMessage.lines + 3
                 local columnCount = 1
                 if key == keys.up then
-                    menuButtonsSelected[1] = (menuButtonsSelected[1] - 2) % columns + 1
+                    menuButtonSelected[1] = (menuButtonSelected[1] - 2) % columns + 1
                 elseif key == keys.down then
-                    menuButtonsSelected[1] = (menuButtonsSelected[1]) % columns + 1
+                    menuButtonSelected[1] = (menuButtonSelected[1]) % columns + 1
                 end
-                if menuButtonsSelected[1] == 1 then
+                if menuButtonSelected[1] == 1 then
                     columnCount = 3
                     if key == keys.right then
-                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2], #composedMessage.subject + 1) % columnCount + 1
+                        menuButtonSelected[2] = math.min(menuButtonSelected[2], #composedMessage.subject + 1) % columnCount + 1
                     elseif key == keys.left then
-                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 2, 1) % columnCount + 1
+                        menuButtonSelected[2] = math.max(menuButtonSelected[2] - 2, 1) % columnCount + 1
                     elseif key == keys.enter then
-                        menuButtons[1][menuButtonsSelected[2]]()
+                        menuButtons[1][menuButtonSelected[2]]()
                     end
-                elseif menuButtonsSelected[1] == 2 then
+                elseif menuButtonSelected[1] == 2 then
                     columnCount = #composedMessage.subject + 1
                     if key == keys.right then
-                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2] + 1, columnCount)
+                        menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
-                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 1, 1)
+                        menuButtonSelected[2] = math.max(menuButtonSelected[2] - 1, 1)
                     elseif key == keys.enter then
                         menuButtonSelected[1] = 3
                         if type(composedMessage.recipient) == "string" then
@@ -1004,16 +1004,16 @@ composeDmailMenu = function()
                             composedMessage.subject = string.sub(composedMessage.subject, 1, menuButtonSelected[2] - 1) .. string.sub(composedMessage.subject, menuButtonSelected[2] + 1)
                         end
                     end
-                elseif menuButtonsSelected[1] == 3 then
+                elseif menuButtonSelected[1] == 3 then
                     local str = #composedMessage.recipient
                     if type(composedMessage.recipient) == "number" then
                         str = nameOrID(composedMessage.recipient)
                     end
                     columnCount = #str + 1
                     if key == keys.right then
-                        menuButtonsSelected[2] = math.min(menuButtonsSelected[2] + 1, columnCount)
+                        menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                     elseif key == keys.left then
-                        menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 1, 1)
+                        menuButtonSelected[2] = math.max(menuButtonSelected[2] - 1, 1)
                     elseif key == keys.enter then
                         menuButtonSelected[1] = 4
                         menuButtonSelected[2] = math.min(menuButtonSelected[2] + 3, #composedMessage.lines[1] + 1)
@@ -1030,7 +1030,7 @@ composeDmailMenu = function()
                     columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
                     menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                     if key == keys.right then
-                        menuButtonsSelected[2] = menuButtonsSelected[2] + 1
+                        menuButtonSelected[2] = menuButtonSelected[2] + 1
                         if menuButtonSelected[2] > columnCount then
                             if menuButtonSelected[1] - 3 < #composedMessage.lines then
                                 menuButtonSelected[1] = menuButtonSelected[1] + 1
@@ -1040,7 +1040,7 @@ composeDmailMenu = function()
                             end
                         end
                     elseif key == keys.left then
-                        menuButtonsSelected[2] = menuButtonsSelected[2] - 1
+                        menuButtonSelected[2] = menuButtonSelected[2] - 1
                         if menuButtonSelected[2] < 1 then
                             if menuButtonSelected[1] - 3 > 1 then
                                 menuButtonSelected[1] = menuButtonSelected[1] - 1
