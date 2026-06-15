@@ -810,7 +810,7 @@ composeDmailMenu = function()
         subject = "",
         recipient = "",
         body = "",
-        lines = {},
+        lines = {""},
         attachments = {}
     }
 
@@ -941,7 +941,9 @@ composeDmailMenu = function()
             composeDmail()
         elseif event == "mouse_scroll" then
             local dir = a
-            menuButtonSelected = {0, 0}
+            if menuButtonSelected[1] == 1 then
+                menuButtonSelected = {0, 0}
+            end
             scroll = clampScrollInCompose(scroll + dir)
             composeDmail()
         elseif event == "key" then
@@ -962,6 +964,8 @@ composeDmailMenu = function()
                 end
             elseif menuButtonSelected[1] == 3 then
                 if char == "\n" then
+                    menuButtonSelected[1] = 4
+                    menuButtonSelected[1] = #composedMessages.lines[1]
                 else
                     if type(composedMessage.recipient) == "string" then
                         composedMessage.recipient = nameOrID(composedMessage.recipient)
