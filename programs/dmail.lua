@@ -926,8 +926,12 @@ composeDmailMenu = function()
                         offs = offs + #button.label + 3
                     end
                 end
-            else
-                
+            elseif y == 2 then
+                menuButtonSelected = {2, math.max(math.min(x - 4), 1)}
+            elseif y == 3 then
+                menuButtonSelected = {3, math.max(math.min(x - 4), 1)}
+            elseif y >= 5 and y < termHeight then
+                menuButtonSelected = {y - 4 + scroll, math.max(math.min(x - 1), 1)}
             end
             composeDmail()
         elseif event == "mouse_scroll" then
@@ -940,12 +944,12 @@ composeDmailMenu = function()
             composeDmail()
         elseif event == "char" then
             local char = a
-            if menuButtonSelected[1] > 1 and menuButtonSelected[1] - 1 <= #composedMessage.lines then
-                local index = getBodyPosInLine(composedmessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 1)
+            if menuButtonSelected[1] > 3 and menuButtonSelected[1] - 3 <= #composedMessage.lines then
+                local index = getBodyPosInLine(composedmessage.body, termWidth - 1, menuButtonSelected[2], menuButtonSelected[1] - 3)
                 message.body = string.sub(message.body, 1, index) .. char .. string.sub(message.body, index + 1)
                 message.lines = getLines(message.body, termWidth - 1)
                 menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedmessage.body, termWidth - 1, index + 1)
-                menuButtonSelected[1] = menuButtonSelected[1] + 1
+                menuButtonSelected[1] = menuButtonSelected[1] + 3
             end
             composeDmail()
         end
