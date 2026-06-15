@@ -980,7 +980,7 @@ composeDmailMenu = function()
                     elseif key == keys.left then
                         menuButtonsSelected[2] = math.max(menuButtonsSelected[2] - 2, 1) % columnCount + 1
                     elseif key == keys.enter then
-                        menuButtons[1][menuButtonsSelected[2]]
+                        menuButtons[1][menuButtonsSelected[2]]()
                     end
                 elseif menuButtonsSelected[1] == 2 then
                     columnCount = #composedMessage.subject + 1
