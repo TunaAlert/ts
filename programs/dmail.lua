@@ -160,12 +160,11 @@ local function hasUnselectedMessages()
     return false
 end
 
-local function writeNoPush(redirect, text)
+local function getLines(text, maxWidth)
     local lines = {""}
     local paragraphs = {}
-    local maxWidth, maxHeight = redirect.getSize()
-    for paragraph in string.gmatch(text, "([^\n]*)\n?") do 
-        for token in string.gmatch(paragraph, "%S+") do
+    for paragraph in string.gmatch(text, "([^\n]*)\n?") do
+        for token in string.gmatch(paragraph, "(%S*)%s") do
            if lines[#lines] == "" then
                 lines[#lines] = token
             elseif #lines[#lines] + #token + 1 > maxWidth then
@@ -176,6 +175,28 @@ local function writeNoPush(redirect, text)
         end
         lines[#lines+1] = ""
     end
+    return lines
+end
+
+local function getLinePosInBody(body, maxWidth, lineIndex, columnIndex)
+    local lines = getLines(body, maxWidth)
+    local index = 1
+    local croppedBody = body
+    for i = 1, lineIndex - 1, 1 do
+        local s, e = string.find(croppedBody, lines[i])
+        croppedBody = string.sub(croppedBody, e+1)
+        index = index + e + 1
+    end
+    index = index + math.min(columnIndex, #lines[lineIndex])
+end
+
+local function getBodyPosInLine(body, maxWidth, index)
+    local lines = getLines(body, maxWidth)
+end
+
+local function writeNoPush(redirect, text)
+    local maxWidth, maxHeight = redirect.getSize()
+    local lines = getLines(text, maxWidth)
     for i, line in ipairs(lines) do
         local y = i - scroll
         if y > 0 and y <= maxHeight then
