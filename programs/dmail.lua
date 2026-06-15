@@ -196,6 +196,7 @@ local function getLinePosInBody(body, maxWidth, index)
     local accumulativeLength = 0
     while accumulativeLength + #lines[line] + 1 < index do
         accumulativeLength = accumulativeLength + #lines[line] + 1
+        line = line + 1
     end
     local column = index - accumulativeLength
     return line, column
