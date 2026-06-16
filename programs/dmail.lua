@@ -6,7 +6,7 @@ local exited = false
 
 local termWidth, termHeight = term.getSize()
 
-local bufferWindow = window.create(term.current(), termWidth/2-11, termHeight/2-11, 24, 24)
+local bufferWindow = window.create(term.current(), termWidth/2-6, termHeight/2-4, 12, 8)
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
 local composeBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 4)
@@ -243,7 +243,7 @@ local function drawLoadingLoop()
         term.setCursorPos(termWidth/2 - 7, 3)
         term.write("Loading Dmails")
 
-        nft.draw(buffer, 1 - 24 * ((bufferx - 1) % 4), 1 - 24 * math.floor((bufferx - 1) / 4), bufferWindow)
+        nft.draw(buffer, 1 - 12 * ((bufferx - 1) % 4), 1 - 8 * math.floor((bufferx - 1) / 4), bufferWindow)
             
         sleep(0.05)
     end
