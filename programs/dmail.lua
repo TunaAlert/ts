@@ -1085,18 +1085,18 @@ composeDmailMenu = function()
                             menuButtonSelected[2] = math.max(menuButtonSelected[2], 1)
                         elseif key == keys.enter then
                             local line = composedMessage.attachments[menuButtonSelected[1]-3]
-                            table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(line, menuButtonsSelected[2]))
-                            composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonsSelected[2] - 1)
-                            menuButtonsSelected[1] = menuButtonsSelected[1] + 1
+                            table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(line, menuButtonSelected[2]))
+                            composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonSelected[2] - 1)
+                            menuButtonSelected[1] = menuButtonSelected[1] + 1
                         elseif key == keys.backspace then
-                            if menuButtonsSelected[2] > 1 then
-                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonsSelected[2] - 2) .. string.sub(attachment, 1, menuButtonsSelected[2])
-                                menuButtonsSelected[1] = menuButtonsSelected[1] - 1
+                            if menuButtonSelected[2] > 1 then
+                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonSelected[2] - 2) .. string.sub(attachment, 1, menuButtonSelected[2])
+                                menuButtonSelected[1] = menuButtonSelected[1] - 1
                             end
                         elseif key == keys.delete then
-                            if menuButtonsSelected[2] <= #attachment then
-                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonsSelected[2] - 1) .. string.sub(attachment, 1, menuButtonsSelected[2] + 1)
-                            elseif menuButtonsSelected[2] - 3 < #composedMessage.attachments then
+                            if menuButtonSelected[2] <= #attachment then
+                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 1) .. string.sub(attachment, 1, menuButtonSelected[2] + 1)
+                            elseif menuButtonSelected[2] - 3 < #composedMessage.attachments then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = line .. composedMessage.attachments[menuButtonSelected[1]-2]
                                 table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
                             end
@@ -1179,11 +1179,17 @@ composeDmailMenu = function()
                 composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2])
                 menuButtonSelected[2] = menuButtonSelected[2] + 1
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
-                local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
-                composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. char .. string.sub(composedMessage.body, index)
-                composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
-                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
-                menuButtonSelected[1] = menuButtonSelected[1] + 3
+                if attachmentList.isVisible() then
+                    local attachment = composedMessage.attachments[menuButtonSelected[1] - 3] or ""
+                    composedMessage.attachments[menuButtonSelected[1] - 3] = string.sub(attachment, 1, menuButtonSelected[2] - 1) .. char .. string.sub(attachment, menuButtonSelected[2])
+                    menuButtonSelected[2] = menuButtonSelected[2] + 1
+                else
+                    local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                    composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. char .. string.sub(composedMessage.body, index)
+                    composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                    menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                    menuButtonSelected[1] = menuButtonSelected[1] + 3
+                end
             end
             composeDmail()
         end
