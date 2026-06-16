@@ -852,7 +852,7 @@ configMenu = function()
 
     local cleanServerList = function(addEmpty)
         local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
-        local selectedPosition = menuButtonSelected[1] - 4 + (menuButtonSelected[2] - 1) % 3
+        local selectedPosition = menuButtonSelected[1] - 3 + (menuButtonSelected[2] - 1) % 3
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
             if server == 0 then
