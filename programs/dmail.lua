@@ -819,7 +819,7 @@ local function drawContacts()
         if contact.id == 0 or string.find(tostring(contact.name), "^[%d%s]*$") then
             fg = "ee"
         end
-        term.blit("- ", fg, bg)
+        term.blit("\x04 ", fg, bg)
         
         fg = "55555"
         bg = "fffff"
