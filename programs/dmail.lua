@@ -983,8 +983,15 @@ composeDmailMenu = function()
                 end
             elseif y >= 5 then
                 if attachmentList.isVisible() then
+                    local w, h = attachmentList.getSize()
+                    local lastLine = menuButtonSelected[1]
                     menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.attachments + 4)
                     local attachment = composedMessage.attachments[menuButtonSelected[1]-3] or ""
+                    if lastLine == menuButtonSelected[1] then
+                        attachment = string.sub(attachment, math.max(0, menuButtonSelected[2] - w + 5))
+                    elseif attachment ~= "" then
+                        attachment = fs.getName(attachment)
+                    end
                     menuButtonSelected[2] = math.max(math.min(x - 1, #attachment + 1), 1)
                 else
                     menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
@@ -1093,9 +1100,9 @@ composeDmailMenu = function()
                         local attachment = composedMessage.attachments[menuButtonSelected[1]-3] or ""
                         columnCount = #attachment + 1
                         if key == keys.right then
-                            menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                            menuButtonSelected[2] = math.min(menuButtonSelected[2] + 1, columnCount)
                         elseif key == keys.left then
-                            menuButtonSelected[2] = math.max(menuButtonSelected[2], 1)
+                            menuButtonSelected[2] = math.max(menuButtonSelected[2] - 1, 1)
                         elseif key == keys.enter then
                             table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(attachment, menuButtonSelected[2]))
                             composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 1)
