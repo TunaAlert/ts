@@ -509,13 +509,17 @@ local function composeDmail()
             if menuButtonSelected[1] - 3 == i then
                 selectedLineScroll = math.max(0, menuButtonSelected[2] - w + 5)
                 attachmentList.write(string.sub(attachment, 1 + selectedLineScroll))
-                attachmentList.setBackgroundColor(colors.gray)
-                attachmentList.setTextColor(colors.white)
-                attachmentList.write(fs.complete(attachment, "/"))
+                local suggestions = fs.complete(attachment, "/")
+                if #suggestions > 0 then
+                    attachmentList.setBackgroundColor(colors.gray)
+                    attachmentList.setTextColor(colors.white)
+                    attachmentList.write(suggestions[1])
+                end
             else
                 attachmentList.write(fs.getName(attachment))
             end
         end
+        attachmentList.setBackgroundColor(colors.black)
         attachmentList.setTextColor(colors.gray)
         attachmentList.setCursorPos(1, #composedMessage.attachments + 1 - scroll)
         attachmentList.write("Add attachment")
@@ -1110,7 +1114,10 @@ composeDmailMenu = function()
                                 table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
                             end
                         elseif key == keys.tab then
-                            composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. fs.complete(attachment, "/")
+                            local suggestions = fs.complete(attachment, "/")
+                            if #suggestions > 0 then
+                                composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. suggestions[1]
+                            end
                         end
                     else
                         local line = composedMessage.lines[menuButtonSelected[1]-3]
