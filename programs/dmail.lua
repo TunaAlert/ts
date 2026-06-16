@@ -315,7 +315,7 @@ local function drawConfigScreen()
         if menuButtonSelected[1] == 3 + r and menuButtonSelected[2] == c then
             b = "1"
         end
-        term.setCursorPos(4 + 8 * c, 6 + r)
+        term.setCursorPos(8 * c - 4, 6 + r)
         term.blit(("[%05d]"):format(server), b .. "00000" .. b, "fffffff")
     end
 
@@ -802,6 +802,7 @@ configMenu = function()
     menuButtonSelected = {0, 0}
 
     drawConfigScreen()
+    local timer = os.startTimer(0.05)
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
@@ -828,6 +829,11 @@ configMenu = function()
                 end
             end
             drawConfigScreen()
+        elseif event == "timer" then
+            if a == timer then
+                timer = os.startTimer(0.05)
+                drawConfigScreen()
+            end
         end
     end
 end
