@@ -60,7 +60,7 @@ local popUp
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
-        main_server = 0,
+        mainServer = 0,
         servers = {0},
         drawInvisibleCharacters = false,
         showImageAttachments = false
@@ -90,7 +90,7 @@ end
 local function IdFromName(nameorid)
     for i, contact in pairs(contacts) do
         if contact.name == nameorid then
-            return contact.name
+            return contact.id
         end
     end
     return tonumber(nameorid) or 0
@@ -1099,9 +1099,9 @@ composeDmailMenu = function()
                     elseif key == keys.enter then
                         menuButtonSelected[1] = 3
                         if type(composedMessage.recipient) == "string" then
-                            menuButtonSelected[2] = #composedMessage.recipient
+                            menuButtonSelected[2] = #composedMessage.recipient + 1
                         else
-                            menuButtonSelected[2] = #nameOrID(composedMessage.recipient)
+                            menuButtonSelected[2] = #tostring(nameOrID(composedMessage.recipient)) + 1
                         end
                     elseif key == keys.backspace then
                         if menuButtonSelected[2] > 1 then
