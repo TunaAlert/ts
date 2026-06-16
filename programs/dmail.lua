@@ -440,13 +440,13 @@ local function displayDmail()
                 if #attachmentImages[i] == 1 then
                     messageBody.setCursorPos(1, ypos)
                     messageBody.write("[")
-                    messageBody.setCursorPos(2+#attachmentImages[i][1], ypos)
+                    messageBody.setCursorPos(2+#attachmentImages[i][1].text, ypos)
                     messageBody.write("]")
                 elseif #attachmentImages[i] > 1 then
                     for j = 1, #attachmentImages[i], 1 do
                         messageBody.setCursorPos(1, ypos + j - 1)
                         messageBody.write("\x7f")
-                        messageBody.setCursorPos(2+#attachmentImages[i][1], ypos + j - 1)
+                        messageBody.setCursorPos(2+#attachmentImages[i][1].text, ypos + j - 1)
                         messageBody.write("\x7f")
                     end
                 end
