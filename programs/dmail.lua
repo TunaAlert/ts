@@ -794,6 +794,66 @@ local function drawOptions()
 end
 
 local function drawContacts()
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+
+    term.setCursorPos(4, 1)
+    term.write("Contacts")
+    
+    term.setCursorPos(1, 2)
+    local b = "4"
+    if menuButtonSelected[1] == 1 then
+        b = "1"
+    end
+    term.blit("[Back]", b .. "4444" .. b, "ffffff")
+
+    for i = 1 + scroll, math.min(termHeight + scroll - 4, #contacts), 1 do
+        local contact = contacts[i]
+        term.setCursorPos(1, 3 + i - scroll)
+        local fg = "55"
+        local bg = "ff"
+        if contact.id == 0 or string.find(tostring(contact.name), "^[%d%s]*$") then
+            fg = "ee"
+        end
+        term.blit("- ", fg, bg)
+        
+        fg = "55555"
+        bg = "fffff"
+        if contact.id == 0 then
+            fg = "eeeee"
+        end
+        if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 1 then
+            bg = "77777"
+        end
+        term.blit(("%05d"):format(contact.id), fg, bg)
+
+        term.setTextColor(colors.lime)
+        term.setBackgroundColor(colors.black)
+        if string.find(tostring(contact.name), "^[%d%s]*$") then
+            term.setTextColor(colors.red)
+        end
+        if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 2 then
+            term.setBackgroundColor(colors.gray)
+        end
+        term.write(tostring(contact.id))
+
+        term.setCursorPos(termWidth - 3, i + 3)
+        fg = "0000"
+        bg = "ffff"
+        if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 3 then
+            fg = "e1e0"
+            bg = "777f"
+        end
+        term.blit("[x] ", fg, bg)
+    end
+    termm.setCursorPos(termWidth/2 - 6, 4 + #contacts - scroll)
+    local fg = "ddddddddddddd"
+    local bg = "fffffffffffff"
+    if menuButtonSelected[1] == #contatcs+2 then
+        fg = "1555555555551"
+        bg = "7777777777777"
+    end
+    term.blit("[Add Contact]", fg, bg)
 end
 
 local function clampScrollInList(value)
