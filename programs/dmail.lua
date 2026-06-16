@@ -825,12 +825,11 @@ configMenu = function()
                 yaml.save(config, "/.data/dmail/config.yaml")
                 if #table.servers < 9 then
                     config.servers[#config.servers + 1] = 0
-                    local r = math.floor((#config.servers - 1) / 3) + 1
-                    local c = ((#config.servers - 1) % 3) + 1
-                    if 3+r == #menuButtons then
-                        table.insert(menuButtons, 3+r, {})
+                    if #menuButtons[#menuButtons-1] == 3 then
+                        table.insert(menuButtons, #menuButtons - 1, {})
                     end
-                    menuButtons[3+r][c] = function() end
+                    local list = menuButtons[#menuButtons-1]
+                    list[#list+1] = function() end
                 end
                 nextMenu = dmailListMenu
             end
@@ -866,11 +865,10 @@ configMenu = function()
         for i = #removeIndecies, 1, -1 do
             local index = removeIndecies[i]
             table.remove(config.servers, index)
-            local r = math.floor((index - 1) / 3) + 1
-            local c = ((index - 1) % 3) + 1
-            table.remove(menuButtons[3+r], c)
-            if #menuButtons[3+r] == 0 then
-                table.remove(menuButtons, 3+r)
+            local list = menuButtons[#menuButtons-1]
+            table.remove(list, #list)
+            if #list == 0 then
+                table.remove(menuButtons, #menuButtons-1)
             end
             if isSelected and index < selectedPosition then
                 selectedPosition = selectedPosition - 1
@@ -882,12 +880,11 @@ configMenu = function()
         end
         if addEmpty and #config.servers < 9 then
             config.servers[#config.servers + 1] = 0
-            local r = math.floor((#config.servers - 1) / 3) + 1
-            local c = ((#config.servers - 1) % 3) + 1
-            if 3+r == #menuButtons then
-                table.insert(menuButtons, 3+r, {})
+            if #menuButtons[#menuButtons-1] == 3 then
+                table.insert(menuButtons, #menuButtons - 1, {})
             end
-            menuButtons[3+r][c] = function() end
+            local list = menuButtons[#menuButtons-1]
+            list[#list+1] = function() end
         end
     end
     
