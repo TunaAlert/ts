@@ -1,6 +1,6 @@
 local dmail = require("/programs/api/dmail")
 local yaml = require("/programs/api/yaml")
-local nft = require("cc.images.nft")
+local nft = require("cc.image.nft")
 
 local exited = false
 
