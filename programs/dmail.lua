@@ -900,6 +900,7 @@ configMenu = function()
             end
         end
     end
+    return nextMenu
 end
 
 dmailListMenu = function()
