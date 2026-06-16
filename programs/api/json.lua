@@ -192,7 +192,7 @@ local function encode(data)
     elseif type(data) == "table" then
         if isList(data) then
             local str = "["
-            for i, v in pairs(data) do
+            for i, v in ipairs(data) do
                 local enc = encode(v)
                 if enc ~= "" then
                     if str ~= "[" then
