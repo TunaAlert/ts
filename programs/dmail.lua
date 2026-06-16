@@ -1075,8 +1075,8 @@ composeDmailMenu = function()
                     end
                 elseif menuButtonSelected[1] >= 4 then
                     if attachmentList.isVisible() then
-                        columnCount = #composedMessage.attachments[menuButtonSelected[1]-3] + 1
-                        local attachment = composedMessage.attachments[menuButtonSelected[1]-3]
+                        local attachment = composedMessage.attachments[menuButtonSelected[1]-3] or ""
+                        columnCount = #attachment + 1
                         if key == keys.right then
                             menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
                         elseif key == keys.left then
