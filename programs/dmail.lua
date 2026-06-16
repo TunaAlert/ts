@@ -794,43 +794,6 @@ configMenu = function()
     bufferWindow.setVisible(true)
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
 
-    local cleanServerList = function(addEmpty)
-        local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
-        local selectedPosition = menuButtonSelected[1] - 4 + (menuButtonSelected[2] - 1) % 3
-        local removeIndecies = {}
-        for i, server in ipairs(config.servers) do
-            if server == 0 and i ~= selectedPosition then
-                removeIndecies[#removeIndecies + 1] = i
-            end
-        end
-        for i = #removeIndecies, 1, -1 do
-            local index = removeIndecies[i]
-            table.remove(config.servers, index)
-            local r = math.floor((index - 1) / 3) + 1
-            local c = ((index - 1) % 3) + 1
-            table.remove(menuButtons[3+r], c)
-            if #menuButtons[3+r] == 0 then
-                table.remove(menuButtons, 3+r)
-            end
-            if isSelected and index < selectedPosition then
-                selectedPosition = selectedPosition - 1
-            end
-        end
-        if isSelected then
-            menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) + 4
-            menuButtonSelected[2] = ((selectedPosition - 1) % 3) + 1
-        end
-        if addEmpty and #config.servers < 9 then
-            config.servers[#config.servers + 1] = 0
-            local r = math.floor((#config.servers - 1) / 3) + 1
-            local c = ((#config.servers - 1) % 3) + 1
-            if 3+r == #menuButtons then
-                table.insert(menuButtons, 3+r, {})
-            end
-            menuButtons[3+r][c] = function() end
-        end
-    end
-    
     menuButtons = {
         {
             function()
@@ -887,6 +850,47 @@ configMenu = function()
     end
     menuButtonSelected = {0, 0}
 
+    local cleanServerList = function(addEmpty)
+        local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
+        local selectedPosition = menuButtonSelected[1] - 4 + (menuButtonSelected[2] - 1) % 3
+        local removeIndecies = {}
+        for i, server in ipairs(config.servers) do
+            if server == 0 then
+                if i == selectedPosition then
+                    addEmpty = false
+                else
+                    removeIndecies[#removeIndecies + 1] = i
+                end
+            end
+        end
+        for i = #removeIndecies, 1, -1 do
+            local index = removeIndecies[i]
+            table.remove(config.servers, index)
+            local r = math.floor((index - 1) / 3) + 1
+            local c = ((index - 1) % 3) + 1
+            table.remove(menuButtons[3+r], c)
+            if #menuButtons[3+r] == 0 then
+                table.remove(menuButtons, 3+r)
+            end
+            if isSelected and index < selectedPosition then
+                selectedPosition = selectedPosition - 1
+            end
+        end
+        if isSelected then
+            menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) + 4
+            menuButtonSelected[2] = ((selectedPosition - 1) % 3) + 1
+        end
+        if addEmpty and #config.servers < 9 then
+            config.servers[#config.servers + 1] = 0
+            local r = math.floor((#config.servers - 1) / 3) + 1
+            local c = ((#config.servers - 1) % 3) + 1
+            if 3+r == #menuButtons then
+                table.insert(menuButtons, 3+r, {})
+            end
+            menuButtons[3+r][c] = function() end
+        end
+    end
+    
     drawConfigScreen()
     local timer = os.startTimer(0.05)
     while not exited and nextMenu == nil do
