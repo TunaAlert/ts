@@ -811,9 +811,9 @@ configMenu = function()
         end
         if isSelected then
             menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) - 2
-            menuButtonSelected[2] = (selectedPosition - 1) % 3) + 1
+            menuButtonSelected[2] = ((selectedPosition - 1) % 3) + 1
         end
-        if addEmpty and #table.servers < 9 then
+        if addEmpty and #config.servers < 9 then
             config.servers[#config.servers] = 0
         end
     end
