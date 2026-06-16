@@ -628,8 +628,10 @@ end
 local function clampScrollInCompose(value)
     if attachmentList.isVisible() then
         return math.max(math.min(value, #composedMessage.attachments + 1 - (termHeight - 4)), 0)
+    elseif #composedMessage.attachments > 0 then
+        return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments + 2 - (termHeight - 4)), 0)
     else
-        return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments - (termHeight - 4)), 0)
+        return math.max(math.min(value, #composedMessage.lines + 1 - (termHeight - 4)), 0)
     end
 end
 
