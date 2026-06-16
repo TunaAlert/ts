@@ -799,7 +799,7 @@ configMenu = function()
         local selectedPosition = menuButtonSelected[1] - 4 + (menuButtonSelected[2] - 1) % 3
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
-            if server == 0 then
+            if server == 0 and i ~= selectedPosition then
                 removeIndecies[#removeIndecies + 1] = i
             end
         end
@@ -817,7 +817,7 @@ configMenu = function()
             end
         end
         if isSelected then
-            menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) - 2
+            menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) + 4
             menuButtonSelected[2] = ((selectedPosition - 1) % 3) + 1
         end
         if addEmpty and #config.servers < 9 then
