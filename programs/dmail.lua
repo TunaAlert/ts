@@ -828,15 +828,17 @@ local function drawContacts()
         end
         term.blit(("%05d"):format(contact.id), fg, bg)
 
-        term.setTextColor(colors.lime)
         term.setBackgroundColor(colors.black)
+        term.write("  ")
+        
+        term.setTextColor(colors.lime)
         if string.find(tostring(contact.name), "^[%d%s]*$") then
             term.setTextColor(colors.red)
         end
         if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 2 then
             term.setBackgroundColor(colors.gray)
         end
-        term.write(tostring(contact.id))
+        term.write(tostring(contact.name))
 
         term.setCursorPos(termWidth - 3, i + 3)
         fg = "0000"
