@@ -841,7 +841,7 @@ local function drawContacts()
         if menuButtonSelected[1] == i+1 and menuButtonSelected[2] == 2 then
             term.setBackgroundColor(colors.gray)
         end
-        term.write(tostring(contact.name))
+        term.write(("%-20s"):format(tostring(contact.name)))
 
         term.setCursorPos(termWidth - 3, i + 3)
         fg = "0000"
