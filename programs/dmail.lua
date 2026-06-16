@@ -795,6 +795,8 @@ configMenu = function()
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
 
     local cleanServerList = function(addEmpty)
+        local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
+        local selectedPosition = menuButtonSelected[1] - 4 + (menuButtonSelected[2] - 1) % 3
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
             if server == 0 then
@@ -803,6 +805,13 @@ configMenu = function()
         end
         for i, index in ipairs(removeIndecies) do
             table.remove(config.servers, index)
+            if isSelected and index < selectedPosition then
+                selectedPosition = selectedPosition - 1
+            end
+        end
+        if isSelected then
+            menuButtonSelected[1] = math.floor((selectedPosition - 1) / 3) - 2
+            menuButtonSelected[2] = (selectedPosition - 1) % 3) + 1
         end
         if addEmpty and #table.servers < 9 then
             config.servers[#config.servers] = 0
@@ -899,10 +908,10 @@ configMenu = function()
                     config.servers[index] = math.floor(config.servers[index]/10)
                 elseif key == keys.delete then
                     config.servers[index] = 0
-                    cleanServerList(true)
                 end
                 config.mainServer = config.servers[1] or 0
             end
+            cleanServerList(true)
             drawConfigScreen()
         elseif event == "char" then
             local char = a
@@ -918,6 +927,7 @@ configMenu = function()
                 end
                 config.mainServer = config.servers[1] or 0
             end
+            cleanServerList(true)
             drawConfigScreen()
         elseif event == "timer" then
             if a == timer then
