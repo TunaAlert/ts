@@ -63,7 +63,7 @@ local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
         mainServer = 0,
-        servers = {0},
+        servers = {},
         drawInvisibleCharacters = false,
         showImageAttachments = false
         }
@@ -320,18 +320,18 @@ local function drawConfigScreen()
     end
 
     term.setCursorPos(1, termHeight)
-    local b = "0"
+    local b = "4"
     if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
         b = "1"
     end
-    term.blit("[Cancel]", b .. "000000" .. b, "ffffffff")
+    term.blit("[Cancel]", b .. "444444" .. b, "ffffffff")
     
     term.setCursorPos(termWidth-5, termHeight)
-    local b = "0"
+    local b = "4"
     if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 2 then
         b = "1"
     end
-    term.blit("[Save]", b .. "0000" .. b, "ffffff")
+    term.blit("[Save]", b .. "4444" .. b, "ffffff")
 
     local frame = ((os.epoch() / 3600) % 32) + 1
     nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
@@ -851,7 +851,11 @@ configMenu = function()
             drawConfigScreen()
         elseif event == "char" then
             local char = a
-            if menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
+            if menuButtonSelected[1] == 3 then
+                if string.find(char, "^%d&") then
+                    config.mainServer = math.min(config.mainServer * 10 + tonumber(char), 65500)
+                end
+            elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
                 local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
                 if string.find(char, "^%d&") then
                     config.servers[index] = math.min(config.servers[index] * 10 + tonumber(char), 65500)
