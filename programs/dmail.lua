@@ -438,6 +438,8 @@ local function composeDmail()
     messageList.setVisible(false)
     messageBody.setVisible(false)
     composeBody.setVisible(not attachmentList.isVisible())
+
+    local selectedLineScroll = 0
     
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
@@ -504,8 +506,8 @@ local function composeDmail()
                 attachmentList.setTextColor(colors.red)
             end
             if menuButtonSelected[1] - 3 == i then
-                local attachmentScroll = math.max(0, menuButtonSelected[2] - w + 5)
-                attachmentList.write(string.sub(attachment, 1 + attachmentScroll))
+                selectedLineScroll = math.max(0, menuButtonSelected[2] - w + 5)
+                attachmentList.write(string.sub(attachment, 1 + selectedLineScroll))
             else
                 attachmentList.write(fs.getname(attachment))
             end
@@ -533,14 +535,16 @@ local function composeDmail()
             composeBody.write("  +  " .. fs.getName(attachment))
         end
     end
-        
+    
     if menuButtonSelected[1] > 1 then
         if menuButtonSelected[1] == 2 then
             term.setCursorPos(4+menuButtonSelected[2], 2)
         elseif menuButtonSelected[1] == 3 then
             term.setCursorPos(4+menuButtonSelected[2], 3)
+        elseif attachmentList.isVisible() then
+            attachmentList.setCursorPos(menuButtonSelected[2] - selectedLineScroll, menuButtonSelected[1] - scroll - 3)
         else
-            composeBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
+            composeBody.setCursorPos(menuButtonSelected[2] - selectedLineScroll, menuButtonSelected[1] - scroll - 3)
         end
         term.setTextColor(colors.white)
         term.setCursorBlink(true)
