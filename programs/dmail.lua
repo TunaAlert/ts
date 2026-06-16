@@ -938,7 +938,7 @@ configMenu = function()
             if config.mainServer ~= 0 then
                 cleanServerList(false, true)
                 yaml.save(config, "/.data/dmail/config.yaml")
-                nextMenu = dmailListMenu
+                nextMenu = optionListMenu
             end
         end
     }
@@ -948,7 +948,7 @@ configMenu = function()
                 if canCancelConfig then
                     config = yaml.load("/.data/dmail/config.yaml")
                     if config.mainServer ~= 0 then
-                        nextMenu = dmailListMenu
+                        nextMenu = optionListMenu
                     end
                 end
             end
