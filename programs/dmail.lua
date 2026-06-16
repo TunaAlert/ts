@@ -1790,7 +1790,7 @@ contactListMenu = function()
     end
 
     local addContactButton = function(contact)
-        menuButtons[#menuButtons + 1] = {
+        menuButtons[#menuButtons] = {
             function()
             end,
             function()
@@ -1815,10 +1815,6 @@ contactListMenu = function()
         }
     }
 
-    for i, contact in ipairs(contacts) do
-        addContactButton(contact)
-    end
-
     menuButtons[#menuButtons+1] = {
         function()
             local contact = {name = "", id = 0}
@@ -1826,6 +1822,10 @@ contactListMenu = function()
             addContactButton(contact)
         end
     }
+
+    for i, contact in ipairs(contacts) do
+        addContactButton(contact)
+    end
 
     menuButtonSelected = {0, 0}
     scroll = 0
@@ -1891,7 +1891,7 @@ contactListMenu = function()
             if selectedContact >= 1 and selectedContact <= #contacts then
                 if menuButtonSelected[2] == 1 then
                     if string.find(char, "^%d*$") then
-                        contacts[selectedContact].id = math.min(contacts[selectedContact].id * 10 + tonumber(c), 65500)
+                        contacts[selectedContact].id = math.min(contacts[selectedContact].id * 10 + tonumber(char), 65500)
                     end
                 elseif menuButtonSelected[2] == 2 then
                     local name = tostring(contacts[selectedContact].name)
