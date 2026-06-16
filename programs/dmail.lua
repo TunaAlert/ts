@@ -791,6 +791,7 @@ end
 
 configMenu = function()
     local nextMenu = nil
+    local cleanServerList = nil
     bufferWindow.setVisible(true)
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
 
@@ -825,10 +826,10 @@ configMenu = function()
                 yaml.save(config, "/.data/dmail/config.yaml")
                 if #table.servers < 9 then
                     config.servers[#config.servers + 1] = 0
-                    if #menuButtons[#menuButtons-1] == 3 then
-                        table.insert(menuButtons, #menuButtons - 1, {})
+                    if #menuButtons[#menuButtons-1] == 3 or #menuButtons < 5 then
+                        table.insert(menuButtons, #menuButtons, {})
                     end
-                    local list = menuButtons[#menuButtons-1]
+                    local list = menuButtons[#menuButtons - 1]
                     list[#list+1] = function() end
                 end
                 nextMenu = dmailListMenu
@@ -849,7 +850,7 @@ configMenu = function()
     end
     menuButtonSelected = {0, 0}
 
-    local cleanServerList = function(addEmpty, removeSelected)
+    cleanServerList = function(addEmpty, removeSelected)
         local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
         local selectedPosition = (menuButtonSelected[1] - 4) * 3 + menuButtonSelected[2]
         local removeIndecies = {}
@@ -880,10 +881,10 @@ configMenu = function()
         end
         if addEmpty and #config.servers < 9 then
             config.servers[#config.servers + 1] = 0
-            if #menuButtons[#menuButtons - 1] == 3 then
+            if #menuButtons[#menuButtons - 1] == 3 or #menuButtons < 5 then
                 table.insert(menuButtons, #menuButtons, {})
             end
-            local list = menuButtons[#menuButtons-1]
+            local list = menuButtons[#menuButtons - 1]
             list[#list+1] = function() end
         end
     end
@@ -953,7 +954,7 @@ configMenu = function()
                 end
                 config.mainServer = config.servers[1] or 0
             end
-            cleanServerList(true)
+            cleanServerList(true, false)
             drawConfigScreen()
         elseif event == "timer" then
             if a == timer then
