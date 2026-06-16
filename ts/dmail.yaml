@@ -5,38 +5,7 @@ files:
   - programs/dmail.lua
   - programs/api/dmail.lua
   - startup/dmail.lua
-  - programs/dmail/buffer/01.nft
-  - programs/dmail/buffer/02.nft
-  - programs/dmail/buffer/03.nft
-  - programs/dmail/buffer/04.nft
-  - programs/dmail/buffer/05.nft
-  - programs/dmail/buffer/06.nft
-  - programs/dmail/buffer/07.nft
-  - programs/dmail/buffer/08.nft
-  - programs/dmail/buffer/09.nft
-  - programs/dmail/buffer/10.nft
-  - programs/dmail/buffer/11.nft
-  - programs/dmail/buffer/12.nft
-  - programs/dmail/buffer/13.nft
-  - programs/dmail/buffer/14.nft
-  - programs/dmail/buffer/15.nft
-  - programs/dmail/buffer/16.nft
-  - programs/dmail/buffer/17.nft
-  - programs/dmail/buffer/18.nft
-  - programs/dmail/buffer/19.nft
-  - programs/dmail/buffer/20.nft
-  - programs/dmail/buffer/21.nft
-  - programs/dmail/buffer/22.nft
-  - programs/dmail/buffer/23.nft
-  - programs/dmail/buffer/24.nft
-  - programs/dmail/buffer/25.nft
-  - programs/dmail/buffer/26.nft
-  - programs/dmail/buffer/27.nft
-  - programs/dmail/buffer/28.nft
-  - programs/dmail/buffer/29.nft
-  - programs/dmail/buffer/30.nft
-  - programs/dmail/buffer/31.nft
-  - programs/dmail/buffer/32.nft
+  - programs/dmail/buffer.nft
 dependencies:
   - program: yaml
     version: 0.1
