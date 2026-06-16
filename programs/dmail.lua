@@ -1199,6 +1199,18 @@ composeDmailMenu = function()
             elseif selectedLineY > termHeight - 1 then
                 scroll = clampScrollInCompose(scroll + selectedLineY - (termHeight - 1))
             end
+            local removedIndecies = {}
+            for i, attachment in ipairs(composedMessage.attachments) do
+                if not attachmentList.isVisible() or i ~= menuButtonSelected[1] - 3 then
+                    removedIndecies[#removedIndecies] = i
+                end
+            end
+            for i, index in ipairs(removedIndecies) do
+                table.remove(composedMessage.attachments, index)
+                if index < menuButtonSelected[1] - 3 then
+                    menuButtonSelected[1] = menuButtonSelected[1] - 1
+                end
+            end
             composeDmail()
         elseif event == "char" then
             local char = a
