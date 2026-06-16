@@ -798,7 +798,7 @@ configMenu = function()
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
             if server == 0 then
-                removeIndecies[$removeIndecies + 1] = i
+                removeIndecies[#removeIndecies + 1] = i
             end
         end
         for i, index in ipairs(removeIndecies) do
