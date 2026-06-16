@@ -626,7 +626,7 @@ local function clampScrollInDmail(value)
 end
 
 local function clampScrollInCompose(value)
-    if attachmentList.isVisible then
+    if attachmentList.isVisible() then
         return math.max(math.min(value, #composedMessage.attachments + 1 - (termHeight - 4)), 0)
     else
         return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments - (termHeight - 4)), 0)
