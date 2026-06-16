@@ -6,7 +6,7 @@ local exited = false
 
 local termWidth, termHeight = term.getSize()
 
-local bufferWindow = window.create(term.current(), termWidth/2-6, termHeight/2-4, 12, 8)
+local bufferWindow = window.create(term.current(), termWidth/2-5, termHeight/2-4, 12, 8)
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
 local composeBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 4)
@@ -244,6 +244,7 @@ end
 
 local function drawLoadingLoop()
     bufferWindow.setVisible(true)
+    bufferWindow.reposition(termWidth/2-5, termHeight/2-4, 12, 8)
     local bufferx = math.random(1, 32)
     while true do
         term.redirect(parentTerm)
@@ -259,6 +260,72 @@ local function drawLoadingLoop()
         nft.draw(buffer, 1 - 12 * ((bufferx - 1) % 4), 1 - 8 * math.floor((bufferx - 1) / 4), bufferWindow)
             
         sleep(0.05)
+    end
+end
+
+local function drawConfigScreen()
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    
+    term.setTextColor(colors.white)
+    term.setCursorPos(4, 1)
+    term.write("Config")
+    
+    term.setCursorPos(1, 3)
+    term.write("draw whitespaces")
+    term.setCursorPos(termWidth-5, 3)
+    local b = "0"
+    if menuButtonSelected[1] == 1 then
+        b = "1"
+    end
+    if config.drawInvisibleCharacters then
+        term.blit("[\x8c\x8c\x95]", b .. "dd5" .. b, "fffff")
+    else
+        term.blit("[\x95\x8c\x8c]", b .. "fcc" .. b, "fefff")
+    end
+    
+    term.setCursorPos(1, 4)
+    term.write("draw images")
+    term.setCursorPos(termWidth-5, 4)
+    local b = "0"
+    if menuButtonSelected[1] == 2 then
+        b = "1"
+    end
+    if config.showImageAttachments then
+        term.blit("[\x8c\x8c\x95]", b .. "dd5" .. b, "fffff")
+    else
+        term.blit("[\x95\x8c\x8c]", b .. "fcc" .. b, "fefff")
+    end
+    
+    term.setCursorPos(1, 5)
+    term.write("main server")
+    term.setCursorPos(termWidth-6, 5)
+    local b = "0"
+    if menuButtonSelected[1] == 3 then
+        b = "1"
+    end
+    term.blit(("[%05d]"):format(config.mainServer), b .. "00000" .. b, "fffffff")
+
+    term.setCursorPos(1, 6)
+    term.write("lookup servers")
+    for i, server in ipairs(config.servers) do
+        local r = math.floor((i - 1) / 3) + 1
+        local c = (i - 1) % 3 + 1
+        local b = "0"
+        if menuButtonSelected[1] == 3 + r and menuButtonSelected[2] == c then
+            b = "1"
+        end
+        term.setCursorPos(4 + 8 * c, 6 + r)
+        term.blit(("[%05d]"):format(server), b .. "00000" .. b, "fffffff")
+    end
+
+    local frame = ((os.epoch() / 3600) % 32) + 1
+    nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
+    if menuButtonSelected[1] == 3 then
+        term.setCursorPos(termWidth, 5)
+        term.setCursorBlink(true)
+    else
+        term.setCursorBlink(false)
     end
 end
 
@@ -699,21 +766,69 @@ end
 configMenu = function()
     local nextMenu = nil
     bufferWindow.setVisible(true)
+    bufferWindow.reposition(termWidth/2-5, termHeight-9, 12, 8)
     menuButtons = {
-
+        {
+            function()
+                config.drawInvisibleCharacters = not config.drawInvisibleCharacters
+            end
+        },
+        {
+            function()
+                config.showImageAttachments = not config.showImageAttachments
+            end
+        },
+        {
+            function()
+            end
+        }
+    }
+    for i, server in ipairs(config.servers) do
+        local r = math.floor((i - 1) / 3) + 1
+        local c = (i - 1) % 3 + 1
+        if menuButtons[r+3] == nil then
+            menuButtons[r+3] = {}
+        end
+        menuButtons[r+3][c] = function() end
+    end
+    menuButtons[math.floor((config.servers - 1)/3)+5] = {
+        function()
+            config = yaml.load("/.data/dmail/config.yaml")
+        end,
+        function()
+            yaml.save(config, "/.data/dmail/config.yaml")
+        end
     }
     menuButtonSelected = {0, 0}
 
-    local frame = 1
-    
-    local timer = os.startTimer(0.05)
+    drawConfigScreen()
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
-        if event == "timer" and a == timer then
-            frame = (frame % 32) + 1
-            timer = os.startTimer(0.05)
+        if event == "mouse_click" then
+            
+            drawConfigScreen()
+        elseif event == "key" then
+            local key = a
+            handleMenuKeyEvent(key)
+            if menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
+                local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
+                if key == keys.backspace then
+                    config.servers[index] = math.floor(config.servers[index]/10)
+                elseif key == keys.delete then
+                    config.servers[index] = 0
+                end
+            end
+            drawConfigScreen()
+        elseif event == "char" then
+            local char = a
+            if menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
+                local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
+                if string.find(char, "^%d&") then
+                    config.servers[index] = math.min(config.servers[index] * 10 + tonumber(char), 65500)
+                end
+            end
+            drawConfigScreen()
         end
-        nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
     end
 end
 
