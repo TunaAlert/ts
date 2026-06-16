@@ -753,6 +753,7 @@ end
 
 local function drawOptions()
     term.setBackgroundColor(colors.black)
+    term.clear()
     
     term.setCursorPos(termWidth/2 - 4, 2)
     term.write("DMail menu")
@@ -846,7 +847,7 @@ local function drawContacts()
         end
         term.blit("[x] ", fg, bg)
     end
-    termm.setCursorPos(termWidth/2 - 6, 4 + #contacts - scroll)
+    term.setCursorPos(termWidth/2 - 6, 4 + #contacts - scroll)
     local fg = "ddddddddddddd"
     local bg = "fffffffffffff"
     if menuButtonSelected[1] == #contatcs+2 then
@@ -902,6 +903,7 @@ configMenu = function()
     local cleanServerList = nil
     bufferWindow.setVisible(true)
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
+    term.redirect(parentTerm)
 
     menuButtons = {
         {
@@ -1086,6 +1088,7 @@ end
 dmailListMenu = function()
     local nextMenu = nil
     scroll = 0
+    term.redirect(parentTerm)
     
     parallel.waitForAny(loadMessages, drawLoadingLoop)
     bufferWindow.setVisible(false)
