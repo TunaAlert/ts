@@ -704,7 +704,7 @@ configMenu = function()
     }
     menuButtonSelected = {0, 0}
 
-    local frame = 0
+    local frame = 1
     
     local lastTime = os.epoch()
     while not exited and nextMenu == nil do
@@ -712,6 +712,7 @@ configMenu = function()
         local thisTime = os.epoch()
         if thisTime - lastTime >= 3600 then
             frame = (frame % 32) + 1
+            lastTime = thisTime
         end
         nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
     end
@@ -1330,7 +1331,7 @@ composeDmailMenu = function()
 end
 
 local nextMenu = dmailListMenu
-if config.defaultServer == 0 then
+if config.mainServer == 0 then
     nextMenu = configMenu
 end
 
