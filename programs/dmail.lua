@@ -791,7 +791,7 @@ configMenu = function()
         end
         menuButtons[r+3][c] = function() end
     end
-    menuButtons[math.floor((config.servers - 1)/3)+5] = {
+    menuButtons[math.floor((#config.servers - 1)/3)+5] = {
         function()
             config = yaml.load("/.data/dmail/config.yaml")
         end,
