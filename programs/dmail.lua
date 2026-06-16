@@ -509,7 +509,7 @@ local function composeDmail()
                 selectedLineScroll = math.max(0, menuButtonSelected[2] - w + 5)
                 attachmentList.write(string.sub(attachment, 1 + selectedLineScroll))
             else
-                attachmentList.write(fs.getname(attachment))
+                attachmentList.write(fs.getName(attachment))
             end
         end
         attachmentList.setTextColor(colors.gray)
@@ -944,6 +944,7 @@ composeDmailMenu = function()
 
         if event == "mouse_click" then
             local button, x, y = a, b, c
+            menuButtonSelected = {0, 0}
             if y == 1 then
                 if x <= 6 then
                     menuButtons[1][1]()
@@ -1088,20 +1089,20 @@ composeDmailMenu = function()
                         elseif key == keys.left then
                             menuButtonSelected[2] = math.max(menuButtonSelected[2], 1)
                         elseif key == keys.enter then
-                            local line = composedMessage.attachments[menuButtonSelected[1]-3]
-                            table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(line, menuButtonSelected[2]))
-                            composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonSelected[2] - 1)
+                            table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(attachment, menuButtonSelected[2]))
+                            composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 1)
                             menuButtonSelected[1] = menuButtonSelected[1] + 1
+                            menuButtonSelected[2] = 1
                         elseif key == keys.backspace then
                             if menuButtonSelected[2] > 1 then
-                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonSelected[2] - 2) .. string.sub(attachment, 1, menuButtonSelected[2])
+                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 2) .. string.sub(attachment, 1, menuButtonSelected[2])
                                 menuButtonSelected[1] = menuButtonSelected[1] - 1
                             end
                         elseif key == keys.delete then
                             if menuButtonSelected[2] <= #attachment then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 1) .. string.sub(attachment, 1, menuButtonSelected[2] + 1)
                             elseif menuButtonSelected[2] - 3 < #composedMessage.attachments then
-                                composedMessage.attachments[menuButtonSelected[1]-3] = line .. composedMessage.attachments[menuButtonSelected[1]-2]
+                                composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. composedMessage.attachments[menuButtonSelected[1]-2]
                                 table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
                             end
                         end
