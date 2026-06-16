@@ -34,6 +34,8 @@ local attachmentImages = {}
 local dmailListMenu
 local dmailDisplayMenu
 local composeDmailMenu
+local optionListMenu
+local contactListMenu
 
 local menuButtons = {}
 local menuButtonSelected = {0, 0}
@@ -66,7 +68,8 @@ if config == nil then
         mainServer = 0,
         servers = {0},
         drawInvisibleCharacters = false,
-        showImageAttachments = false
+        showImageAttachments = false,
+        initialScreen = "list" -- list, compose, menu
         }
     yaml.save(config, "/.data/dmail/config.yaml")
 end
@@ -74,7 +77,7 @@ config.servers[1] = config.mainServer
 
 local contacts = yaml.load("/.data/dmail/contacts.yaml")
 if contacts == nil or contacts.contacts == nil then
-    contacts = {{name = "Tuna", id = 9}}
+    contacts = {}
     yaml.save({contacts = contacts}, "/.data/dmail/contacts.yaml")
 else
     contacts = contacts.contacts
@@ -405,9 +408,9 @@ local function displayDmailList()
     term.setTextColor(colors.yellow)
     term.setCursorPos(2, termHeight)
     if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
-        term.blit("[Exit]", "144441", "ffffff")
+        term.blit("[Menu]", "144441", "ffffff")
     else
-        term.write("[Exit]")
+        term.write("[Menu]")
     end
     
     term.setCursorPos(termWidth-11, termHeight)
@@ -748,6 +751,51 @@ local function composeDmail()
     end
 end
 
+local function drawOptions()
+    term.setBackgroundColor(colors.black)
+    
+    term.setCursorPos(termWidth/2 - 4, 2)
+    term.write("DMail menu")
+    
+    term.setCursorPos(termWidth/2 - 4, 4)
+    local b = "4"
+    if menuButtonSelected[1] == 1 then
+        b = "1"
+    end
+    term.blit("[  Inbox ]", b .. "44444444" .. b, "ffffffffff")
+    
+    term.setCursorPos(termWidth/2 - 4, 5)
+    local b = "4"
+    if menuButtonSelected[1] == 2 then
+        b = "1"
+    end
+    term.blit("[New Mail]", b .. "44444444" .. b, "ffffffffff")
+    
+    term.setCursorPos(termWidth/2 - 4, 6)
+    local b = "4"
+    if menuButtonSelected[1] == 3 then
+        b = "1"
+    end
+    term.blit("[Contacts]", b .. "44444444" .. b, "ffffffffff")
+    
+    term.setCursorPos(termWidth/2 - 4, 7)
+    local b = "4"
+    if menuButtonSelected[1] == 4 then
+        b = "1"
+    end
+    term.blit("[ Config ]", b .. "44444444" .. b, "ffffffffff")
+    
+    term.setCursorPos(termWidth/2 - 4, 9)
+    local b = "4"
+    if menuButtonSelected[1] == 5 then
+        b = "1"
+    end
+    term.blit("[  Exit  ]", b .. "44444444" .. b, "ffffffffff")
+end
+
+local function drawContacts()
+end
+
 local function clampScrollInList(value)
     return math.max(math.min(value, #messages + #status - ({messageList.getSize()})[2]), 0)
 end
@@ -1011,7 +1059,7 @@ dmailListMenu = function()
     end
     menuButtons[#menuButtons + 1] = {
         function()
-            exited = true
+            nextMenu = optionListMenu
         end,
         function()
             nextMenu = composeDmailMenu
@@ -1579,10 +1627,147 @@ composeDmailMenu = function()
     return nextMenu
 end
 
+optionListMenu = function()
+    local nextMenu = nil
+
+    menuButtons = {
+        {
+            function()
+                nextMenu = dmailListMenu
+            end
+        },
+        {
+            function()
+                nextMenu = composeDmailMenu
+            end
+        },
+        {
+            function()
+                nextMenu = contactListMenu
+            end
+        },
+        {
+            function()
+                nextMenu = configMenu
+            end
+        },
+        {
+            function()
+                exited = true
+            end
+        }
+    }
+
+    menuButtonSelected = {0, 0}
+    
+    drawOptions()
+    
+    while not exited and nextMenu == nil do
+        local event, a, b, c, d, e, f = os.pullEvent()
+        if event == "mouse_click" then
+            local button, x, y = a, b, c
+            if x >= termWidth/2 - 4 and x <= termWidth/2 + 5 then
+                if y == 4 then
+                    menuButtons[1][1]()
+                elseif y == 5 then
+                    menuButtons[2][1]()
+                elseif y == 6 then
+                    menuButtons[3][1]()
+                elseif y == 7 then
+                    menuButtons[4][1]()
+                elseif y == 9 then
+                    menuButtons[5][1]()
+                end
+            end
+        elseif event == "key" then
+            local key = a
+            handleMenuKeyEvent(key)
+        end
+        drawOptions()
+    end
+    return nextMenu
+end
+
+contactListMenu = function()
+    local nextMenu = nil
+
+    local removeContact = function(contact)
+        local index = 0
+        for i, con in ipairs(contacts) do
+            if con == contact then
+                index = i
+            end
+        end
+        if index > 0 then
+            table.remove(contacts, index)
+            table.remove(menuButtons, index + 1)
+        end
+    end
+    
+    local cleanContacts = function()
+        for i = #contacts, 1, -1 do
+            local contact = contacts[i]
+            if contact.id == 0 or string.find(contact, "^[%s%d]*$") then
+                removeContact(contact)
+            end
+        end
+    end
+
+    local addContactButton = function(contact)
+        menuButtons[#menuButtons + 1] = {
+            function()
+            end,
+            function()
+            end,
+            function()
+                removeContact(contact)
+                if menuButtonSelected[1] == #menuButtons then
+                    menuButtonSelected[2] = 1
+                end
+            end
+        }
+    end
+
+    menuButtons = {
+        {
+            function()
+                cleanContacts()
+                table.sort(contacts, function(a, b) return string.lower(a.name) < string.lower(b.name) end)
+                yaml.save({contacts = contacts}, "/.data/dmail/contacts.yaml")
+                nextMenu = optionListMenu
+            end
+        }
+    }
+
+    for i, contact in ipairs(contacts) do
+        addContactButton(contact)
+    end
+
+    menuButtons[#menuButtons+1] = {
+        function()
+            local contact = {name = "", id = 0}
+            contacts[#contacts+1] = contact
+            addContactButton(contact)
+        end
+    }
+    
+    drawContacts()
+    
+    while not exited and nextMenu == nil do
+        local event, a, b, c, d, e, f = os.pullEvent()
+        drawContacts()
+    end
+    return nextMenu
+end
+
 local nextMenu = dmailListMenu
 if config.mainServer == 0 then
     nextMenu = configMenu
     canCancelConfig = false
+elseif config.initialScreen == "compose" then
+    nextMenu = composeDmailMenu
+elseif config.initialScreen == "menu" then
+    nextMenu = optionListMenu
 end
 
 while not exited and nextMenu ~= nil do
