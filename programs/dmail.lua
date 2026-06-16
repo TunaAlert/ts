@@ -1204,7 +1204,9 @@ composeDmailMenu = function()
             local removedIndecies = {}
             for i, attachment in ipairs(composedMessage.attachments) do
                 if not attachmentList.isVisible() or i ~= menuButtonSelected[1] - 3 then
-                    removedIndecies[#removedIndecies] = i
+                    if attachment == "" then
+                        removedIndecies[#removedIndecies + 1] = i
+                    end
                 end
             end
             for i, index in ipairs(removedIndecies) do
