@@ -806,7 +806,22 @@ configMenu = function()
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
         if event == "mouse_click" then
-            
+            local button, x, y = a, b, c
+            if y == 3 then
+                if x >= termWidth - 5 and x < termWidth then
+                    menuButtonSelected = {1, 1}
+                    menuButtons[1][1]()
+                end
+            elseif y == 4 then
+                if x >= termWidth - 5 and x < termWidth then
+                    menuButtonSelected = {2, 1}
+                    menuButtons[2][1]()
+                end
+            elseif y == 4 then
+                if x >= termWidth - 6 then
+                    menuButtonSelected = {3, 1}
+                end
+            end
             drawConfigScreen()
         elseif event == "key" then
             local key = a
