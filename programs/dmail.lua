@@ -1111,7 +1111,12 @@ composeDmailMenu = function()
                         elseif key == keys.backspace then
                             if menuButtonSelected[2] > 1 then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 2) .. string.sub(attachment, menuButtonSelected[2])
-                                menuButtonSelected[1] = menuButtonSelected[1] - 1
+                                menuButtonSelected[2] = menuButtonSelected[2] - 1
+                            else
+                                if menuButtonSelected[1]-3 > 1 then
+                                    composedMessage.attachments[menuButtonSelected[1]-4] = composedMessage.attachments[menuButtonSelected[1]-4] .. composedMessage.attachments[menuButtonSelected[1]-3]
+                                end
+                                table.remove(composedMessage.attachments, menuButtonSelected[1]-3)
                             end
                         elseif key == keys.delete then
                             if menuButtonSelected[2] <= #attachment then
@@ -1124,7 +1129,7 @@ composeDmailMenu = function()
                             local suggestions = fs.complete(attachment, "/")
                             if #suggestions > 0 then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. suggestions[1]
-                                menuButtonSelected[2] = #composedMessage.attachments[menuButtonSelected[1]-3]
+                                menuButtonSelected[2] = #composedMessage.attachments[menuButtonSelected[1]-3] + 1
                             end
                         end
                     else
