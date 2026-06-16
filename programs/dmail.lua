@@ -511,7 +511,7 @@ local function composeDmail()
                 attachmentList.write(string.sub(attachment, 1 + selectedLineScroll))
                 attachmentList.setBackgroundColor(colors.gray)
                 attachmentList.setTextColor(colors.white)
-                attachmentList.write(fs.complete(attachment, "/")
+                attachmentList.write(fs.complete(attachment, "/"))
             else
                 attachmentList.write(fs.getName(attachment))
             end
@@ -1109,6 +1109,8 @@ composeDmailMenu = function()
                                 composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. composedMessage.attachments[menuButtonSelected[1]-2]
                                 table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
                             end
+                        elseif key == keys.tab then
+                            composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. fs.complete(attachment, "/")
                         end
                     else
                         local line = composedMessage.lines[menuButtonSelected[1]-3]
