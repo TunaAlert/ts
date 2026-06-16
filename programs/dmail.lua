@@ -340,7 +340,7 @@ local function drawConfigScreen()
         col = "cccc"
         b = "c"
     end
-    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 2 then
+    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == #menuButtons[#menuButtons] then
         b = "1"
     end
     term.blit("[Save]", b .. col .. b, "ffffff")
@@ -803,8 +803,15 @@ configMenu = function()
                 removeIndecies[#removeIndecies + 1] = i
             end
         end
-        for i, index in ipairs(removeIndecies) do
+        for i = #removeIndecies, 1, -1 do
+            local index = removeIndecies[i]
             table.remove(config.servers, index)
+            local r = math.floor((index - 1) / 3) + 1
+            local c = ((index - 1) % 3) + 1
+            table.remove(menuButtons[3+r], c)
+            if #menuButtons[3+r] == 0 then
+                table.remove(menuButtons, 3+r)
+            end
             if isSelected and index < selectedPosition then
                 selectedPosition = selectedPosition - 1
             end
@@ -814,7 +821,13 @@ configMenu = function()
             menuButtonSelected[2] = ((selectedPosition - 1) % 3) + 1
         end
         if addEmpty and #config.servers < 9 then
-            config.servers[#config.servers] = 0
+            config.servers[#config.servers + 1] = 0
+            local r = math.floor((#config.servers - 1) / 3) + 1
+            local c = ((#config.servers - 1) % 3) + 1
+            if 3+r == #menuButtons then
+                table.insert(menuButtons, 3+r, {})
+            end
+            menuButtons[3+r][c] = function() end
         end
     end
     
@@ -842,15 +855,7 @@ configMenu = function()
         end
         menuButtons[r+3][c] = function() end
     end
-    menuButtons[math.floor((#config.servers - 1)/3)+5] = {
-        function()
-            if canCancelConfig then
-                config = yaml.load("/.data/dmail/config.yaml")
-                if config.mainServer ~= 0 then
-                    nextMenu = dmailListMenu
-                end
-            end
-        end,
+    menuButtons[#menuButtons + 1] = {
         function()
             if config.mainServer ~= 0 then
                 cleanServerList(false)
@@ -862,6 +867,18 @@ configMenu = function()
             end
         end
     }
+    if canCancelConfig then
+        table.insert(menuButtons[#menuButtons], 1,
+            function()
+                if canCancelConfig then
+                    config = yaml.load("/.data/dmail/config.yaml")
+                    if config.mainServer ~= 0 then
+                        nextMenu = dmailListMenu
+                    end
+                end
+            end
+        )
+    end
     menuButtonSelected = {0, 0}
 
     drawConfigScreen()
@@ -885,10 +902,11 @@ configMenu = function()
                     menuButtonSelected = {3, 1}
                 end
             elseif y == termHeight then
+                local lastRow = #menuButtons[#menuButtons]
                 if x <= 8 then
-                    menuButtons[#menuButtons][1]()
+                    lastRow[1]()
                 elseif x >= termWidth - 5 then
-                    menuButtons[#menuButtons][2]()
+                    lastRow[#lastRow]()
                 end
             end
             drawConfigScreen()
@@ -1255,7 +1273,8 @@ composeDmailMenu = function()
                 end
             end
         end
-        for i, index in ipairs(removedIndecies) do
+        for i = #removedIndecies, 1, -1 do
+            local index = removedIndecies[i]
             table.remove(composedMessage.attachments, index)
             if index < menuButtonSelected[1] - 3 then
                 menuButtonSelected[1] = menuButtonSelected[1] - 1
