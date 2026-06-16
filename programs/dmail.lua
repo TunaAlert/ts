@@ -880,8 +880,8 @@ configMenu = function()
         end
         if addEmpty and #config.servers < 9 then
             config.servers[#config.servers + 1] = 0
-            if #menuButtons[#menuButtons-1] == 3 then
-                table.insert(menuButtons, #menuButtons - 1, {})
+            if #menuButtons[#menuButtons - 1] == 3 then
+                table.insert(menuButtons, #menuButtons, {})
             end
             local list = menuButtons[#menuButtons-1]
             list[#list+1] = function() end
