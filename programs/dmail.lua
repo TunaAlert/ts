@@ -6,6 +6,7 @@ local exited = false
 
 local termWidth, termHeight = term.getSize()
 
+local bufferWindow = window.create(term.current(), termWidth/2-11, termHeight/2-11, 24, 24)
 local messageList = window.create(term.current(), 1, 4, termWidth, termHeight - 5)
 local messageBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 6)
 local composeBody = window.create(term.current(), 2, 5, termWidth-1, termHeight - 4)
@@ -73,10 +74,7 @@ else
     contacts = contacts.contacts
 end
 
-local buffer = {}
-for i, file in ipairs(fs.list("/programs/dmail/buffer/")) do
-    buffer[i] = nft.load("/programs/dmail/buffer/" .. file)
-end
+local buffer = nft.load("/programs/dmail/buffer.nft")
 
 local function nameOrID(id)
     for i, contact in pairs(contacts) do
@@ -232,20 +230,20 @@ local function writeNoPush(redirect, text)
 end
 
 local function drawLoadingLoop()
-    local bufferx = math.random(1, #buffer)
+    bufferWindow.setVisible(true)
+    local bufferx = math.random(1, 32)
     while true do
         term.redirect(parentTerm)
         term.setBackgroundColor(colors.black)
         term.setTextColor(colors.white)
         term.clear()
 
-        bufferx = (bufferx % #buffer) + 1
+        bufferx = (bufferx % 32) + 1
 
         term.setCursorPos(termWidth/2 - 7, 3)
         term.write("Loading Dmails")
 
-        local frame = buffer[bufferx]        
-        nft.draw(frame, (termWidth - #frame[1]) / 2, (termHeight - #frame) / 2)
+        bufferWindow.draw(buffer, 1 - 24 * ((bufferx - 1) % 4), 1 - 24 * math.floor((bufferx - 1) / 4))
             
         sleep(0.05)
     end
