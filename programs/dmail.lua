@@ -857,7 +857,7 @@ configMenu = function()
             elseif y == termHeight then
                 if x <= 8 then
                     menuButtons[#menuButtons][1]()
-                elseif x >= ternWidth - 5 then
+                elseif x >= termWidth - 5 then
                     menuButtons[#menuButtons][2]()
                 end
             end
@@ -865,7 +865,13 @@ configMenu = function()
         elseif event == "key" then
             local key = a
             handleMenuKeyEvent(key)
-            if menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
+           if menuButtonSelected[1] == 3 then
+                if key == keys.backspace then
+                    config.mainServer = math.floor(config.mainServer/10)
+                elseif key == keys.delete then
+                    config.mainServer = 0
+                end
+           elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
                 local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
                 if key == keys.backspace then
                     config.servers[index] = math.floor(config.servers[index]/10)
