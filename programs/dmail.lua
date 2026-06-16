@@ -914,6 +914,7 @@ composeDmailMenu = function()
     
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
+
         if event == "mouse_click" then
             local button, x, y = a, b, c
             if y == 1 then
@@ -945,12 +946,18 @@ composeDmailMenu = function()
                     menuButtonSelected = {3, math.max(math.min(x - 4, #nameOrID(composedMessage.recipient) + 1), 1)}
                 end
             elseif y >= 5 then
-                menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
-                local line = composedMessage.lines[menuButtonSelected[1]-3]
-                if string.sub(line, #line) == "\n" then
-                    menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3]), 1)
+                if attachmentList.isVisible() then
+                    menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.attachments + 4)
+                    local attachment = composedMessage.attachments[menuButtonSelected[1]-3] or ""
+                    menuButtonSelected[2] = math.max(math.min(x - 1, #line + 1), 1)
                 else
-                    menuButtonSelected[2] = math.max(math.min(x - 1, #composedMessage.lines[menuButtonSelected[1]-3] + 1), 1)
+                    menuButtonSelected[1] = math.min(y - 1 + scroll, #composedMessage.lines + 3)
+                    local line = composedMessage.lines[menuButtonSelected[1]-3]
+                    if string.sub(line, #line) == "\n" then
+                        menuButtonSelected[2] = math.max(math.min(x - 1, #line), 1)
+                    else
+                        menuButtonSelected[2] = math.max(math.min(x - 1, #line + 1), 1)
+                    end
                 end
             end
             composeDmail()
@@ -973,6 +980,9 @@ composeDmailMenu = function()
                 end
             else
                 local rows = #composedMessage.lines + 3
+                if attachmentList.isVisible() then
+                    rows = #composedMessage.attachments + 4
+                end
                 local columnCount = 1
                 if key == keys.up then
                     menuButtonSelected[1] = (menuButtonSelected[1] - 2) % rows + 1
@@ -1043,59 +1053,87 @@ composeDmailMenu = function()
                         end
                     end
                 elseif menuButtonSelected[1] >= 4 then
-                    local line = composedMessage.lines[menuButtonSelected[1]-3]
-                    if string.sub(line, #line) == "\n" then
-                        columnCount = #composedMessage.lines[menuButtonSelected[1]-3]
+                    if attachmentList.isVisible() then
+                        columnCount = #composedMessage.attachments[menuButtonSelected[1]-3] + 1
+                        if key == keys.right then
+                            menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                        elseif key == keys.left then
+                            menuButtonSelected[2] = math.max(menuButtonSelected[2], 1)
+                        elseif key == keys.enter then
+                            local line = composedMessage.attachments[menuButtonSelected[1]-3]
+                            table.insert(composedMessage.attachments, menuButtonSelected[1]-2, string.sub(line, menuButtonsSelected[2]))
+                            composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonsSelected[2] - 1)
+                            menuButtonsSelected[1] = menuButtonsSelected[1] + 1
+                        elseif key == keys.backspace then
+                            if menuButtonsSelected[2] > 1 then
+                                local line = composedMessage.attachments[menuButtonSelected[1]-3]
+                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonsSelected[2] - 2) .. string.sub(line, 1, menuButtonsSelected[2])
+                                menuButtonsSelected[1] = menuButtonsSelected[1] - 1
+                            end
+                        elseif key == keys.delete then
+                            local line = composedMessage.attachments[menuButtonSelected[1]-3]
+                            if menuButtonsSelected[2] <= #line then
+                                composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(line, 1, menuButtonsSelected[2] - 1) .. string.sub(line, 1, menuButtonsSelected[2] + 1)
+                            elseif menuButtonsSelected[2] - 3 < #composedMessage.attachments then
+                                composedMessage.attachments[menuButtonSelected[1]-3] = line + composedMessage.attachments[menuButtonSelected[1]-2]
+                                table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
+                            end
+                        end
                     else
-                        columnCount = #composedMessage.lines[menuButtonSelected[1]-3] + 1
-                    end
-                    menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
-                    if key == keys.right then
-                        menuButtonSelected[2] = menuButtonSelected[2] + 1
-                        if menuButtonSelected[2] > columnCount then
-                            if menuButtonSelected[1] - 3 < #composedMessage.lines then
-                                menuButtonSelected[1] = menuButtonSelected[1] + 1
-                                menuButtonSelected[2] = 1
-                            else
-                                menuButtonSelected[2] = columnCount
-                            end
+                        local line = composedMessage.lines[menuButtonSelected[1]-3]
+                        if string.sub(line, #line) == "\n" then
+                            columnCount = #line
+                        else
+                            columnCount = #line + 1
                         end
-                    elseif key == keys.left then
-                        menuButtonSelected[2] = menuButtonSelected[2] - 1
-                        if menuButtonSelected[2] < 1 then
-                            if menuButtonSelected[1] - 3 > 1 then
-                                menuButtonSelected[1] = menuButtonSelected[1] - 1
-                                local line = composedMessage.lines[menuButtonSelected[1]-3]
-                                if string.sub(line, #line) == "\n" then
-                                    menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3]
+                        menuButtonSelected[2] = math.min(menuButtonSelected[2], columnCount)
+                        if key == keys.right then
+                            menuButtonSelected[2] = menuButtonSelected[2] + 1
+                            if menuButtonSelected[2] > columnCount then
+                                if menuButtonSelected[1] - 3 < #composedMessage.lines then
+                                    menuButtonSelected[1] = menuButtonSelected[1] + 1
+                                    menuButtonSelected[2] = 1
                                 else
-                                    menuButtonSelected[2] = #composedMessage.lines[menuButtonSelected[1]-3] + 1
+                                    menuButtonSelected[2] = columnCount
                                 end
-                            else
-                                menuButtonSelected[2] = 1
                             end
-                        end
-                    elseif key == keys.enter then
-                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
-                        composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. "\n" .. string.sub(composedMessage.body, index)
-                        composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
-                        menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
-                        menuButtonSelected[1] = menuButtonSelected[1] + 3
-                    elseif key == keys.backspace then
-                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
-                        if index > 1 then
-                            composedMessage.body = string.sub(composedMessage.body, 1, index - 2) .. string.sub(composedMessage.body, index)
-                            composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
-                            menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index - 1)
-                            menuButtonSelected[1] = menuButtonSelected[1] + 3
-                        end
-                    elseif key == keys.delete then
-                        local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
-                        if index <= #composedMessage.body then
-                            composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. string.sub(composedMessage.body, index + 1)
+                        elseif key == keys.left then
+                            menuButtonSelected[2] = menuButtonSelected[2] - 1
+                            if menuButtonSelected[2] < 1 then
+                                if menuButtonSelected[1] - 3 > 1 then
+                                    menuButtonSelected[1] = menuButtonSelected[1] - 1
+                                    local line = composedMessage.lines[menuButtonSelected[1]-3]
+                                    if string.sub(line, #line) == "\n" then
+                                        menuButtonSelected[2] = #line
+                                    else
+                                        menuButtonSelected[2] = #line + 1
+                                    end
+                                else
+                                    menuButtonSelected[2] = 1
+                                end
+                            end
+                        elseif key == keys.enter then
+                            local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                            composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. "\n" .. string.sub(composedMessage.body, index)
                             composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
                             menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
                             menuButtonSelected[1] = menuButtonSelected[1] + 3
+                        elseif key == keys.backspace then
+                            local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                            if index > 1 then
+                                composedMessage.body = string.sub(composedMessage.body, 1, index - 2) .. string.sub(composedMessage.body, index)
+                                composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index - 1)
+                                menuButtonSelected[1] = menuButtonSelected[1] + 3
+                            end
+                        elseif key == keys.delete then
+                            local index = getBodyPosInLine(composedMessage.body, termWidth - 1, menuButtonSelected[1] - 3, menuButtonSelected[2])
+                            if index <= #composedMessage.body then
+                                composedMessage.body = string.sub(composedMessage.body, 1, index - 1) .. string.sub(composedMessage.body, index + 1)
+                                composedMessage.lines = getLines(composedMessage.body, termWidth - 1)
+                                menuButtonSelected[1], menuButtonSelected[2] = getLinePosInBody(composedMessage.body, termWidth - 1, index + 1)
+                                menuButtonSelected[1] = menuButtonSelected[1] + 3
+                            end
                         end
                     end
                 end
