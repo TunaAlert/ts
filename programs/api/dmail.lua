@@ -1,7 +1,7 @@
 local ftp = require("/programs/api/ftp")
 
 local function send(server, recipient, subject, body, attachments)
-    local mail_id = ("%s %d %d"):format(os.getComputerID(), recipient, os.date("%Y-%m-%d %H-%M-%S"))
+    local mail_id = ("%s %d %d"):format(os.date("%Y-%m-%d %H-%M-%S"), os.getComputerID(), recipient)
     local mailFile = ("/.data/dmail/outbox/%s.mail"):format(mail_id)
     local handle = io.open(mailFile)
     handle:write(("server:%d\n"):format(server))
