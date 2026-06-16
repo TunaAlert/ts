@@ -1209,7 +1209,7 @@ composeDmailMenu = function()
                 end
                 composedMessage.recipient = string.sub(composedMessage.recipient, 1, menuButtonSelected[2] - 1) .. char .. string.sub(composedMessage.recipient, menuButtonSelected[2])
                 menuButtonSelected[2] = menuButtonSelected[2] + 1
-            elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] - 4 <= #composedMessage.lines then
+            elseif menuButtonSelected[1] > 3 then
                 if attachmentList.isVisible() then
                     local attachment = composedMessage.attachments[menuButtonSelected[1] - 3] or ""
                     composedMessage.attachments[menuButtonSelected[1] - 3] = string.sub(attachment, 1, menuButtonSelected[2] - 1) .. char .. string.sub(attachment, menuButtonSelected[2])
