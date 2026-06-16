@@ -824,7 +824,7 @@ configMenu = function()
             if config.mainServer ~= 0 then
                 cleanServerList(false, true)
                 yaml.save(config, "/.data/dmail/config.yaml")
-                if #table.servers < 9 then
+                if #config.servers < 9 then
                     config.servers[#config.servers + 1] = 0
                     if #menuButtons[#menuButtons-1] == 3 or #menuButtons < 5 then
                         table.insert(menuButtons, #menuButtons, {})
