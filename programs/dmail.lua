@@ -88,7 +88,7 @@ local buffer = nft.load("/programs/dmail/buffer.nft")
 local function nameOrID(id)
     for i, contact in pairs(contacts) do
         if contact.id == id then
-            return tostrinf(contact.name)
+            return tostring(contact.name)
         end
     end
     return tostring(id)
