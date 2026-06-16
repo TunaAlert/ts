@@ -64,12 +64,13 @@ local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
         mainServer = 0,
-        servers = {},
+        servers = {0},
         drawInvisibleCharacters = false,
         showImageAttachments = false
         }
     yaml.save(config, "/.data/dmail/config.yaml")
 end
+config.servers[1] = config.mainServer
 
 local contacts = yaml.load("/.data/dmail/contacts.yaml")
 if contacts == nil or contacts.contacts == nil then
@@ -792,6 +793,22 @@ configMenu = function()
     local nextMenu = nil
     bufferWindow.setVisible(true)
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
+
+    local cleanServerList = function(addEmpty)
+        local removeIndecies = {}
+        for i, server in ipairs(config.servers) do
+            if server == 0 then
+                removeIndecies[$removeIndecies + 1] = i
+            end
+        end
+        for i, index in ipairs(removeIndecies) do
+            table.remove(config.servers, index)
+        end
+        if addEmpty and #table.servers < 9 then
+            config.servers[#config.servers] = 0
+        end
+    end
+    
     menuButtons = {
         {
             function()
@@ -827,7 +844,11 @@ configMenu = function()
         end,
         function()
             if config.mainServer ~= 0 then
+                cleanServerList(false)
                 yaml.save(config, "/.data/dmail/config.yaml")
+                if #table.servers < 9 then
+                    config.servers[#config.servers] = 0
+                end
                 nextMenu = dmailListMenu
             end
         end
@@ -871,13 +892,16 @@ configMenu = function()
                 elseif key == keys.delete then
                     config.mainServer = 0
                 end
+                config.servers[1] = config.mainServer
            elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
                 local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
                 if key == keys.backspace then
                     config.servers[index] = math.floor(config.servers[index]/10)
                 elseif key == keys.delete then
                     config.servers[index] = 0
+                    cleanServerList(true)
                 end
+                config.mainServer = config.servers[1] or 0
             end
             drawConfigScreen()
         elseif event == "char" then
@@ -886,11 +910,13 @@ configMenu = function()
                 if string.find(char, "^%d$") then
                     config.mainServer = math.min(config.mainServer * 10 + tonumber(char), 65500)
                 end
+                config.servers[1] = config.mainServer
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
                 local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
                 if string.find(char, "^%d$") then
                     config.servers[index] = math.min(config.servers[index] * 10 + tonumber(char), 65500)
                 end
+                config.mainServer = config.servers[1] or 0
             end
             drawConfigScreen()
         elseif event == "timer" then
