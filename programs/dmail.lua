@@ -87,6 +87,15 @@ local function nameOrID(id)
     return tostring(id)
 end
 
+local function IdFromName(nameorid)
+    for i, contact in pairs(contacts) do
+        if contact.name == nameorid then
+            return contact.name
+        end
+    end
+    return tonumber(nameorid) or 0
+end
+
 local function isMessageRead(messageId)
     for i, message in pairs(readMessages) do
         if message == messageId then
@@ -482,12 +491,17 @@ local function composeDmail()
     end
 
     term.setCursorPos(5, 3)
-    if type(composedMessage.recipient) == "string" and #composedMessage.recipient > 0 then
-        term.setTextColor(colors.red)
-        term.write(composedMessage.recipient)
-    elseif type(composedMessage.recipient) == "number" and composedMessage.recipient ~= 0 then
+    
+    if type(composedMessage.recipient) == "number" and composedMessage.recipient > 0 then
         term.setTextColor(colors.green)
         term.write(nameOrID(composedMessage.recipient))
+    elseif type(composedMessage.recipient) == "string" and #composedMessage.recipient > 0 then
+        if IdFromName(composedMessage.recipient) > 0 then
+            term.setTextColor(colors.green)
+        else
+            term.setTextColor(colors.red)
+        end
+        term.write(composedMessage.recipient)
     else
         term.setTextColor(colors.gray)
         term.write("recipient")
