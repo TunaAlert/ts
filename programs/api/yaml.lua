@@ -302,7 +302,7 @@ local function constructInlineJSON(data)
         local json = ""
         if isList(data) then
             json = "["
-            for k, v in pairs(data) do
+            for k, v in ipairs(data) do
                 local valueJson = constructInlineJSON(v)
                 if valueJSON ~= "" then
                     if json ~= "[" then
@@ -345,7 +345,7 @@ local function constructYaml(data, prefix, inList)
         if inList then
             return thisIterationPrefix .. constructInlineJSON(data) .. "\n"
         end
-        for k, v in pairs(data) do
+        for k, v in ipairs(data) do
             if type(v) == "table" then
                 yaml = yaml .. constructYaml(v, prefix, true)
             elseif type(v) == "number" or type(v) == "boolean" or type(v) == "string" then
