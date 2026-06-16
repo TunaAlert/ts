@@ -752,6 +752,7 @@ local function composeDmail()
 end
 
 local function drawOptions()
+    term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.clear()
     
@@ -795,6 +796,7 @@ local function drawOptions()
 end
 
 local function drawContacts()
+    term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
 
@@ -905,7 +907,6 @@ configMenu = function()
     local cleanServerList = nil
     bufferWindow.setVisible(true)
     bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
-    term.redirect(parentTerm)
 
     menuButtons = {
         {
