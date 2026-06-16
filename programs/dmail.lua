@@ -1124,6 +1124,7 @@ composeDmailMenu = function()
                             local suggestions = fs.complete(attachment, "/")
                             if #suggestions > 0 then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. suggestions[1]
+                                menuButtonSelected[2] = #composedMessage.attachments[menuButtonSelected[1]-3]
                             end
                         end
                     else
