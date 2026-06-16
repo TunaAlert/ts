@@ -27,6 +27,7 @@ local attachmentsDownloaded = {}
 local scroll = 0
 local selectedDmail = 0
 local composedMessage = {}
+local canCancelConfig = true
 
 local attachmentImages = {}
 
@@ -320,18 +321,28 @@ local function drawConfigScreen()
     end
 
     term.setCursorPos(1, termHeight)
-    local b = "4"
-    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
-        b = "1"
+    if canCancelConfig then
+        local b = "4"
+        if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
+            b = "1"
+        end
+        term.blit("[Cancel]", b .. "444444" .. b, "ffffffff")
+    else
+        term.setTextColor(colors.gray)
+        term.write("set main server")
     end
-    term.blit("[Cancel]", b .. "444444" .. b, "ffffffff")
     
     term.setCursorPos(termWidth-5, termHeight)
     local b = "4"
+    local col = "4444"
+    if config.mainServer == 0 then
+        col = "cccc"
+        b = "c"
+    end
     if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 2 then
         b = "1"
     end
-    term.blit("[Save]", b .. "4444" .. b, "ffffff")
+    term.blit("[Save]", b .. col .. b, "ffffff")
 
     local frame = ((os.epoch() / 3600) % 32) + 1
     nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
@@ -807,10 +818,18 @@ configMenu = function()
     end
     menuButtons[math.floor((#config.servers - 1)/3)+5] = {
         function()
-            config = yaml.load("/.data/dmail/config.yaml")
+            if canCancelConfig then
+                config = yaml.load("/.data/dmail/config.yaml")
+                if config.mainServer ~= 0 then
+                    nextMenu = dmailListMenu
+                end
+            end
         end,
         function()
-            yaml.save(config, "/.data/dmail/config.yaml")
+            if config.mainServer ~= 0 then
+                yaml.save(config, "/.data/dmail/config.yaml")
+                nextMenu = dmailListMenu
+            end
         end
     }
     menuButtonSelected = {0, 0}
@@ -835,6 +854,12 @@ configMenu = function()
                 if x >= termWidth - 6 then
                     menuButtonSelected = {3, 1}
                 end
+            elseif y == termHeight then
+                if x <= 8 then
+                    menuButtons[#menuButtons][1]()
+                elseif x >= ternWidth - 5 then
+                    menuButtons[#menuButtons][2]()
+                end
             end
             drawConfigScreen()
         elseif event == "key" then
@@ -852,12 +877,12 @@ configMenu = function()
         elseif event == "char" then
             local char = a
             if menuButtonSelected[1] == 3 then
-                if string.find(char, "^%d&") then
+                if string.find(char, "^%d$") then
                     config.mainServer = math.min(config.mainServer * 10 + tonumber(char), 65500)
                 end
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
                 local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
-                if string.find(char, "^%d&") then
+                if string.find(char, "^%d$") then
                     config.servers[index] = math.min(config.servers[index] * 10 + tonumber(char), 65500)
                 end
             end
@@ -1486,6 +1511,7 @@ end
 local nextMenu = dmailListMenu
 if config.mainServer == 0 then
     nextMenu = configMenu
+    canCancelConfig = false
 end
 
 while not exited and nextMenu ~= nil do
