@@ -1,5 +1,5 @@
 name: Dmail
-version: 0.1
+version: 1.0.0
 description: A way to send files and messages to each other using central ftp servers in CraftOS
 files:
   - programs/dmail.lua
