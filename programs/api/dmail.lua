@@ -93,6 +93,9 @@ local function openMail(server, mail)
 end
 
 local function fetchLocal()
+    if not fs.exists("/.data/dmail/inbox") then
+        return {}
+    end
     local messageFiles = {}
     local localInbox = fs.list("/.data/dmail/inbox")
     for i, localMessage in pairs(localInbox) do
