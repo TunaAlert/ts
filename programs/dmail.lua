@@ -752,9 +752,9 @@ local function handleMenuKeyEvent(key)
         menuButtonSelected[1] = (math.max(math.min(menuButtonSelected[1], #menuButtons), 1) - 2) % #menuButtons + 1
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
     elseif key == keys.left then
-        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons + 1
+        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1) - 2) % #menuButtons[menuButtonSelected[1]] + 1
     elseif key == keys.right then
-        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons + 1
+        menuButtonSelected[2] = (math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)) % #menuButtons[menuButtonSelected[1]] + 1
     elseif key == keys.enter then
         menuButtonSelected[1] = math.max(math.min(menuButtonSelected[1], #menuButtons), 1)
         menuButtonSelected[2] = math.max(math.min(menuButtonSelected[2], #menuButtons[menuButtonSelected[1]]), 1)
@@ -817,7 +817,7 @@ configMenu = function()
                     menuButtonSelected = {2, 1}
                     menuButtons[2][1]()
                 end
-            elseif y == 4 then
+            elseif y == 5 then
                 if x >= termWidth - 6 then
                     menuButtonSelected = {3, 1}
                 end
