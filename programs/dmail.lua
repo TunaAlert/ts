@@ -861,7 +861,13 @@ configMenu = function()
                 cleanServerList(false)
                 yaml.save(config, "/.data/dmail/config.yaml")
                 if #table.servers < 9 then
-                    config.servers[#config.servers] = 0
+                    config.servers[#config.servers + 1] = 0
+                    local r = math.floor((#config.servers - 1) / 3) + 1
+                    local c = ((#config.servers - 1) % 3) + 1
+                    if 3+r == #menuButtons then
+                        table.insert(menuButtons, 3+r, {})
+                    end
+                    menuButtons[3+r][c] = function() end
                 end
                 nextMenu = dmailListMenu
             end
