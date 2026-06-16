@@ -319,6 +319,20 @@ local function drawConfigScreen()
         term.blit(("[%05d]"):format(server), b .. "00000" .. b, "fffffff")
     end
 
+    term.setCursorPos(1, termHeight)
+    local b = "0"
+    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 1 then
+        b = "1"
+    end
+    term.blit("[Cancel]", b .. "000000" .. b, "ffffffff")
+    
+    term.setCursorPos(termWidth-5, termHeight)
+    local b = "0"
+    if menuButtonSelected[1] == #menuButtons and menuButtonSelected[2] == 2 then
+        b = "1"
+    end
+    term.blit("[Save]", b .. "0000" .. b, "ffffff")
+
     local frame = ((os.epoch() / 3600) % 32) + 1
     nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
     if menuButtonSelected[1] == 3 then
