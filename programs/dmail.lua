@@ -821,7 +821,7 @@ configMenu = function()
     menuButtons[#menuButtons + 1] = {
         function()
             if config.mainServer ~= 0 then
-                cleanServerList(false)
+                cleanServerList(false, true)
                 yaml.save(config, "/.data/dmail/config.yaml")
                 if #table.servers < 9 then
                     config.servers[#config.servers + 1] = 0
@@ -850,13 +850,13 @@ configMenu = function()
     end
     menuButtonSelected = {0, 0}
 
-    local cleanServerList = function(addEmpty)
+    local cleanServerList = function(addEmpty, removeSelected)
         local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
         local selectedPosition = (menuButtonSelected[1] - 4) * 3 + menuButtonSelected[2]
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
             if server == 0 then
-                if i == selectedPosition then
+                if i == selectedPosition and not removeSelected then
                     addEmpty = false
                 else
                     removeIndecies[#removeIndecies + 1] = i
@@ -936,10 +936,11 @@ configMenu = function()
                     config.servers[index] = math.floor(config.servers[index]/10)
                 elseif key == keys.delete then
                     config.servers[index] = 0
+                    cleanServerList(true, true)
                 end
                 config.mainServer = config.servers[1] or 0
             end
-            cleanServerList(true)
+            cleanServerList(true, false)
             drawConfigScreen()
         elseif event == "char" then
             local char = a
