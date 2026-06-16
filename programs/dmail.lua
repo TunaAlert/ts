@@ -424,19 +424,35 @@ local function displayDmail()
     local ypos = message.lineCount+2 - scroll
     for i, attachment in ipairs(message.attachments) do
         messageBody.setCursorPos(3, ypos)
+        local defaultColor = colors.yellow
+        if attachmentsDownloaded[i] == true then
+            defaultColor = colors.lime
+        elseif attachmentsDownloaded[i] == false then
+            defaultColor = colors.red
+        end
         if config.showImageAttachments and string.find(attachment, ".nft$") then
             if attachmentImages[i] == nil then
                 attachmentImages[i] = nft.load(("/.data/dmail/attachments/%s/%s"):format(message.id, attachment))
             end
-            nft.draw(attachmentImages[i], 1, ypos, messageBody)
+            nft.draw(attachmentImages[i], 2, ypos, messageBody)
+            if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
+                messageBody.setTextColor(defaultColor)
+                if #attachmentImages[i] == 1 then
+                    messageBody.setCursorPos(1, ypos)
+                    messageBody.write("[")
+                    messageBody.setCursorPos(2+#attachmentImages[i][1], ypos)
+                    messageBody.write("]")
+                elseif #attachmentImages[i] > 1 then
+                    for j = 1, #attachmentImages[i], 1 do
+                        messageBody.setCursorPos(1, ypos + j - 1)
+                        messageBody.write("\x7f")
+                        messageBody.setCursorPos(2+#attachmentImages[i][1], ypos + j - 1)
+                        messageBody.write("\x7f")
+                    end
+                end
+            end
             ypos = ypos + #attachmentImages[i] + 2
         else
-            local defaultColor = colors.yellow
-            if attachmentsDownloaded[i] == true then
-                defaultColor = colors.lime
-            elseif attachmentsDownloaded[i] == false then
-                defaultColor = colors.red
-            end
             if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
                 messageBody.setTextColor(defaultColor)
                 messageBody.write("+ ")
