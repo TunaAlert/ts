@@ -28,6 +28,8 @@ local scroll = 0
 local selectedDmail = 0
 local composedMessage = {}
 
+local attachmentImages = {}
+
 local dmailListMenu
 local dmailDisplayMenu
 local composeDmailMenu
@@ -419,26 +421,36 @@ local function displayDmail()
     messageBody.setBackgroundColor(colors.black)
     messageBody.clear()
     message.lineCount = #writeNoPush(messageBody, message.body)
+    local ypos = message.lineCount+2 - scroll
     for i, attachment in ipairs(message.attachments) do
-        messageBody.setCursorPos(3, message.lineCount+1+i - scroll)
-        local defaultColor = colors.yellow
-        if attachmentsDownloaded[i] == true then
-            defaultColor = colors.lime
-        elseif attachmentsDownloaded[i] == false then
-            defaultColor = colors.red
-        end
-        if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
-            messageBody.setTextColor(defaultColor)
-            messageBody.write("+ ")
-            messageBody.setTextColor(colors.orange)
-            messageBody.write("[")
-            messageBody.setTextColor(defaultColor)
-            messageBody.write(attachment)
-            messageBody.setTextColor(colors.orange)
-            messageBody.write("]")
+        messageBody.setCursorPos(3, ypos)
+        if config.showImageAttachments and string.find(attachment, ".nft$") then
+            if attachmentImages[i] == nil then
+                attachmentImages[i] = nft.load(("/.data/dmail/attachments/%s/%s"):format(message.id, attachment))
+            end
+            nft.draw(attachmentImages[i], 1, ypos, messageBody)
+            ypos = ypos + #attachmentImages[i] + 2
         else
-            messageBody.setTextColor(defaultColor)
-            messageBody.write("+  " .. attachment)
+            local defaultColor = colors.yellow
+            if attachmentsDownloaded[i] == true then
+                defaultColor = colors.lime
+            elseif attachmentsDownloaded[i] == false then
+                defaultColor = colors.red
+            end
+            if menuButtonSelected[1] == #menuButtons - #message.attachments + i then
+                messageBody.setTextColor(defaultColor)
+                messageBody.write("+ ")
+                messageBody.setTextColor(colors.orange)
+                messageBody.write("[")
+                messageBody.setTextColor(defaultColor)
+                messageBody.write(attachment)
+                messageBody.setTextColor(colors.orange)
+                messageBody.write("]")
+            else
+                messageBody.setTextColor(defaultColor)
+                messageBody.write("+  " .. attachment)
+            end
+            ypos = ypos + 1
         end
     end
 end
@@ -774,6 +786,7 @@ dmailDisplayMenu = function()
     scroll = 0
     menuButtonSelected = {0, 0}
     attachmentsDownloaded = {}
+    attachmentImages = {}
     local selectedMessage = messages[selectedDmail]
     
     displayDmail()
