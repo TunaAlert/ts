@@ -60,8 +60,10 @@ local popUp
 local config = yaml.load("/.data/dmail/config.yaml")
 if config == nil then
     config = {
-        main_server = 20,
-        servers = {20}
+        main_server = 0,
+        servers = {0},
+        drawInvisibleCharacters = false,
+        showImageAttachments = false
         }
     yaml.save(config, "/.data/dmail/config.yaml")
 end
@@ -1190,6 +1192,9 @@ composeDmailMenu = function()
 end
 
 local nextMenu = dmailListMenu
+if config.defaultServer == 0 then
+    nextMenu = initialConfigMenu
+end
 
 while not exited and nextMenu ~= nil do
     nextMenu = nextMenu()
