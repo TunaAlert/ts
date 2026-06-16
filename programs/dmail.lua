@@ -780,7 +780,7 @@ end
 configMenu = function()
     local nextMenu = nil
     bufferWindow.setVisible(true)
-    bufferWindow.reposition(termWidth/2-5, termHeight-9, 12, 8)
+    bufferWindow.reposition(termWidth/2-5, termHeight-8, 12, 8)
     menuButtons = {
         {
             function()
