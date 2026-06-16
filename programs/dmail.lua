@@ -243,7 +243,7 @@ local function drawLoadingLoop()
         term.setCursorPos(termWidth/2 - 7, 3)
         term.write("Loading Dmails")
 
-        bufferWindow.draw(buffer, 1 - 24 * ((bufferx - 1) % 4), 1 - 24 * math.floor((bufferx - 1) / 4))
+        nft.draw(buffer, 1 - 24 * ((bufferx - 1) % 4), 1 - 24 * math.floor((bufferx - 1) / 4), bufferWindow)
             
         sleep(0.05)
     end
@@ -622,6 +622,7 @@ dmailListMenu = function()
     scroll = 0
     
     parallel.waitForAny(loadMessages, drawLoadingLoop)
+    bufferWindow.setVisible(false)
 
     menuButtons = {
         {
