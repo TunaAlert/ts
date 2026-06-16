@@ -911,7 +911,7 @@ composeDmailMenu = function()
             function()
                 local recipient = IdFromName(composedMessage.recipient)
                 if recipient > 0 then
-                    local status = dmail.send(config.mainServer, composedMessage.recipient, composedMessage.subject, composedMessage.body, composedMessage.attachments)
+                    local status = dmail.send(config.mainServer, recipient, composedMessage.subject, composedMessage.body, composedMessage.attachments)
                     if status[1] ~= dmail.SUCCESS then
                         popUp = PopUp.new()
                         popUp.title = "Dmail not Sent"
