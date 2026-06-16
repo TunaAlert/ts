@@ -799,16 +799,17 @@ local function drawContacts()
     term.redirect(parentTerm)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
-
-    term.setCursorPos(4, 1)
-    term.write("Contacts")
+    term.clear()
     
-    term.setCursorPos(1, 2)
+    term.setCursorPos(1, 1)
     local b = "4"
     if menuButtonSelected[1] == 1 then
         b = "1"
     end
     term.blit("[Back]", b .. "4444" .. b, "ffffff")
+
+    term.setCursorPos(4, 2)
+    term.write("Contacts")
 
     for i = 1 + scroll, math.min(termHeight + scroll - 4, #contacts), 1 do
         local contact = contacts[i]
@@ -854,7 +855,7 @@ local function drawContacts()
     term.setCursorPos(termWidth/2 - 6, 4 + #contacts - scroll)
     local fg = "ddddddddddddd"
     local bg = "fffffffffffff"
-    if menuButtonSelected[1] == #contatcs+2 then
+    if menuButtonSelected[1] == #contacts+2 then
         fg = "1555555555551"
         bg = "7777777777777"
     end
@@ -1782,7 +1783,7 @@ contactListMenu = function()
     local cleanContacts = function()
         for i = #contacts, 1, -1 do
             local contact = contacts[i]
-            if contact.id == 0 or string.find(contact, "^[%s%d]*$") then
+            if contact.id == 0 or string.find(tostring(contact.name), "^[%s%d]*$") then
                 removeContact(contact)
             end
         end
@@ -1845,10 +1846,10 @@ contactListMenu = function()
                 local clickedContact = y - 3 + scroll
                 if clickedContact <= #contacts then
                     if x > 2 and x <= 7 then
-                        menuButtonSelected[1] = clickedContact + 1]
+                        menuButtonSelected[1] = clickedContact + 1
                         menuButtonSelected[2] = 1
                     elseif x > 8 and x <= termWidth - 4 then
-                        menuButtonSelected[1] = clickedContact + 1]
+                        menuButtonSelected[1] = clickedContact + 1
                         menuButtonSelected[2] = 2
                     elseif x > termWidth - 4 then
                         removeContact(contacts[clickedContact])
