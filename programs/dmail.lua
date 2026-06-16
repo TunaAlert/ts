@@ -852,7 +852,7 @@ configMenu = function()
 
     local cleanServerList = function(addEmpty)
         local isSelected = menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons
-        local selectedPosition = (menuButtonSelected[1] - 4) * 3 + (menuButtonSelected[2] - 1) % 3 + 1
+        local selectedPosition = (menuButtonSelected[1] - 4) * 3 + menuButtonSelected[2]
         local removeIndecies = {}
         for i, server in ipairs(config.servers) do
             if server == 0 then
@@ -931,7 +931,7 @@ configMenu = function()
                 end
                 config.servers[1] = config.mainServer
            elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
-                local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
+                local index = (menuButtonSelected[1] - 4) * 3 + menuButtonSelected[2]
                 if key == keys.backspace then
                     config.servers[index] = math.floor(config.servers[index]/10)
                 elseif key == keys.delete then
@@ -949,7 +949,7 @@ configMenu = function()
                 end
                 config.servers[1] = config.mainServer
             elseif menuButtonSelected[1] > 3 and menuButtonSelected[1] < #menuButtons then
-                local index = menuButtonSelected[1] - 4 + menuButtonSelected[2]
+                local index = (menuButtonSelected[1] - 4) * 3 + menuButtonSelected[2]
                 if string.find(char, "^%d$") then
                     config.servers[index] = math.min(config.servers[index] * 10 + tonumber(char), 65500)
                 end
