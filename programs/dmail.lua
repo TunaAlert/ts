@@ -46,7 +46,7 @@ local PopUp = {
             if #pu.messages > 0 then
                 h = #pu.messages + 6
             end
-            popupWindow.reposition(3, (termHeight - h) / 2, termWidth - 4, h)
+            popupWindow.reposition(3, math.floor((termHeight - h) / 2), termWidth - 4, h)
         end
         
         if menuButtonSelected[1] > 0 then
