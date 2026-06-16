@@ -1002,6 +1002,8 @@ configMenu = function()
             list[#list+1] = function() end
         end
     end
+
+    cleanServerList(true, true)
     
     drawConfigScreen()
     local timer = os.startTimer(0.05)
