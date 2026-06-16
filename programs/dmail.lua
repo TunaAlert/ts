@@ -1153,7 +1153,7 @@ composeDmailMenu = function()
                         elseif key == keys.delete then
                             if menuButtonSelected[2] <= #attachment then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = string.sub(attachment, 1, menuButtonSelected[2] - 1) .. string.sub(attachment, menuButtonSelected[2] + 1)
-                            elseif menuButtonSelected[2] - 3 < #composedMessage.attachments then
+                            elseif menuButtonSelected[1] - 3 < #composedMessage.attachments then
                                 composedMessage.attachments[menuButtonSelected[1]-3] = attachment .. composedMessage.attachments[menuButtonSelected[1]-2]
                                 table.remove(composedMessage.attachments, menuButtonSelected[1]-2)
                             end
