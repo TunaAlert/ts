@@ -696,6 +696,27 @@ local function handleMenuKeyEvent(key)
 
 end
 
+configMenu = function()
+    local nextMenu = nil
+    bufferWindow.setVisible(true)
+    menuButtons = {
+
+    }
+    menuButtonSelected = {0, 0}
+
+    local frame = 0
+    
+    local lastTime = os.epoch()
+    while not exited and nextMenu == nil do
+        local event, a, b, c, d, e, f = os.pullEvent(0.05)
+        local thisTime = os.epoch()
+        if thisTime - lastTime >= 3600 then
+            frame = (frame % 32) + 1
+        end
+        nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
+    end
+end
+
 dmailListMenu = function()
     local nextMenu = nil
     scroll = 0
@@ -1310,7 +1331,7 @@ end
 
 local nextMenu = dmailListMenu
 if config.defaultServer == 0 then
-    nextMenu = initialConfigMenu
+    nextMenu = configMenu
 end
 
 while not exited and nextMenu ~= nil do
