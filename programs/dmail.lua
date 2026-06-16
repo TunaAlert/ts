@@ -500,6 +500,7 @@ local function composeDmail()
 
         for i, attachment in ipairs(composedMessage.attachments) do
             attachmentList.setCursorPos(1, i - scroll)
+            attachmentList.setBackgroundColor(colors.black)
             if fs.exists(attachment) and not fs.isDir(attachment) then
                 attachmentList.setTextColor(colors.lime)
             else
@@ -508,6 +509,9 @@ local function composeDmail()
             if menuButtonSelected[1] - 3 == i then
                 selectedLineScroll = math.max(0, menuButtonSelected[2] - w + 5)
                 attachmentList.write(string.sub(attachment, 1 + selectedLineScroll))
+                attachmentList.setBackgroundColor(colors.gray)
+                attachmentList.setTextColor(colors.white)
+                attachmentList.write(fs.complete(attachment, "/")
             else
                 attachmentList.write(fs.getName(attachment))
             end
