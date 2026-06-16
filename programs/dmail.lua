@@ -706,13 +706,12 @@ configMenu = function()
 
     local frame = 1
     
-    local lastTime = os.epoch()
+    local timer = os.startTimer(0.05)
     while not exited and nextMenu == nil do
-        local event, a, b, c, d, e, f = os.pullEvent(0.05)
-        local thisTime = os.epoch()
-        if thisTime - lastTime >= 3600 then
+        local event, a, b, c, d, e, f = os.pullEvent()
+        if event == "timer" and a == timer then
             frame = (frame % 32) + 1
-            lastTime = thisTime
+            timer = os.startTimer(0.05)
         end
         nft.draw(buffer, 1 - 12 * ((frame - 1) % 4), 1 - 8 * math.floor((frame - 1) / 4), bufferWindow)
     end
