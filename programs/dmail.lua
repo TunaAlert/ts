@@ -320,7 +320,7 @@ local function drawConfigScreen()
         if menuButtonSelected[1] == 3 + r and menuButtonSelected[2] == c then
             b = "1"
         end
-        term.setCursorPos(8 * c - 4, 6 + r)
+        term.setCursorPos(8 * c - 6, 6 + r)
         term.blit(("[%05d]"):format(server), b .. "00000" .. b, "fffffff")
     end
 
@@ -956,6 +956,15 @@ configMenu = function()
             elseif y == 5 then
                 if x >= termWidth - 6 then
                     menuButtonSelected = {3, 1}
+                end
+            elseif y > 6 and y <= 9 then
+                local r = y - 6
+                local c = math.floor((x + 5) / 8)
+                if c >= 1 and c <= 3 then
+                    menuButtonSelected[1] = r + 3
+                    menuButtonSelected[2] = c
+                else
+                    menuButtonSelected = {0, 0}
                 end
             elseif y == termHeight then
                 local lastRow = #menuButtons[#menuButtons]
@@ -1750,11 +1759,50 @@ contactListMenu = function()
             addContactButton(contact)
         end
     }
+
+    menuButtonSelected = {0, 0}
+    scroll = 0
     
     drawContacts()
     
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
+        if event == "mouse_clicke" then
+        elseif event == "mouse_scroll" then
+        elseif event == "key" then
+            local key = a
+            handleMenuKeyEvent(key)
+            local selectedContact = menuButtonSelected[1] - 1
+            if selectedContact >= 1 and selectedContact <= #contacts then
+                if key == keys.backspace then
+                    if menuButtonSelected[2] == 1 then
+                        contacts[selectedContact].id = math.floor(contacts[selectedContact].id / 10)
+                    elseif menuButtonSelected[2] == 2 then
+                        local name = tostring(contacts[selectedContact].name)
+                        contacts[selectedContact].name = string.sub(name, 1, #name - 1)
+                    end
+                elseif key == keys.delete then
+                    if menuButtonSelected[2] == 1 then
+                        contacts[selectedContact].id = 0
+                    elseif menuButtonSelected[2] == 2 then
+                        contacts[selectedContact].name = ""
+                    end
+                end
+            end
+        elseif event == "char" then
+            local char = a
+            local selectedContact = menuButtonSelected[1] - 1
+            if selectedContact >= 1 and selectedContact <= #contacts then
+                if menuButtonSelected[2] == 1 then
+                    if string.find(char, "^%d*$") then
+                        contacts[selectedContact].id = math.min(contacts[selectedContact].id * 10 + tonumber(c), 65500)
+                    end
+                elseif menuButtonSelected[2] == 2 then
+                    local name = tostring(contacts[selectedContact].name)
+                    contacts[selectedContact].name = name .. char
+                end
+            end
+        end
         drawContacts()
     end
     return nextMenu
