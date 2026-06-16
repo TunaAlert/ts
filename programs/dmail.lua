@@ -973,6 +973,23 @@ composeDmailMenu = function()
     }
 
     menuButtonSelected = {0, 0}
+
+    removeEmptyAttachments = function()
+        local removedIndecies = {}
+        for i, attachment in ipairs(composedMessage.attachments) do
+            if not attachmentList.isVisible() or i ~= menuButtonSelected[1] - 3 then
+                if attachment == "" then
+                    removedIndecies[#removedIndecies + 1] = i
+                end
+            end
+        end
+        for i, index in ipairs(removedIndecies) do
+            table.remove(composedMessage.attachments, index)
+            if index < menuButtonSelected[1] - 3 then
+                menuButtonSelected[1] = menuButtonSelected[1] - 1
+            end
+        end
+    end
     
     composeDmail()
     
@@ -1032,6 +1049,7 @@ composeDmailMenu = function()
                     end
                 end
             end
+            removeEmptyAttachments()
             composeDmail()
         elseif event == "mouse_scroll" then
             local dir = a
@@ -1229,20 +1247,7 @@ composeDmailMenu = function()
             elseif selectedLineY > termHeight - 1 then
                 scroll = clampScrollInCompose(scroll + selectedLineY - (termHeight - 1))
             end
-            local removedIndecies = {}
-            for i, attachment in ipairs(composedMessage.attachments) do
-                if not attachmentList.isVisible() or i ~= menuButtonSelected[1] - 3 then
-                    if attachment == "" then
-                        removedIndecies[#removedIndecies + 1] = i
-                    end
-                end
-            end
-            for i, index in ipairs(removedIndecies) do
-                table.remove(composedMessage.attachments, index)
-                if index < menuButtonSelected[1] - 3 then
-                    menuButtonSelected[1] = menuButtonSelected[1] - 1
-                end
-            end
+            removeEmptyAttachments()
             composeDmail()
         elseif event == "char" then
             local char = a
