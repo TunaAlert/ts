@@ -490,10 +490,27 @@ local function composeDmail()
     end
 
     if attachmentList.isVisible() then
+        local w, h = attachmentList.getSize()
         attachmentList.setBackgroundColor(colors.black)
         attachmentList.clear()
 
-        
+        for i, attachment in ipairs(composedMessage.attachments) do
+            attachmentList.setCursorPos(1, i - scroll)
+            if fs.exists(attachment) and not fs.isDir(attachment) then
+                attachmentList.setTextColor(colors.lime)
+            else
+                attachmentList.setTextColor(colors.red)
+            end
+            if menuButtonSelected[1] - 3 == i then
+                local attachmentScroll = math.max(0, menuButtonSelected[2] - w + 5)
+                attachmentList.write(string.sub(attachment, 1 + attachmentScroll))
+            else
+                attachmentList.write(fs.getname(attachment))
+            end
+        end
+        attachmentList.setTextColor(colors.gray)
+        attachmentList.setCursorPos(1, #composedMessage.attachments + 1 - scroll)
+        attachmentList.write("Add attachment")
     else
         composeBody.setBackgroundColor(colors.black)
         composeBody.clear()
@@ -595,7 +612,11 @@ local function clampScrollInDmail(value)
 end
 
 local function clampScrollInCompose(value)
-    return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments - (termHeight - 4)), 0)
+    if attachmentList.isVisible then
+        return math.max(math.min(value, #composedMessage.attachments + 1 - (termHeight - 4)), 0)
+    else
+        return math.max(math.min(value, #composedMessage.lines + #composedMessage.attachments - (termHeight - 4)), 0)
+    end
 end
 
 local function handleMenuKeyEvent(key)
