@@ -909,7 +909,8 @@ composeDmailMenu = function()
                 scroll = 0
             end,
             function()
-                if type(recipient) == "number" and recipient ~= 0 then
+                local recipient = IdFromName(composedMessage.recipient)
+                if recipient > 0 then
                     local status = dmail.send(config.mainServer, composedMessage.recipient, composedMessage.subject, composedMessage.body, composedMessage.attachments)
                     if status[1] ~= dmail.SUCCESS then
                         popUp = PopUp.new()
@@ -954,6 +955,18 @@ composeDmailMenu = function()
                         end
                         popUp.calculateSize()
                     end
+                else
+                    popUp = PopUp.new()
+                    popUp.title = "No recipient!"
+                    popUp.buttons = {
+                        {
+                            label = "Close",
+                            click = function()
+                                popUp = nil
+                            end
+                        }
+                    }
+                    popUp.calculateSize()
                 end
             end
         }
