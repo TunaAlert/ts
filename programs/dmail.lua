@@ -1032,7 +1032,7 @@ configMenu = function()
                     menuButtonSelected = {0, 0}
                 end
             elseif y == termHeight then
-                local lastRow = #menuButtons[#menuButtons]
+                local lastRow = menuButtons[#menuButtons]
                 if x <= 8 then
                     lastRow[1]()
                 elseif x >= termWidth - 5 then
@@ -1833,7 +1833,36 @@ contactListMenu = function()
     
     while not exited and nextMenu == nil do
         local event, a, b, c, d, e, f = os.pullEvent()
-        if event == "mouse_clicke" then
+        if event == "mouse_click" then
+            local button, x, y = a, b, c
+            if y == 1 then
+                if x <= 6 then
+                    menuButtons[1][1]()
+                else
+                    menuButtonSelected = {0, 0}
+                end
+            elseif y >= 4 then
+                local clickedContact = y - 3 + scroll
+                if clickedContact <= #contacts then
+                    if x > 2 and x <= 7 then
+                        menuButtonSelected[1] = clickedContact + 1]
+                        menuButtonSelected[2] = 1
+                    elseif x > 8 and x <= termWidth - 4 then
+                        menuButtonSelected[1] = clickedContact + 1]
+                        menuButtonSelected[2] = 2
+                    elseif x > termWidth - 4 then
+                        removeContact(contacts[clickedContact])
+                    else
+                        menuButtonSelected = {0, 0}
+                    end
+                elseif clickedContact == #contacts + 1 then
+                    menuButtons[#menuButtons][1]()
+                else
+                    menuButtonSelected = {0, 0}
+                end
+            else
+                menuButtonSelected = {0, 0}
+            end
         elseif event == "mouse_scroll" then
         elseif event == "key" then
             local key = a
