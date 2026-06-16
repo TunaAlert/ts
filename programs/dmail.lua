@@ -1784,7 +1784,7 @@ contactListMenu = function()
     end
 
     local addContactButton = function(contact)
-        menuButtons[#menuButtons] = {
+        buttons = {
             function()
             end,
             function()
@@ -1796,6 +1796,7 @@ contactListMenu = function()
                 end
             end
         }
+        table.insert(menuButtons, #menuButtons, buttons)
     end
 
     menuButtons = {
