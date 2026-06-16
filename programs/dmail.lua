@@ -320,7 +320,7 @@ local function drawConfigScreen()
         if menuButtonSelected[1] == 3 + r and menuButtonSelected[2] == c then
             b = "1"
         end
-        term.setCursorPos(8 * c - 6, 6 + r)
+        term.setCursorPos(8 * c - 5, 6 + r)
         term.blit(("[%05d]"):format(server), b .. "00000" .. b, "fffffff")
     end
 
