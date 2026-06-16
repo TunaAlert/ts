@@ -530,20 +530,20 @@ local function composeDmail()
             composeBody.setCursorPos(1, #composedMessage.lines + 1 + i - scroll)
             composeBody.write("  +  " .. fs.getName(attachment))
         end
+    end
         
-        if menuButtonSelected[1] > 1 then
-            if menuButtonSelected[1] == 2 then
-                term.setCursorPos(4+menuButtonSelected[2], 2)
-            elseif menuButtonSelected[1] == 3 then
-                term.setCursorPos(4+menuButtonSelected[2], 3)
-            else
-                composeBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
-            end
-            term.setTextColor(colors.white)
-            term.setCursorBlink(true)
+    if menuButtonSelected[1] > 1 then
+        if menuButtonSelected[1] == 2 then
+            term.setCursorPos(4+menuButtonSelected[2], 2)
+        elseif menuButtonSelected[1] == 3 then
+            term.setCursorPos(4+menuButtonSelected[2], 3)
         else
-            term.setCursorBlink(false)
+            composeBody.setCursorPos(menuButtonSelected[2], menuButtonSelected[1] - scroll - 3)
         end
+        term.setTextColor(colors.white)
+        term.setCursorBlink(true)
+    else
+        term.setCursorBlink(false)
     end
     
     if popUp ~= nil then
