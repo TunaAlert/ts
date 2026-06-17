@@ -216,7 +216,14 @@ local function pushdir(host, dir, name)
         else
             result = push(host, ("%s/%s"):format(dir, file), ("%s/%s"):format(name, file))
         end
-        if results[result] == nil then
+		if type(result) == "table" then
+			for key, value in ipairs(result) do
+			if results[key] == nil then
+	            results[key] = value
+	        else
+	        	results[key] = results[key] + value
+	        end
+		elseif results[result] == nil then
             results[result] = 1
         else
         	results[result] = results[result] + 1
@@ -238,7 +245,14 @@ local function pulldir(host, dir, name)
         else
             result = pull(host, ("%s/%s"):format(dir, file), ("%s/%s"):format(name, file))
         end
-        if results[result] == nil then
+        if type(result) == "table" then
+			for key, value in ipairs(result) do
+			if results[key] == nil then
+	            results[key] = value
+	        else
+	        	results[key] = results[key] + value
+	        end
+		elseif results[result] == nil then
             results[result] = 1
         else
         	results[result] = results[result] + 1
