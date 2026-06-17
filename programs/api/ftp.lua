@@ -81,7 +81,7 @@ local function host(folder, readperm, writeperm)
 
 			print(("received %s request from %d"):format(cmd[1], id))
 
-            if string.find(path, "[/\]%.%.[/\]") then
+            if string.find(path, "[/\\]%.%.[/\\]") then
                 rednet.send(id, "denied forbidden", "ftp")
 				print("denied access: forbidden path")
             elseif cmd[1] == "list" then
