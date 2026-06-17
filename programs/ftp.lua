@@ -12,6 +12,7 @@ local function usage()
     print("  or   ftp pushdir <host> [dir] [destination]")
     print("  or   ftp pulldir <host> [dir] [destination]")
     print("  or   ftp list <host> [dir]")
+    print("  or   ftp delete <host> <file>")
 end
 
 if #arg == 0 then
