@@ -1,9 +1,9 @@
 peripheral.find("modem", rednet.open)
 
-UNKNOWN_RESPONSE = 1
-SUCCESS = 2
-NO_RESPONSE = 3
-ACCESS_DENIED = 4
+local UNKNOWN_RESPONSE = 1
+local SUCCESS = 2
+local NO_RESPONSE = 3
+local ACCESS_DENIED = 4
 
 local function split(str)
     local t = {}
