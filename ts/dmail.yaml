@@ -5,7 +5,7 @@ files:
   - programs/dmail.lua
   - programs/api/dmail.lua
   - programs/dmail/buffer.nft
-  - programs/dmail/unreads_notification.lua
+  - programs/dmail/unread_notification.lua
   - startup/dmail.lua
 dependencies:
   - program: yaml
