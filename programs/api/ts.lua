@@ -203,7 +203,7 @@ local function install(program, repo, forceDependencies)
         end
     end
     if startupFile ~= nil then
-        shell.run(startupFile)
+        shell.run("/" .. startupFile)
     end
     print(("Installed %s"):format(data.name))
     return true

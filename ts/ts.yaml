@@ -1,5 +1,5 @@
 name: Tuna System
-version: 1.0
+version: 1.0.1
 description: A Package Manager for CraftOS
 files:
   - programs/ts.lua
