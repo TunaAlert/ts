@@ -868,7 +868,18 @@ end
 
 local function clampScrollInDmail(value)
     if selectedDmail > 0 then
-        return math.max(math.min(value, messages[selectedDmail].lineCount + 2 + #messages[selectedDmail].attachments - ({messageBody.getSize()})[2]), 0)
+        local attachmentSize = #messages[selectedDmail].attachments
+        if config.showImageAttachments then
+            attachmentSize = 0
+            for i, attachment in ipairs(messages[selectedDmail].attachments) do
+                if attachmentImages[i] then
+                    attachmentSize = attachmentSize + #attachmentImages[i]
+                else
+                    attachmentSize = attachmentSize + 1
+                end
+            end
+        end
+        return math.max(math.min(value, messages[selectedDmail].lineCount + 2 + attachmentSize - ({messageBody.getSize()})[2]), 0)
     else
         return 0
     end
@@ -1254,9 +1265,27 @@ dmailDisplayMenu = function()
                 end
             elseif y >= pos[2] and y < pos[2] + size[2] then
                 local lineClicked = y - pos[2] + 2 + scroll
-                if lineClicked > selectedMessage.lineCount + 2 and lineClicked <= selectedMessage.lineCount + 2 + #selectedMessage.attachments then
-                    local attachmentClicked = lineClicked - selectedMessage.lineCount - 2
-                    menuButtons[#menuButtons - #selectedMessage.attachments + attachmentClicked][1]()
+                
+                if lineClicked > selectedMessage.lineCount + 2 then
+                    local attachmentClicked = 0
+                   if config.showImageAttachments then
+                        local offset = 0
+                        for i, attachment in ipairs(messages[selectedDmail].attachments) do
+                            if attachmentImages[i] then
+                                offset = offset + #attachmentImages[i]
+                            else
+                                offset = offset + 1
+                            end
+                            if attachmentClicked == 0 and lineClicked <= selectedMessage.lineCount + 2 + offset then
+                                attachmentClicked = i
+                            end
+                        end
+                    elseif lineClicked <= selectedMessage.lineCount + 2 + #selectedMessage.attachments then
+                        attachmentClicked = lineClicked - selectedMessage.lineCount - 2
+                    end
+                    if attachmentClicked > 0 then
+                        menuButtons[#menuButtons - #selectedMessage.attachments + attachmentClicked][1]()
+                    end
                 end
             end
             displayDmail()
