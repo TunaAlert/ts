@@ -4,8 +4,9 @@ description: A way to send files and messages to each other using central ftp se
 files:
   - programs/dmail.lua
   - programs/api/dmail.lua
-  - startup/dmail.lua
   - programs/dmail/buffer.nft
+  - programs/dmail/unreads_notification.lua
+  - startup/dmail.lua
 dependencies:
   - program: yaml
     version: 0.1
