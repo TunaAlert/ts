@@ -248,11 +248,12 @@ local function pulldir(host, dir, name)
         end
         if type(result) == "table" then
 			for key, value in ipairs(result) do
-			if results[key] == nil then
-	            results[key] = value
-	        else
-	        	results[key] = results[key] + value
-	        end
+				if results[key] == nil then
+		            results[key] = value
+		        else
+		        	results[key] = results[key] + value
+		        end
+			end
 		elseif results[result] == nil then
             results[result] = 1
         else
