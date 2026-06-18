@@ -1,13 +1,14 @@
 name: Dmail
-version: 1.0.0
+version: 1.0.1
 description: A way to send files and messages to each other using central ftp servers in CraftOS
 files:
   - programs/dmail.lua
   - programs/api/dmail.lua
-  - startup/dmail.lua
   - programs/dmail/buffer.nft
+  - programs/dmail/unread_notification.lua
+  - startup/dmail.lua
 dependencies:
   - program: yaml
     version: 0.1
   - program: ftp
-    version: 1.1
+    version: 1.2

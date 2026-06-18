@@ -113,7 +113,10 @@ end
 
 local function fetch(server)
     local status, messageFiles = ftp.list(server, ("%d/inbox/"):format(os.getComputerID()))
-    if status ~= ftp.SUCCESS then
+    if status == ftp.ACCESS_DENIED and messageFiles == "nonexistent" then
+        messageFiles = {}
+        status = ftp.SUCCESS
+    elseif status ~= ftp.SUCCESS then
         messageFiles = {}
     end
     local messages = {}
