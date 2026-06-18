@@ -200,7 +200,12 @@ local function list(host, dir)
     if id == nil then
         return NO_RESPONSE
     elseif type(message) == "string" then
-        return ACCESS_DENIED, message
+		if string.find(message, "denied") then
+	        local reason = string.sub(message, 8)
+	        return ACCESS_DENIED, reason
+		else
+			return UNKNOWN_RESPONSE, message
+		end
     else
         return SUCCESS, message
     end
