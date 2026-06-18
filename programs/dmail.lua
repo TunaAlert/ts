@@ -1233,7 +1233,7 @@ dmailDisplayMenu = function()
                         return
                     end
                 end
-                local extensionpos = {string.find(attachment, "%.%w$")}
+                local extensionpos = {string.find(attachment, "%.%w+$")}
                 local extension = ""
                 if #extensionpos > 0 then
                     extension = string.sub(attachment, extensionpos[1], extensionpos[2])
