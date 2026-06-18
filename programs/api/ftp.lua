@@ -1,9 +1,9 @@
 peripheral.find("modem", rednet.open)
 
-UNKNOWN_RESPONSE = 1
-SUCCESS = 2
-NO_RESPONSE = 3
-ACCESS_DENIED = 4
+local UNKNOWN_RESPONSE = 1
+local SUCCESS = 2
+local NO_RESPONSE = 3
+local ACCESS_DENIED = 4
 
 local function split(str)
     local t = {}
@@ -81,7 +81,7 @@ local function host(folder, readperm, writeperm)
 
 			print(("received %s request from %d"):format(cmd[1], id))
 
-            if string.find(path, "[/\]%.%.[/\]") then
+            if string.find(path, "[/\\]%.%.[/\\]") then
                 rednet.send(id, "denied forbidden", "ftp")
 				print("denied access: forbidden path")
             elseif cmd[1] == "list" then
@@ -89,7 +89,7 @@ local function host(folder, readperm, writeperm)
 					rednet.send(id, "denied permissions", "ftp")
 					print("denied access: no read permissions")
 				elseif not fs.exists(path) then
-                    rednet.send(id, "denied nonexistant", "ftp")
+                    rednet.send(id, "denied nonexistent", "ftp")
 					print("denied access: dir doesn't exist")
                 elseif not fs.isDir(path) then
                     rednet.send(id, "denied file", "ftp")
@@ -107,7 +107,7 @@ local function host(folder, readperm, writeperm)
 			elseif cmd[1] == "delete" then
 				if writeperm then
 					if not fs.exists(path) then
-						rednet.send(id, "denied nonexistant", "ftp")
+						rednet.send(id, "denied nonexistent", "ftp")
 						print("denied access: file doesn't exist")
 					elseif fs.isReadOnly(path) then
 						rednet.send(id, "denied permissions", "ftp")
@@ -200,7 +200,12 @@ local function list(host, dir)
     if id == nil then
         return NO_RESPONSE
     elseif type(message) == "string" then
-        return ACCESS_DENIED, message
+		if string.find(message, "denied") then
+	        local reason = string.sub(message, 8)
+	        return ACCESS_DENIED, reason
+		else
+			return UNKNOWN_RESPONSE, message
+		end
     else
         return SUCCESS, message
     end
@@ -216,7 +221,15 @@ local function pushdir(host, dir, name)
         else
             result = push(host, ("%s/%s"):format(dir, file), ("%s/%s"):format(name, file))
         end
-        if results[result] == nil then
+		if type(result) == "table" then
+			for key, value in ipairs(result) do
+				if results[key] == nil then
+		            results[key] = value
+		        else
+		        	results[key] = results[key] + value
+		        end
+			end
+		elseif results[result] == nil then
             results[result] = 1
         else
         	results[result] = results[result] + 1
@@ -238,7 +251,15 @@ local function pulldir(host, dir, name)
         else
             result = pull(host, ("%s/%s"):format(dir, file), ("%s/%s"):format(name, file))
         end
-        if results[result] == nil then
+        if type(result) == "table" then
+			for key, value in ipairs(result) do
+				if results[key] == nil then
+		            results[key] = value
+		        else
+		        	results[key] = results[key] + value
+		        end
+			end
+		elseif results[result] == nil then
             results[result] = 1
         else
         	results[result] = results[result] + 1
@@ -257,8 +278,13 @@ local function delete(host, fileOrDir)
     if id == nil then
         return NO_RESPONSE
     elseif type(message) == "string" then
-		return ACCESS_DENIED
-	else
+		if string.find(message, "denied") then
+	        local reason = string.sub(message, 8)
+	        return ACCESS_DENIED, reason
+		else
+			return UNKNOWN_RESPONSE, message
+		end
+    else
         return SUCCESS
     end
 end

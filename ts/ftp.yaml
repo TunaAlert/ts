@@ -1,5 +1,5 @@
 name: FTP Client and Server
-version: 1.1
+version: 1.2
 description: A program for hosting and connecting to FTP Servers in CraftOS using a custom FTP
 files:
   - programs/ftp.lua
