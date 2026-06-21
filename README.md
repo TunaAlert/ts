@@ -26,7 +26,7 @@ where TunaAlert is the owner name, ts is the repo name and main is the branch na
 
 ### Other hosts
 To add a repo from another host, run `ts config repo-add -url <url>` where url leads to the root of the repository.
-So, to add this repository you would run `ts config repo-add -url https://github.com/TunaAlert/ts/blob/main`.
+So, to add this repository you would run `ts config repo-add -url https://raw.githubusercontent.com/TunaAlert/ts/refs/heads/main`.
 To make software in these repositories installable, make sure there is a suitable file matching the path ts/&lt;name&gt;.yaml for each
 program you want to host. I.e., my repository has the file *https[]()://github.com/TunaAlert/ts/blob/main/ts/ftp.yaml* for my ftp program.
 
